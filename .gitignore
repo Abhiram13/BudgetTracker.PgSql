@@ -1,0 +1,5 @@
+/.config
+/Src/*/bin
+/Src/*/obj
+/Src/*/.env
+*.DS_Store
