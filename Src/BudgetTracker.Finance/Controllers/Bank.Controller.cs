@@ -39,4 +39,16 @@ public class BankController : ControllerBase
             Message = "Bank created successfully"
         });
     }
+
+    [HttpGet]
+    public async Task<ActionResult<ApiResponse<List<BankListDto>>>> GetAllBanksAsync()
+    {
+        List<BankListDto> list = await _bankService.GetBankListsAsync();
+        return Ok(new ApiResponse<List<BankListDto>>
+        {
+            StatusCode = System.Net.HttpStatusCode.OK,
+            TraceId = _traceProvider.TraceId,
+            Result = list
+        });
+    }
 }

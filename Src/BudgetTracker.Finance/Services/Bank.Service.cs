@@ -1,5 +1,6 @@
 using BudgetTracker.Finance.Interfaces;
 using BudgetTracker.Finance.Entities;
+using BudgetTracker.Finance.Models;
 
 namespace BudgetTracker.Finance.Services;
 
@@ -16,5 +17,10 @@ public class BankService
     {
         Bank bank = await _bankRepository.InsertOneBankAsync(payload);
         return bank;
+    }
+
+    public async Task<List<BankListDto>> GetBankListsAsync()
+    {
+        return await _bankRepository.GetAllBanksAsync();
     }
 }

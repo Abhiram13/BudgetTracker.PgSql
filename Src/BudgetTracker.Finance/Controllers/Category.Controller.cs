@@ -39,4 +39,16 @@ public class CategoryController : ControllerBase
             Message = "Category created successfully"
         });
     }
+
+    [HttpGet]
+    public async Task<ActionResult<ApiResponse<List<CategoryListDto>>>> GetCategoriesAsync()
+    {
+        List<CategoryListDto> list = await _categoryService.GetAllCategoriesAsync();
+        return Ok(new ApiResponse<List<CategoryListDto>>
+        {
+            StatusCode = System.Net.HttpStatusCode.OK,
+            TraceId = _traceProvider.TraceId,
+            Result = list
+        });
+    }
 }
