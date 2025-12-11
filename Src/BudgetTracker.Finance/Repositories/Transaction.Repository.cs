@@ -1,5 +1,8 @@
 using BudgetTracker.Finance.Interfaces;
 using BudgetTracker.Finance.Entities;
+using BudgetTracker.Finance.Models;
+using BudgetTracker.Finance.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace BudgetTracker.Finance.Repository;
 
@@ -10,6 +13,38 @@ public class TransactionRepository : ITransactionRepository
     public TransactionRepository(WriteDbContext write)
     {
         _writeDbContext = write;
+    }
+
+    public async Task<List<TransactionListDto>> GetTransactionsAsync(int? month = null, int? year = null)
+    {
+        IQueryable<Transaction> query = _writeDbContext.Transactions.AsQueryable();
+
+        if (month is not null)
+        {
+            query = query.Where(q => q.Date.Month == month);
+        }
+
+        if (year is not null)
+        {
+            query = query.Where(q => q.Date.Year == year);
+        }
+
+        if (month is not null && year is not null)
+        {
+            query = query.Where(q => q.Date.Month == month && q.Date.Year == year);
+        }
+
+        List<TransactionListDto> list = await query
+            .GroupBy(t => t.Date.Date)
+            .Select(g => new TransactionListDto
+            {
+                Date = g.Key.ToString("yyyy-MM-dd"),
+                Debit = g.Where(t => t.Type == TransactionType.Debit).Sum(t => t.ActualAmount),
+                Credit = g.Where(t => t.Type == TransactionType.Credit).Sum(t => t.ActualAmount),
+            })
+            .ToListAsync();
+
+        return list;
     }
 
     public async Task<Transaction> InsertOneTransactionAsync(Transaction payload)

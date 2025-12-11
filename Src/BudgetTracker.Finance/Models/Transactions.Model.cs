@@ -28,3 +28,15 @@ public record class InsertTransactionDto
     [JsonPropertyName("type")]
     public TransactionType Type { get; init; }
 }
+
+public record class TransactionListDto
+{
+    [JsonPropertyName("debit")]
+    public decimal Debit { get; init; }
+
+    [JsonPropertyName("credit")]
+    public decimal Credit { get; init; }
+
+    [JsonPropertyName("date")]
+    public string Date { get; init; } = string.Empty;
+}

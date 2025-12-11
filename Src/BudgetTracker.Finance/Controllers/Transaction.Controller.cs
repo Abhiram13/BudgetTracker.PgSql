@@ -46,4 +46,16 @@ public class TransactionController : ControllerBase
             Message = "Transaction created successfully"
         });
     }
+
+    [HttpGet]
+    public async Task<ActionResult<ApiResponse<List<TransactionListDto>>>> GetTransactionsAsync([FromQuery] int? month, [FromQuery] int? year)
+    {
+        List<TransactionListDto> list = await _transactionService.GetAllTransactionsAsync(month, year);
+        return Ok(new ApiResponse<List<TransactionListDto>>
+        {
+            StatusCode = System.Net.HttpStatusCode.OK,
+            TraceId = _traceProvider.TraceId,
+            Result = list
+        });
+    }
 }
