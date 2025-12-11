@@ -53,4 +53,9 @@ public class TransactionService
         CheckMonthAndDate();
         return await _repository.GetTransactionsAsync();
     }
+
+    public async Task<TransactionByDateDto> GetTransactionsByDateAsync(string transactionDate)
+    {
+        return await _repository.GetTransactionsByDateAsync(transactionDate);
+    }
 }

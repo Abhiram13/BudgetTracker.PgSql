@@ -7,4 +7,5 @@ public interface ITransactionRepository
 {
     Task<Transaction> InsertOneTransactionAsync(Transaction payload);
     Task<List<TransactionListDto>> GetTransactionsAsync(int? month = null, int? year = null);
+    Task<TransactionByDateDto> GetTransactionsByDateAsync(string transactionDate);
 }

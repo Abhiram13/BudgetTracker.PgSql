@@ -47,6 +47,27 @@ public class TransactionRepository : ITransactionRepository
         return list;
     }
 
+    public async Task<TransactionByDateDto> GetTransactionsByDateAsync(string transactionDate)
+    {
+        DateTime date = DateTime.Parse(transactionDate);
+        TransactionByDateDto? result = await _writeDbContext.Transactions
+            .Where(t => t.Date.Date == date.Date)
+            .GroupBy(t => t.Date.Date)
+            .Select(t => new TransactionByDateDto
+            {
+                Debit = t.Where(d => d.Type == TransactionType.Debit).Sum(d => d.ActualAmount),
+                Credit = t.Where(c => c.Type == TransactionType.Credit).Sum(c => c.ActualAmount),
+                TransactionsList = t.Select(l => new TransactionByDateDto.Transactions
+                {
+                    Amount = l.ActualAmount,
+                    Type = l.Type
+                }).ToList()
+            })
+            .FirstOrDefaultAsync();
+
+        return result ?? new TransactionByDateDto();
+    }
+
     public async Task<Transaction> InsertOneTransactionAsync(Transaction payload)
     {
         await _writeDbContext.Transactions.AddAsync(payload);

@@ -40,3 +40,24 @@ public record class TransactionListDto
     [JsonPropertyName("date")]
     public string Date { get; init; } = string.Empty;
 }
+
+public record class TransactionByDateDto
+{
+    [JsonPropertyName("debit")]
+    public decimal Debit { get; init; }
+
+    [JsonPropertyName("credit")]
+    public decimal Credit { get; init; }
+
+    [JsonPropertyName("transactions")]
+    public List<Transactions> TransactionsList { get; init; } = new List<Transactions>();
+
+    public record class Transactions
+    {
+        [JsonPropertyName("amount")]
+        public decimal Amount { get; init; }
+
+        [JsonPropertyName("type")]
+        public TransactionType Type { get; init; }
+    }
+}

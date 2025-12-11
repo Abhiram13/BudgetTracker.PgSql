@@ -58,4 +58,16 @@ public class TransactionController : ControllerBase
             Result = list
         });
     }
+
+    [HttpGet("date/{date}")]
+    public async Task<ActionResult<ApiResponse<TransactionByDateDto>>> GetTransactionsByDateAsync([FromRoute] string date)
+    {
+        TransactionByDateDto result = await _transactionService.GetTransactionsByDateAsync(date);
+        return Ok(new ApiResponse<TransactionByDateDto>
+        {
+            StatusCode = System.Net.HttpStatusCode.OK,
+            TraceId = _traceProvider.TraceId,
+            Result = result
+        });
+    }
 }
