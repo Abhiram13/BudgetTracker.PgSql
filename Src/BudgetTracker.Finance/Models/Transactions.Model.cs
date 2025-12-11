@@ -1,8 +1,30 @@
+using BudgetTracker.Finance.Enums;
+
 namespace BudgetTracker.Finance.Models;
 
 public record class InsertTransactionDto
 {
-    public decimal Amount { get; set; }
-    public decimal ActualAmount { get; set; }
-    public string Description { get; set; } = string.Empty;
+    [JsonPropertyName("amount")]
+    public decimal Amount { get; init; }
+
+    [JsonPropertyName("actual_amount")]
+    public decimal ActualAmount { get; init; }
+
+    [JsonPropertyName("description")]
+    public string Description { get; init; } = string.Empty;
+
+    [JsonPropertyName("from_bank")]
+    public int FromBank { get; init; }
+
+    [JsonPropertyName("to_bank")]
+    public int ToBank { get; init; }
+
+    [JsonPropertyName("category_id")]
+    public int CategoryId { get; init; }
+
+    [JsonPropertyName("date")]
+    public string Date { get; init; } = string.Empty;
+
+    [JsonPropertyName("type")]
+    public TransactionType Type { get; init; }
 }

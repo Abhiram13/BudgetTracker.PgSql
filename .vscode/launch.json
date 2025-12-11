@@ -1,0 +1,39 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": ".NET Launch (BudgetTracker.Finances)",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/Src/BudgetTracker.Finance/bin/Debug/net8.0/BudgetTracker.Finance.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/Src",
+            "preLaunchTask": "BudgetTracker Finance build",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
+            "name": ".NET Launch (BudgetTracker.Dues)",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/Src/BudgetTracker.Dues/bin/Debug/net8.0/BudgetTracker.Dues.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/Src",
+            "preLaunchTask": "BudgetTracker Dues build",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
+            "name": ".NET Attach (BudgetTracker.Finances)",
+            "type": "coreclr",
+            "request": "attach",
+            "processName": "BudgetTracker.Finance"
+        },
+        {
+            "name": ".NET Attach (BudgetTracker.Dues)",
+            "type": "coreclr",
+            "request": "attach",
+            "processName": "BudgetTracker.Dues"
+        }
+    ]
+}

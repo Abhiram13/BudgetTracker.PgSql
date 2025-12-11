@@ -39,7 +39,11 @@ public static class ServiceExtension
     private static void AddScopedServices(IServiceCollection collection)
     {
         collection.AddScoped<IBankRepository, BankRepository>();
+        collection.AddScoped<ITransactionRepository, TransactionRepository>();
+        collection.AddScoped<ICategoryRepository, CategoryRepository>();
         collection.AddScoped<BankService>();
+        collection.AddScoped<TransactionService>();
+        collection.AddScoped<CategoryService>();
         collection.AddScoped<TraceIdProvider>();
     }
 }

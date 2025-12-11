@@ -8,35 +8,35 @@ using BudgetTracker.Shared.Utilities;
 namespace BudgetTracker.Finance.Controllers;
 
 [ApiController]
-[Route("api/banks")]
-public class BankController : ControllerBase
+[Route("api/categories")]
+public class CategoryController : ControllerBase
 {
-    private readonly BankService _bankService;
+    private readonly CategoryService _categoryService;
     private readonly TraceIdProvider _traceProvider;
 
-    public BankController(BankService bankService, TraceIdProvider trace)
+    public CategoryController(CategoryService categoryService, TraceIdProvider trace)
     {
-        _bankService = bankService;
+        _categoryService = categoryService;
         _traceProvider = trace;
     }
 
     [HttpPost]
-    public async Task<ActionResult<ApiResponse<string>>> InsertAsync([FromBody] InsertBankDto payload)
+    public async Task<ActionResult<ApiResponse<string>>> InsertAsync([FromBody] InsertCategoryDto payload)
     {
         DateTime now = DateTime.UtcNow;
-        Bank bank = new Bank
+        Category category = new Category
         {
             CreatedAt = now,
             UpdatedAt = now,
             Name = payload.Name
         };
 
-        await _bankService.InsertBankAsync(bank);
+        await _categoryService.InsertCategoryAsync(category);
         return Ok(new ApiResponse<string>
         {
             StatusCode = System.Net.HttpStatusCode.Created,
             TraceId = _traceProvider.TraceId,
-            Message = "Bank created successfully"
+            Message = "Category created successfully"
         });
     }
 }

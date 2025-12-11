@@ -38,7 +38,7 @@ public class Transaction : BaseEntity
     [JsonPropertyName("tags")]
     public string Tags { get; set; } = string.Empty;
 
-    [Column("date")]
+    [Column(name: "date", TypeName = "timestamp without time zone")]
     [JsonPropertyName("date")]
     public DateTime Date { get; set; }
 
