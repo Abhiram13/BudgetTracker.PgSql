@@ -4,7 +4,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <GenerateDocumentationFile>false</GenerateDocumentationFile>        
-        <NoWarn>IDE0130;IDE0290;</NoWarn>
+        <NoWarn>IDE0130;IDE0290;CA1822;IDE0090;</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>

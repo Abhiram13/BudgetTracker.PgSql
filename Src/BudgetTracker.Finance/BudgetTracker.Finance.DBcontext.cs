@@ -12,6 +12,7 @@ public class WriteDbContext : DbContext
     public DbSet<Bank> Banks { get; set; }
 }
 
+[Obsolete(message: "Read-Only DB has issues. So, not using this context")]
 public class ReadDbContext : DbContext
 {
     public ReadDbContext(DbContextOptions<ReadDbContext> options) : base (options) { }

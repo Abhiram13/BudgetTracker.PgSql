@@ -22,16 +22,6 @@ builder.Services.AddDbContext<WriteDBContext>(async (provider, options) =>
     string connectionString = $"Host={postgresHost};Port={postgresPort};Database={postgresDatabase};Username={postgresUsername};Password={postgresPassword}";
     options.UseNpgsql(connectionString);
 });
-builder.Services.AddDbContext<ReadDBContext>(async (provider, options) =>
-{
-    string? postgresHost = "localhost";
-    string? postgresPort = "5433";
-    string? postgresDatabase = "BudgetTracker.Due";
-    string? postgresUsername = "postgres";
-    string? postgresPassword = "postgres";
-    string connectionString = $"Host={postgresHost};Port={postgresPort};Database={postgresDatabase};Username={postgresUsername};Password={postgresPassword}";
-    options.UseNpgsql(connectionString);
-});
 builder.WebHost.ConfigureKestrel((_, server) =>
 {
     string portNumber = Environment.GetEnvironmentVariable("PORT") ?? "3000";

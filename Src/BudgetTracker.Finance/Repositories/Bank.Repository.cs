@@ -6,12 +6,10 @@ namespace BudgetTracker.Finance.Repository;
 public class BankRepository : IBankRepository
 {
     private readonly WriteDbContext _writeDbContext;
-    private readonly ReadDbContext _readDbContext;
 
-    public BankRepository(WriteDbContext write, ReadDbContext read)
+    public BankRepository(WriteDbContext write)
     {
         _writeDbContext = write;
-        _readDbContext = read;
     }
 
     public async Task<Bank> InsertOneBankAsync(Bank payload)

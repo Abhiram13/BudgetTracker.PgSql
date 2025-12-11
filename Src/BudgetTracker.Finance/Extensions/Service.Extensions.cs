@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using BudgetTracker.Finance.Interfaces;
 using BudgetTracker.Finance.Repository;
 using BudgetTracker.Finance.Services;
+using BudgetTracker.Shared.Utilities;
 
 namespace BudgetTracker.Finance.Extensions;
 
@@ -33,21 +34,12 @@ public static class ServiceExtension
             options.UseNpgsql(connectionString);
         });
 
-        collection.AddDbContext<ReadDbContext>(async (provider, options) =>
-        {
-            string? postgresHost = "localhost";
-            string? postgresPort = "5433";
-            string? postgresDatabase = "BudgetTracker.Finance";
-            string? postgresUsername = "postgres";
-            string? postgresPassword = "postgres";
-            string connectionString = $"Host={postgresHost};Port={postgresPort};Database={postgresDatabase};Username={postgresUsername};Password={postgresPassword}";
-            options.UseNpgsql(connectionString);            
-        });
     }
 
     private static void AddScopedServices(IServiceCollection collection)
     {
         collection.AddScoped<IBankRepository, BankRepository>();
         collection.AddScoped<BankService>();
+        collection.AddScoped<TraceIdProvider>();
     }
 }
