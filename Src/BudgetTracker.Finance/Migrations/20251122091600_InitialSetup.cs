@@ -76,7 +76,6 @@ namespace BudgetTracker.Finance.Infrastructure.Migrations
                     from_bank INT,
                     to_bank INT,
                     category_id INT,
-                    tags TEXT,
                     date TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW(),
                     type INT,
                     created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
@@ -84,6 +83,18 @@ namespace BudgetTracker.Finance.Infrastructure.Migrations
                     FOREIGN KEY (from_bank) REFERENCES banks(id),
                     FOREIGN KEY (to_bank) REFERENCES banks(id),
                     FOREIGN KEY (category_id) REFERENCES categories(id)
+                )
+            ");
+
+            migrationBuilder.Sql(@"
+                CREATE TABLE IF NOT EXISTS transactions_meta (
+	                transaction_id INT NOT NULL,
+	                due_id INT,
+	                emi_id INT,
+	                tags VARCHAR,
+	                created_at TIMESTAMP WITHOUT TIME ZONE,
+	                updated_at TIMESTAMP WITHOUT TIME ZONE,
+	                FOREIGN KEY (transaction_id) REFERENCES transactions(id)
                 )
             ");
         }

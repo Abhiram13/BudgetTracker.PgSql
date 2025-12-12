@@ -43,13 +43,13 @@ public class Due : BaseEntity
     [JsonPropertyName("status")]
     public DueType Status { get; set; } = DueType.Active;
 
-    [Column("start_date")]
+    [Column("start_date", TypeName = "timestamp without time zone")]
     [JsonPropertyName("start_date")]
     public DateTime StartDate { get; set; }
 
     [Column("completed_date")]
     [JsonPropertyName("completed_date")]
-    public DateTime CompletedDate { get; set; }
+    public DateTime? CompletedDate { get; set; }
 
     [Column("remarks")]
     [JsonPropertyName("remarks")]

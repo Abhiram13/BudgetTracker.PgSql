@@ -8,6 +8,7 @@ public class WriteDbContext : DbContext
     public WriteDbContext(DbContextOptions<WriteDbContext> options) : base (options) { }
 
     public DbSet<Transaction> Transactions { get; set; }
+    public DbSet<TransactionsMeta> TransactionsMeta { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<Bank> Banks { get; set; }
 }

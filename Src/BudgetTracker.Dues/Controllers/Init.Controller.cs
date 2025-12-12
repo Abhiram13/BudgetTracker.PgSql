@@ -4,7 +4,7 @@ namespace PostgresWebApiTemplate.Controllers;
 
 [ApiController]
 [Route("")]
-public class InitController : BaseApiController
+public class InitController : ControllerBase
 {
     private readonly ILogger<InitController> _logger;
 

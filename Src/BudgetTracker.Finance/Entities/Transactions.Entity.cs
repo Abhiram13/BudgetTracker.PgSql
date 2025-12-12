@@ -34,10 +34,6 @@ public class Transaction : BaseEntity
     [JsonPropertyName("category_id")]
     public int CategoryId { get; set; }
 
-    [Column("tags")]
-    [JsonPropertyName("tags")]
-    public string Tags { get; set; } = string.Empty;
-
     [Column(name: "date", TypeName = "timestamp without time zone")]
     [JsonPropertyName("date")]
     public DateTime Date { get; set; }

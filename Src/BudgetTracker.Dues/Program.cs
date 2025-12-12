@@ -3,15 +3,22 @@ using Abhiram.Extensions.DotEnv;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 using BudgetTracker.Dues;
+using BudgetTracker.Dues.Interfaces;
+using BudgetTracker.Dues.Repository;
+using BudgetTracker.Dues.Services;
+using BudgetTracker.Shared.Utilities;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 DotEnvironmentVariables.Load();
 
-builder.AddConsoleGoogleSeriLog(template: "[{Level:u3}] [TraceId: {trace_id}] [Source: {SourceContext}] {Message:lj}{NewLine}{Exception}");
+// builder.AddConsoleGoogleSeriLog(template: "[{Level:u3}] [TraceId: {trace_id}] [Source: {SourceContext}] {Message:lj}{NewLine}{Exception}");
 builder.Services.AddRouting();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IDueRepository, DueRepository>();
+builder.Services.AddScoped<DueService>();
+builder.Services.AddScoped<TraceIdProvider>();
 builder.Services.AddDbContext<WriteDBContext>(async (provider, options) =>
 {
     string? postgresHost = "localhost";
