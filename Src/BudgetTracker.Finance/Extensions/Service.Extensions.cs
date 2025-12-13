@@ -45,5 +45,6 @@ public static class ServiceExtension
         collection.AddScoped<TransactionService>();
         collection.AddScoped<CategoryService>();
         collection.AddScoped<TraceIdProvider>();
+        collection.AddHttpClient<BigQueryService>();
     }
 }

@@ -6,6 +6,7 @@
     <PackageVersion Include="Abhiram.Abstractions.Logging" Version="2.0.0" />
     <PackageVersion Include="Abhiram.Extensions.DotEnv" Version="1.1.0" />
     <PackageVersion Include="EntityFramework6.Npgsql" Version="6.4.3" />
+    <PackageVersion Include="Google.Cloud.BigQuery.V2" Version="3.11.0" />
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="8.0.12" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="8.0.19" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.19">

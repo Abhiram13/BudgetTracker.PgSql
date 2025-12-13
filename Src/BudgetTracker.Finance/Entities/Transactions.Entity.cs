@@ -51,4 +51,6 @@ public class Transaction : BaseEntity
 
     [ForeignKey(nameof(ToBank))]
     public Bank ToBankF { get; set; } = default!;
+
+    public TransactionsMeta Meta { get; set; } = default!;
 }

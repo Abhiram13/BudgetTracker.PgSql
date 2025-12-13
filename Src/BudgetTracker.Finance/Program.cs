@@ -2,8 +2,11 @@ using System.Net;
 using BudgetTracker.Finance;
 using BudgetTracker.Finance.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Abhiram.Extensions.DotEnv;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+DotEnvironmentVariables.Load();
+
 builder.Services.AddCollections();
 builder.WebHost.ConfigureKestrel((_, server) => {
     string portNumber = Environment.GetEnvironmentVariable("PORT") ?? "3000";

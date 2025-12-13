@@ -1,0 +1,1 @@
+namespace BudgetTracker.Warehouse.Models;

@@ -47,7 +47,7 @@ public class TransactionRepository : ITransactionRepository
         return list;
     }
 
-    public async Task<TransactionByDateDto> GetTransactionsByDateAsync(string transactionDate)
+    public async Task<TransactionByDateDto> GetAllTransactionsByDateAsync(string transactionDate)
     {
         DateTime date = DateTime.Parse(transactionDate);
         TransactionByDateDto? result = await _writeDbContext.Transactions
@@ -73,5 +73,22 @@ public class TransactionRepository : ITransactionRepository
         await _writeDbContext.Transactions.AddAsync(payload);
         await _writeDbContext.SaveChangesAsync();
         return payload;
+    }
+
+    public async Task<TransactionListDto?> GetDebitCreditByDateAsync(string transactionDate)
+    {
+        DateTime date = DateTime.Parse(transactionDate);
+        TransactionListDto? result = await _writeDbContext.Transactions
+            .Where(t => t.Date == date.Date)
+            .GroupBy(t => t.Date.Date)
+            .Select(t => new TransactionListDto
+            {
+                Credit = t.Where(d => d.Type == TransactionType.Credit).Sum(c => c.ActualAmount),
+                Debit = t.Where(d => d.Type == TransactionType.Debit).Sum(c => c.ActualAmount),
+                Date = date.Date.ToString("yyyy-MM-dd")
+            })
+            .FirstOrDefaultAsync();
+
+        return result;
     }
 }

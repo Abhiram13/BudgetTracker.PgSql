@@ -2,13 +2,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 using BudgetTracker.Finance.Enums;
 using Microsoft.EntityFrameworkCore;
 using BudgetTracker.Shared.Entities;
+using System.ComponentModel.DataAnnotations;
 
 namespace BudgetTracker.Finance.Entities;
 
 [Table("transactions_meta")]
 public class TransactionsMeta
 {
+    [Key]
     [Column("transaction_id")]
+    [ForeignKey(nameof(Transaction))]
     [JsonPropertyName("transaction_id")]
     public required int TransactionId { get; init; }
 
@@ -32,6 +35,5 @@ public class TransactionsMeta
     [JsonPropertyName("tags")]
     public string? Tags { get; init; }
 
-    [ForeignKey(nameof(TransactionId))]
     public Transaction TransactionF { get; init; } = default!;
 }
