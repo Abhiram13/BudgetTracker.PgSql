@@ -1,4 +1,5 @@
 using Abhiram.Extensions.DotEnv;
+using BudgetTracker.Shared.Utilities;
 using BudgetTracker.Warehouse.Services;
 using Google.Cloud.BigQuery.V2;
 
@@ -11,6 +12,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 builder.Services.AddSingleton<BigQueryService>();
+builder.Services.AddScoped<TraceIdProvider>();
 
 WebApplication app = builder.Build();
 

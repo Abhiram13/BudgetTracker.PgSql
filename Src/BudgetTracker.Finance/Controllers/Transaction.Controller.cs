@@ -47,17 +47,17 @@ public class TransactionController : ControllerBase
         });
     }
 
-    [HttpGet]
-    public async Task<ActionResult<ApiResponse<List<TransactionListDto>>>> GetTransactionsAsync([FromQuery] int? month, [FromQuery] int? year)
-    {
-        List<TransactionListDto> list = await _transactionService.GetAllTransactionsAsync(month, year);
-        return Ok(new ApiResponse<List<TransactionListDto>>
-        {
-            StatusCode = System.Net.HttpStatusCode.OK,
-            TraceId = _traceProvider.TraceId,
-            Result = list
-        });
-    }
+    // [HttpGet]
+    // public async Task<ActionResult<ApiResponse<List<TransactionListDto<string>>>>> GetTransactionsAsync([FromQuery] int? month, [FromQuery] int? year)
+    // {
+    //     List<TransactionListDto<string>> list = await _transactionService.GetAllTransactionsAsync(month, year);
+    //     return Ok(new ApiResponse<List<TransactionListDto<string>>>
+    //     {
+    //         StatusCode = System.Net.HttpStatusCode.OK,
+    //         TraceId = _traceProvider.TraceId,
+    //         Result = list
+    //     });
+    // }
 
     [HttpGet("date/{date}")]
     public async Task<ActionResult<ApiResponse<TransactionByDateDto>>> GetTransactionsByDateAsync([FromRoute] string date)

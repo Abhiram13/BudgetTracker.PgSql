@@ -15,7 +15,7 @@ public class TransactionRepository : ITransactionRepository
         _writeDbContext = write;
     }
 
-    public async Task<List<TransactionListDto>> GetTransactionsAsync(int? month = null, int? year = null)
+    public async Task<List<TransactionListDto<string>>> GetTransactionsAsync(int? month = null, int? year = null)
     {
         IQueryable<Transaction> query = _writeDbContext.Transactions.AsQueryable();
 
@@ -34,9 +34,9 @@ public class TransactionRepository : ITransactionRepository
             query = query.Where(q => q.Date.Month == month && q.Date.Year == year);
         }
 
-        List<TransactionListDto> list = await query
+        List<TransactionListDto<string>> list = await query
             .GroupBy(t => t.Date.Date)
-            .Select(g => new TransactionListDto
+            .Select(g => new TransactionListDto<string>
             {
                 Date = g.Key.ToString("yyyy-MM-dd"),
                 Debit = g.Where(t => t.Type == TransactionType.Debit).Sum(t => t.ActualAmount),
@@ -74,18 +74,17 @@ public class TransactionRepository : ITransactionRepository
         await _writeDbContext.SaveChangesAsync();
         return payload;
     }
-
-    public async Task<TransactionListDto?> GetDebitCreditByDateAsync(string transactionDate)
+    
+    public async Task<TransactionListDto<DateTime>?> GetDebitCreditByDateAsync(DateTime transactionDate)
     {
-        DateTime date = DateTime.Parse(transactionDate);
-        TransactionListDto? result = await _writeDbContext.Transactions
-            .Where(t => t.Date == date.Date)
+        TransactionListDto<DateTime>? result = await _writeDbContext.Transactions
+            .Where(t => t.Date == transactionDate.Date)
             .GroupBy(t => t.Date.Date)
-            .Select(t => new TransactionListDto
+            .Select(t => new TransactionListDto<DateTime>
             {
                 Credit = t.Where(d => d.Type == TransactionType.Credit).Sum(c => c.ActualAmount),
                 Debit = t.Where(d => d.Type == TransactionType.Debit).Sum(c => c.ActualAmount),
-                Date = date.Date.ToString("yyyy-MM-dd")
+                Date = transactionDate.Date
             })
             .FirstOrDefaultAsync();
 

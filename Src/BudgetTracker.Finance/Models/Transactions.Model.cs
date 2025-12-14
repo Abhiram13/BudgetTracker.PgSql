@@ -29,7 +29,7 @@ public record class InsertTransactionDto
     public TransactionType Type { get; init; }
 }
 
-public record class TransactionListDto
+public record class TransactionListDto<T>
 {
     [JsonPropertyName("debit")]
     public decimal Debit { get; init; }
@@ -38,7 +38,7 @@ public record class TransactionListDto
     public decimal Credit { get; init; }
 
     [JsonPropertyName("date")]
-    public string Date { get; init; } = string.Empty;
+    public T Date { get; init; } = default!;
 }
 
 public record class TransactionByDateDto
