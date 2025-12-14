@@ -31,7 +31,7 @@ builder.Services.AddDbContext<WriteDBContext>(async (provider, options) =>
 });
 builder.WebHost.ConfigureKestrel((_, server) =>
 {
-    string portNumber = Environment.GetEnvironmentVariable("PORT") ?? "3000";
+    string portNumber = Environment.GetEnvironmentVariable("PORT") ?? "3002";
     int port = int.Parse(portNumber);
     server.Listen(IPAddress.Any, port);
 });

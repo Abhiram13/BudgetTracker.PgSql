@@ -1,3 +1,4 @@
+using System.Net;
 using Abhiram.Extensions.DotEnv;
 using BudgetTracker.Shared.Utilities;
 using BudgetTracker.Warehouse.Services;
@@ -13,6 +14,11 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 builder.Services.AddSingleton<BigQueryService>();
 builder.Services.AddScoped<TraceIdProvider>();
+builder.WebHost.ConfigureKestrel((_, server) => {
+    string portNumber = Environment.GetEnvironmentVariable("PORT") ?? "3004";
+    int port = int.Parse(portNumber);
+    server.Listen(IPAddress.Any, port);
+});
 
 WebApplication app = builder.Build();
 

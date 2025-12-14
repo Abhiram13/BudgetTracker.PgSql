@@ -9,7 +9,7 @@ DotEnvironmentVariables.Load();
 
 builder.Services.AddCollections();
 builder.WebHost.ConfigureKestrel((_, server) => {
-    string portNumber = Environment.GetEnvironmentVariable("PORT") ?? "3000";
+    string portNumber = Environment.GetEnvironmentVariable("PORT") ?? "3001";
     int port = int.Parse(portNumber);
     server.Listen(IPAddress.Any, port);
 });
