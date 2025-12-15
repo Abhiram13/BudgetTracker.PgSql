@@ -1,8 +1,9 @@
 using System.Net;
 using BudgetTracker.Gateway.Middlewares;
-using Yarp.ReverseProxy;
+using Abhiram.Extensions.DotEnv;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+DotEnvironmentVariables.Load();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -24,5 +25,7 @@ if (app.Environment.IsDevelopment())
 
 app.MapReverseProxy();
 app.UseHttpsRedirection();
+app.UseMiddleware<ApiKeyMiddleware>();
 app.UseMiddleware<BadGatewayMiddleware>();
+app.UseMiddleware<TraceProviderMiddleware>();
 app.Run();
