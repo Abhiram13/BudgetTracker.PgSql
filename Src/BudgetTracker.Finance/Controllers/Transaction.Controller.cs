@@ -4,10 +4,13 @@ using BudgetTracker.Finance.Models;
 using BudgetTracker.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using BudgetTracker.Shared.Utilities;
+using Microsoft.AspNetCore.Authorization;
+using BudgetTracker.Shared.Security;
 
 namespace BudgetTracker.Finance.Controllers;
 
 [ApiController]
+[Authorize(AuthenticationSchemes = YarpApiKeySchemaOptions.DefaultSchema)]
 [Route("api/transactions")]
 public class TransactionController : ControllerBase
 {
@@ -46,18 +49,6 @@ public class TransactionController : ControllerBase
             Message = "Transaction created successfully"
         });
     }
-
-    // [HttpGet]
-    // public async Task<ActionResult<ApiResponse<List<TransactionListDto<string>>>>> GetTransactionsAsync([FromQuery] int? month, [FromQuery] int? year)
-    // {
-    //     List<TransactionListDto<string>> list = await _transactionService.GetAllTransactionsAsync(month, year);
-    //     return Ok(new ApiResponse<List<TransactionListDto<string>>>
-    //     {
-    //         StatusCode = System.Net.HttpStatusCode.OK,
-    //         TraceId = _traceProvider.TraceId,
-    //         Result = list
-    //     });
-    // }
 
     [HttpGet("date/{date}")]
     public async Task<ActionResult<ApiResponse<TransactionByDateDto>>> GetTransactionsByDateAsync([FromRoute] string date)

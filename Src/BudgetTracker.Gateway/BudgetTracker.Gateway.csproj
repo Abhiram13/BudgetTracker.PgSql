@@ -11,4 +11,8 @@
         <PackageReference Include="Abhiram.Extensions.DotEnv" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\BudgetTracker.Shared\BudgetTracker.Shared.csproj" />
+    </ItemGroup>
+
 </Project>

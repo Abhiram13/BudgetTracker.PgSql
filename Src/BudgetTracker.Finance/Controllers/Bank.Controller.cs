@@ -4,10 +4,13 @@ using BudgetTracker.Finance.Models;
 using BudgetTracker.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using BudgetTracker.Shared.Utilities;
+using Microsoft.AspNetCore.Authorization;
+using BudgetTracker.Shared.Security;
 
 namespace BudgetTracker.Finance.Controllers;
 
 [ApiController]
+[Authorize(AuthenticationSchemes = YarpApiKeySchemaOptions.DefaultSchema)]
 [Route("api/banks")]
 public class BankController : ControllerBase
 {

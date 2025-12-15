@@ -1,4 +1,4 @@
-using BudgetTracker.Gateway.Interfaces;
+using BudgetTracker.Shared.Interfaces;
 
 namespace BudgetTracker.Gateway.Middlewares;
 

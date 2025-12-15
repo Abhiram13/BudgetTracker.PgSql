@@ -2,12 +2,15 @@ using BudgetTracker.Dues.Entities;
 using BudgetTracker.Dues.Models;
 using BudgetTracker.Dues.Services;
 using BudgetTracker.Shared.Models;
+using BudgetTracker.Shared.Security;
 using BudgetTracker.Shared.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BudgetTracker.Dues.Controllers;
 
 [ApiController]
+[Authorize(AuthenticationSchemes = YarpApiKeySchemaOptions.DefaultSchema)]
 [Route("api/dues")]
 public class DueController : ControllerBase
 {

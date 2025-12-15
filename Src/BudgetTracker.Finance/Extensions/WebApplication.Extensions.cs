@@ -14,6 +14,7 @@ public static class WebApplicationExtensions
     public static WebApplication UseApplicationServices(this WebApplication application)
     {        
         UseSwagger(application);
+        application.UseRouting();
         application.UseAuthentication();
         application.UseAuthorization();
         application.MapControllers();

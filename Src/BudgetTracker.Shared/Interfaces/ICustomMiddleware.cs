@@ -1,4 +1,6 @@
-namespace BudgetTracker.Gateway.Interfaces;
+using Microsoft.AspNetCore.Http;
+
+namespace BudgetTracker.Shared.Interfaces;
 
 public interface ICustomMiddleware
 {

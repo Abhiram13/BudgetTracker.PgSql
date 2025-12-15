@@ -1,4 +1,4 @@
-using BudgetTracker.Gateway.Interfaces;
+using BudgetTracker.Shared.Interfaces;
 using Yarp.ReverseProxy.Forwarder;
 
 namespace BudgetTracker.Gateway.Middlewares;

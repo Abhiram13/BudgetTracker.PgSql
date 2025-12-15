@@ -14,21 +14,24 @@ public class ApiKeyMiddleware : ICustomMiddleware
     public async Task InvokeAsync(HttpContext httpContext)
     {
         string? apiKey = Environment.GetEnvironmentVariable("YARP_API_KEY");
+        string? xTraceId = httpContext.Request.Headers["X-Trace-Id"];
 
-        if (string.IsNullOrEmpty(apiKey))
+        Console.WriteLine(apiKey);
+        Console.WriteLine(xTraceId);
+
+        if (string.IsNullOrEmpty(xTraceId) || xTraceId != apiKey)
         {
             httpContext.Response.Clear();
             httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
             httpContext.Response.ContentType = "application/json";
+
             await httpContext.Response.WriteAsJsonAsync(new
             {
-                StatusCode = StatusCodes.Status401Unauthorized,
-                Message = "Something went wrong",
+                Error = "Unauthorized",
+                Message = "Invalid auth key provided"
             });
             return;
         }
-
-        httpContext.Request.Headers["YARP_API_KEY"] = apiKey;
 
         await _next(httpContext);
     }

@@ -7,6 +7,7 @@ using BudgetTracker.Dues.Interfaces;
 using BudgetTracker.Dues.Repository;
 using BudgetTracker.Dues.Services;
 using BudgetTracker.Shared.Utilities;
+using BudgetTracker.Shared.Security;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 DotEnvironmentVariables.Load();
@@ -16,6 +17,11 @@ builder.Services.AddRouting();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = YarpApiKeySchemaOptions.DefaultSchema;
+    options.DefaultChallengeScheme = YarpApiKeySchemaOptions.DefaultSchema;
+}).AddScheme<YarpApiKeySchemaOptions, YarpApiKeyHandler>(YarpApiKeySchemaOptions.DefaultSchema, _ => {});
 builder.Services.AddScoped<IDueRepository, DueRepository>();
 builder.Services.AddScoped<DueService>();
 builder.Services.AddScoped<TraceIdProvider>();
@@ -57,6 +63,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 app.UseHttpsRedirection();
 app.Run();

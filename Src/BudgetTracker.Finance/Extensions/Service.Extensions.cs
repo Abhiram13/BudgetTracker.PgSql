@@ -3,6 +3,7 @@ using BudgetTracker.Finance.Interfaces;
 using BudgetTracker.Finance.Repository;
 using BudgetTracker.Finance.Services;
 using BudgetTracker.Shared.Utilities;
+using BudgetTracker.Shared.Security;
 
 namespace BudgetTracker.Finance.Extensions;
 
@@ -10,7 +11,7 @@ public static class ServiceExtension
 {
     public static IServiceCollection AddCollections(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddAuthentication();
+        serviceCollection.AddAuthentication().AddScheme<YarpApiKeySchemaOptions, YarpApiKeyHandler>(YarpApiKeySchemaOptions.DefaultSchema, _ => {});
         serviceCollection.AddAuthorization();
         serviceCollection.AddEndpointsApiExplorer();
         serviceCollection.AddSwaggerGen();
