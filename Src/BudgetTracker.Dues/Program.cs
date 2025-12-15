@@ -8,6 +8,7 @@ using BudgetTracker.Dues.Repository;
 using BudgetTracker.Dues.Services;
 using BudgetTracker.Shared.Utilities;
 using BudgetTracker.Shared.Security;
+using BudgetTracker.Shared.Middlwares;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 DotEnvironmentVariables.Load();
@@ -67,4 +68,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.UseHttpsRedirection();
+app.UseMiddleware<TraceIdMiddleware>();
 app.Run();

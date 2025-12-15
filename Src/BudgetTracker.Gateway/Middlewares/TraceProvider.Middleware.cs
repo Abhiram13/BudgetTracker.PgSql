@@ -5,7 +5,7 @@ namespace BudgetTracker.Gateway.Middlewares;
 public class TraceProviderMiddleware : ICustomMiddleware
 {
     private readonly RequestDelegate _next;
-    private const string _traceHeader = "x-trace-id";
+    private const string _traceHeader = "X-Trace-Id";
 
     public TraceProviderMiddleware(RequestDelegate next)
     {

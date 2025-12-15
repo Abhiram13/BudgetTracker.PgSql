@@ -1,3 +1,5 @@
+using BudgetTracker.Shared.Middlwares;
+
 namespace BudgetTracker.Finance.Extensions;
 
 public static class WebApplicationExtensions
@@ -19,6 +21,7 @@ public static class WebApplicationExtensions
         application.UseAuthorization();
         application.MapControllers();
         application.UseHttpsRedirection();
+        application.UseMiddleware<TraceIdMiddleware>();
 
         return application;
     }

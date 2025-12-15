@@ -43,4 +43,19 @@ public class ApiKeyHandler : AuthenticationHandler<ApiKeySchemaOptions>
 
         return Task.FromResult(AuthenticateResult.Success(ticket));
     }
+
+    // protected override async Task HandleChallengeAsync(AuthenticationProperties properties)
+    // {
+    //     Response.StatusCode = StatusCodes.Status401Unauthorized;
+    //     Response.ContentType = "application/json";
+
+    //     var body = new
+    //     {
+    //         error = "unauthorized",
+    //         message = "Invalid or missing API key",
+    //         scheme = Scheme.Name
+    //     };
+
+    //     await Response.WriteAsync(JsonSerializer.Serialize(body));
+    // }
 }
