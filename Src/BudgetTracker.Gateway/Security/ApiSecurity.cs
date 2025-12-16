@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Text.Encodings.Web;
+using BudgetTracker.Shared.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 
@@ -44,18 +45,20 @@ public class ApiKeyHandler : AuthenticationHandler<ApiKeySchemaOptions>
         return Task.FromResult(AuthenticateResult.Success(ticket));
     }
 
-    // protected override async Task HandleChallengeAsync(AuthenticationProperties properties)
-    // {
-    //     Response.StatusCode = StatusCodes.Status401Unauthorized;
-    //     Response.ContentType = "application/json";
+    protected override async Task HandleChallengeAsync(AuthenticationProperties properties)
+    {
+        Response.StatusCode = StatusCodes.Status401Unauthorized;
+        Response.ContentType = "application/json";
 
-    //     var body = new
-    //     {
-    //         error = "unauthorized",
-    //         message = "Invalid or missing API key",
-    //         scheme = Scheme.Name
-    //     };
+        string traceId = Request.Headers["X-Trace-Id"]!;
 
-    //     await Response.WriteAsync(JsonSerializer.Serialize(body));
-    // }
+        ApiResponse<string> response = new ApiResponse<string>
+        {
+            StatusCode = System.Net.HttpStatusCode.Unauthorized,
+            TraceId = traceId,
+            Message = "Unauthorised"
+        };
+
+        await Response.WriteAsJsonAsync(response);
+    }
 }

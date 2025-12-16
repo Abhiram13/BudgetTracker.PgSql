@@ -3,10 +3,12 @@ using BudgetTracker.Gateway.Middlewares;
 using Abhiram.Extensions.DotEnv;
 using BudgetTracker.Gateway.Security;
 using BudgetTracker.Shared.Utilities;
+using Abhiram.Abstractions.Logging;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 DotEnvironmentVariables.Load();
 
+builder.AddConsoleGoogleSeriLog(template: "[{Level:u3}] [Source: {SourceContext}] {Message:lj}{NewLine}{Exception}");
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddReverseProxy().LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));

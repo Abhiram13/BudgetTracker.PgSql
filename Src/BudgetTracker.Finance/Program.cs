@@ -3,10 +3,12 @@ using BudgetTracker.Finance;
 using BudgetTracker.Finance.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Abhiram.Extensions.DotEnv;
+using Abhiram.Abstractions.Logging;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 DotEnvironmentVariables.Load();
 
+builder.AddConsoleGoogleSeriLog(template: "[{Level:u3}] [Source: {SourceContext}] {Message:lj}{NewLine}{Exception}");
 builder.Services.AddCollections();
 builder.WebHost.ConfigureKestrel((_, server) => {
     string portNumber = Environment.GetEnvironmentVariable("PORT") ?? "3001";

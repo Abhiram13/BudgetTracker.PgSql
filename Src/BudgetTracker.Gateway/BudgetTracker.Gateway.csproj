@@ -9,6 +9,7 @@
         <PackageReference Include="Swashbuckle.AspNetCore" />
         <PackageReference Include="Yarp.ReverseProxy" />
         <PackageReference Include="Abhiram.Extensions.DotEnv" />
+        <PackageReference Include="Abhiram.Abstractions.Logging" />
     </ItemGroup>
 
     <ItemGroup>

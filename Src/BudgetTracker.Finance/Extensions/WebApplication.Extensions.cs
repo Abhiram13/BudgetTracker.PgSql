@@ -22,6 +22,7 @@ public static class WebApplicationExtensions
         application.MapControllers();
         application.UseHttpsRedirection();
         application.UseMiddleware<ValidateTraceIdMiddleware>();
+        application.UseMiddleware<ExceptionHandlerMiddleware>();
 
         return application;
     }

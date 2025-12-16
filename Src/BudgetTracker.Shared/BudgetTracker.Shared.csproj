@@ -7,6 +7,7 @@
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+        <PackageReference Include="Abhiram.Abstractions.Logging" />
     </ItemGroup>
     
 </Project>

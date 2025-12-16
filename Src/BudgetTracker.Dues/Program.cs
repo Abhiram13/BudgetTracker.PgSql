@@ -13,7 +13,6 @@ using BudgetTracker.Shared.Middlwares;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 DotEnvironmentVariables.Load();
 
-// builder.AddConsoleGoogleSeriLog(template: "[{Level:u3}] [TraceId: {trace_id}] [Source: {SourceContext}] {Message:lj}{NewLine}{Exception}");
 builder.Services.AddRouting();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

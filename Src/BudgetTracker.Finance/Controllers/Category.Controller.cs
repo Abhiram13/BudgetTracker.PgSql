@@ -15,12 +15,12 @@ namespace BudgetTracker.Finance.Controllers;
 public class CategoryController : ControllerBase
 {
     private readonly CategoryService _categoryService;
-    private readonly TraceIdProvider _traceProvider;
+    private readonly string _traceId = "";
 
-    public CategoryController(CategoryService categoryService, TraceIdProvider trace)
+    public CategoryController(CategoryService categoryService)
     {
         _categoryService = categoryService;
-        _traceProvider = trace;
+        _traceId = Request.Headers["X-Trace-Id"]!;
     }
 
     [HttpPost]
@@ -38,7 +38,7 @@ public class CategoryController : ControllerBase
         return Ok(new ApiResponse<string>
         {
             StatusCode = System.Net.HttpStatusCode.Created,
-            TraceId = _traceProvider.TraceId,
+            TraceId = _traceId,
             Message = "Category created successfully"
         });
     }
@@ -50,7 +50,7 @@ public class CategoryController : ControllerBase
         return Ok(new ApiResponse<List<CategoryListDto>>
         {
             StatusCode = System.Net.HttpStatusCode.OK,
-            TraceId = _traceProvider.TraceId,
+            TraceId = _traceId,
             Result = list
         });
     }
