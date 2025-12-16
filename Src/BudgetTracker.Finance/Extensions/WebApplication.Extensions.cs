@@ -21,7 +21,7 @@ public static class WebApplicationExtensions
         application.UseAuthorization();
         application.MapControllers();
         application.UseHttpsRedirection();
-        application.UseMiddleware<TraceIdMiddleware>();
+        application.UseMiddleware<ValidateTraceIdMiddleware>();
 
         return application;
     }

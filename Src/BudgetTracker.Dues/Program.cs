@@ -68,5 +68,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.UseHttpsRedirection();
-app.UseMiddleware<TraceIdMiddleware>();
+app.UseMiddleware<ValidateTraceIdMiddleware>();
 app.Run();

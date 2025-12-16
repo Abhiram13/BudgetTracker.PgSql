@@ -1,4 +1,5 @@
 using BudgetTracker.Shared.Interfaces;
+using BudgetTracker.Shared.Utilities;
 
 namespace BudgetTracker.Gateway.Middlewares;
 
@@ -14,7 +15,8 @@ public class TraceProviderMiddleware : ICustomMiddleware
 
     public async Task InvokeAsync(HttpContext httpContext)
     {
-        string traceId = Guid.NewGuid().ToString();
+        TraceIdProvider traceIdProvider = httpContext.RequestServices.GetRequiredService<TraceIdProvider>();
+        string traceId = traceIdProvider.TraceId;
 
         httpContext.Request.Headers[_traceHeader] = traceId;
         httpContext.Items[_traceHeader] = traceId;

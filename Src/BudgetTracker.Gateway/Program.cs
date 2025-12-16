@@ -2,6 +2,7 @@ using System.Net;
 using BudgetTracker.Gateway.Middlewares;
 using Abhiram.Extensions.DotEnv;
 using BudgetTracker.Gateway.Security;
+using BudgetTracker.Shared.Utilities;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 DotEnvironmentVariables.Load();
@@ -10,6 +11,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddReverseProxy().LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 builder.Services.AddAuthentication().AddScheme<ApiKeySchemaOptions, ApiKeyHandler>(ApiKeySchemaOptions.DefaultSchema, _ => {});
+builder.Services.AddScoped<TraceIdProvider>();
 builder.WebHost.ConfigureKestrel((_, server) => {
     string portNumber = Environment.GetEnvironmentVariable("PORT") ?? "3000";
     int port = int.Parse(portNumber);

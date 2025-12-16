@@ -3,18 +3,18 @@ using Microsoft.AspNetCore.Http;
 
 namespace BudgetTracker.Shared.Middlwares;
 
-public class TraceIdMiddleware : ICustomMiddleware
+public class ValidateTraceIdMiddleware : ICustomMiddleware
 {
     private readonly RequestDelegate _next;
 
-    public TraceIdMiddleware(RequestDelegate next)
+    public ValidateTraceIdMiddleware(RequestDelegate next)
     {
         _next = next;
     }
 
     public async Task InvokeAsync(HttpContext httpContext)
     {
-        string? traceId = httpContext.Request.Headers["X-Trace_Id"];
+        string? traceId = httpContext.Request.Headers["X-Trace-Id"];
 
         if (string.IsNullOrEmpty(traceId))
         {
