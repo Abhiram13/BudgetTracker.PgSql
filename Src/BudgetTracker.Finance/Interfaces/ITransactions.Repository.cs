@@ -1,5 +1,6 @@
 using BudgetTracker.Finance.Entities;
 using BudgetTracker.Finance.Models;
+using BudgetTracker.Shared.Models;
 
 namespace BudgetTracker.Finance.Interfaces;
 
@@ -13,6 +14,6 @@ public interface ITransactionRepository
     /// </summary>
     /// <param name="transactionDate"></param>
     /// <returns></returns>
-    Task<TransactionsByMonthDto?> GetDebitCreditByDateAsync(DateOnly transactionDate);
+    Task<TransactionsListByMonthDto?> GetDebitCreditByDateAsync(DateOnly transactionDate);
     Task<CategoryTransactionsSumDto> GetTransactionsSumsByCategoryAsync();
 }

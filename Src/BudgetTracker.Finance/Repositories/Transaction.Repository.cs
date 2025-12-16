@@ -3,6 +3,7 @@ using BudgetTracker.Finance.Entities;
 using BudgetTracker.Finance.Models;
 using BudgetTracker.Finance.Enums;
 using Microsoft.EntityFrameworkCore;
+using BudgetTracker.Shared.Models;
 
 namespace BudgetTracker.Finance.Repository;
 
@@ -23,11 +24,11 @@ public class TransactionRepository : ITransactionRepository
             .GroupBy(t => t.Date)
             .Select(t => new TransactionByDateDto
             {
-                Debit = t.Where(d => d.Type == TransactionType.Debit).Sum(d => d.ActualAmount),
-                Credit = t.Where(c => c.Type == TransactionType.Credit).Sum(c => c.ActualAmount),
+                Debit = t.Where(d => d.Type == TransactionType.Debit).Sum(d => d.ActualAmount) ?? 0,
+                Credit = t.Where(c => c.Type == TransactionType.Credit).Sum(c => c.ActualAmount) ?? 0,
                 TransactionsList = t.Select(l => new TransactionByDateDto.Transactions
                 {
-                    Amount = l.ActualAmount,
+                    Amount = l.Amount,
                     Type = l.Type
                 }).ToList()
             })
@@ -43,15 +44,15 @@ public class TransactionRepository : ITransactionRepository
         return payload;
     }
     
-    public async Task<TransactionsByMonthDto?> GetDebitCreditByDateAsync(DateOnly transactionDate)
+    public async Task<TransactionsListByMonthDto?> GetDebitCreditByDateAsync(DateOnly transactionDate)
     {
-        TransactionsByMonthDto? result = await _writeDbContext.Transactions
+        TransactionsListByMonthDto? result = await _writeDbContext.Transactions
             .Where(t => t.Date == transactionDate)
             .GroupBy(t => t.Date)
-            .Select(t => new TransactionsByMonthDto
+            .Select(t => new TransactionsListByMonthDto
             {
-                Credit = t.Where(d => d.Type == TransactionType.Credit).Sum(c => c.ActualAmount),
-                Debit = t.Where(d => d.Type == TransactionType.Debit).Sum(c => c.ActualAmount),
+                Credit = t.Where(d => d.Type == TransactionType.Credit).Sum(c => c.ActualAmount) ?? 0,
+                Debit = t.Where(d => d.Type == TransactionType.Debit).Sum(c => c.ActualAmount) ?? 0,
                 Date = transactionDate
             })
             .FirstOrDefaultAsync();

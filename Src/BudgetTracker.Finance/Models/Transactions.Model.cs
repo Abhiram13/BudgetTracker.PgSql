@@ -1,3 +1,4 @@
+using BudgetTracker.Finance.Attributes;
 using BudgetTracker.Finance.Enums;
 
 namespace BudgetTracker.Finance.Models;
@@ -8,22 +9,23 @@ public record class InsertTransactionDto
     public decimal Amount { get; init; }
 
     [JsonPropertyName("actual_amount")]
-    public decimal ActualAmount { get; init; }
+    public decimal? ActualAmount { get; init; }
 
     [JsonPropertyName("description")]
     public string Description { get; init; } = string.Empty;
 
     [JsonPropertyName("from_bank")]
-    public int FromBank { get; init; }
+    public int? FromBank { get; init; }
 
     [JsonPropertyName("to_bank")]
-    public int ToBank { get; init; }
+    public int? ToBank { get; init; }
 
     [JsonPropertyName("category_id")]
     public int CategoryId { get; init; }
 
     [JsonPropertyName("date")]
-    public string Date { get; init; } = string.Empty;
+    [MaxDate(ErrorMessage = "Provided date is out of range or invalid.")]
+    public DateOnly Date { get; init; }
 
     [JsonPropertyName("type")]
     public TransactionType Type { get; init; }

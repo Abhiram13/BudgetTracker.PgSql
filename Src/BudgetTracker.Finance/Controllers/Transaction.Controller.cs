@@ -35,7 +35,7 @@ public class TransactionController : ControllerBase
             Amount = payload.Amount,
             Description = payload.Description,
             CategoryId = payload.CategoryId,
-            Date = DateOnly.Parse(payload.Date),
+            Date = payload.Date,
             FromBank = payload.FromBank,
             ToBank = payload.ToBank,
             Type = payload.Type

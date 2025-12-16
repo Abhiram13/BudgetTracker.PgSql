@@ -8,7 +8,7 @@ public record class ApiResponse<T>
     public required HttpStatusCode StatusCode { get; init; }
 
     [JsonPropertyName("trace_id")]
-    public required string TraceId { get; init; }
+    public string TraceId { get; init; } = string.Empty;
 
     [JsonPropertyName("message")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

@@ -4,6 +4,10 @@ using BudgetTracker.Finance.Repository;
 using BudgetTracker.Finance.Services;
 using BudgetTracker.Shared.Utilities;
 using BudgetTracker.Shared.Security;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc;
+using BudgetTracker.Shared.Models;
+using System.Net;
 
 namespace BudgetTracker.Finance.Extensions;
 
@@ -15,7 +19,17 @@ public static class ServiceExtension
         serviceCollection.AddAuthorization();
         serviceCollection.AddEndpointsApiExplorer();
         serviceCollection.AddSwaggerGen();
-        serviceCollection.AddControllers();
+        serviceCollection.AddControllers().ConfigureApiBehaviorOptions(options =>
+        {
+            options.SuppressModelStateInvalidFilter = false;
+            options.InvalidModelStateResponseFactory = action =>
+            {
+                KeyValuePair<string, ModelStateEntry?> modelState = action.ModelState.FirstOrDefault();
+                string errorAt = modelState.Key;
+                string errorMessage = modelState.Value?.Errors?[0].ErrorMessage ?? $"Something went wrong at {errorAt}";
+                return new BadRequestObjectResult(new ApiResponse<string> { Message = errorMessage, StatusCode = HttpStatusCode.BadRequest });
+            };
+        });
         AddDbContext(serviceCollection);
         AddScopedServices(serviceCollection);
 
@@ -47,6 +61,5 @@ public static class ServiceExtension
         collection.AddScoped<CategoryService>();
         collection.AddScoped<TraceIdProvider>();
         collection.AddSingleton<PublisherService>();
-        collection.AddHttpClient<BigQueryService>();
     }
 }

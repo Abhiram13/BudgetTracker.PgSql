@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json;
 using BudgetTracker.Shared.Models;
 using Google.Cloud.BigQuery.V2;
@@ -68,7 +69,9 @@ public class BigQueryService
         {
             Credit = decimal.Parse(r["credit"].ToString()!),
             Debit = decimal.Parse(r["debit"].ToString()!),
-            Date = DateOnly.Parse(r["date"].ToString()!)
+            Date = DateOnly.FromDateTime(
+                DateTime.Parse(r["date"].ToString()!, CultureInfo.InvariantCulture)
+            )
         }).ToList();
 
         return list;

@@ -1,5 +1,6 @@
 using System.Net;
 using Abhiram.Extensions.DotEnv;
+using BudgetTracker.Shared.Middlwares;
 using BudgetTracker.Shared.Utilities;
 using BudgetTracker.Warehouse.Services;
 
@@ -29,5 +30,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 app.UseHttpsRedirection();
 app.Run();

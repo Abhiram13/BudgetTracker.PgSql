@@ -16,7 +16,7 @@ public class Transaction : BaseEntity
     [Column("actual_amount")]
     [JsonPropertyName("actual_amount")]
     [Comment(comment: "Amount that was used in a transaction and left the bank account. Credit card transaction amounts won't be added in actual amount")]
-    public decimal ActualAmount { get; set; }
+    public decimal? ActualAmount { get; set; }
 
     [Column("description")]
     [JsonPropertyName("description")]

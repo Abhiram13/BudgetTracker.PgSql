@@ -21,6 +21,11 @@ public class TransactionService
 
     public async Task<Transaction> InsertTransactionAsync(Transaction payload)
     {
+        if (payload.FromBank is null && payload.ToBank is null)
+        {
+            throw new BadHttpRequestException("Invalid payload provided");
+        }
+
         Transaction transaction = await _repository.InsertOneTransactionAsync(payload);
         TransactionsListByMonthDto? result = null;
 
