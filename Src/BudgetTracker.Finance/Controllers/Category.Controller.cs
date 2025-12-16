@@ -15,18 +15,17 @@ namespace BudgetTracker.Finance.Controllers;
 public class CategoryController : ControllerBase
 {
     private readonly CategoryService _categoryService;
-    private readonly string _traceId = "";
 
     public CategoryController(CategoryService categoryService)
     {
         _categoryService = categoryService;
-        _traceId = Request.Headers["X-Trace-Id"]!;
     }
 
     [HttpPost]
     public async Task<ActionResult<ApiResponse<string>>> InsertAsync([FromBody] InsertCategoryDto payload)
     {
         DateTime now = DateTime.UtcNow;
+        string traceId = Request.Headers["X-Trace-Id"]!;
         Category category = new Category
         {
             CreatedAt = now,
@@ -38,7 +37,7 @@ public class CategoryController : ControllerBase
         return Ok(new ApiResponse<string>
         {
             StatusCode = System.Net.HttpStatusCode.Created,
-            TraceId = _traceId,
+            TraceId = traceId,
             Message = "Category created successfully"
         });
     }
@@ -47,10 +46,11 @@ public class CategoryController : ControllerBase
     public async Task<ActionResult<ApiResponse<List<CategoryListDto>>>> GetCategoriesAsync()
     {
         List<CategoryListDto> list = await _categoryService.GetAllCategoriesAsync();
+        string traceId = Request.Headers["X-Trace-Id"]!;
         return Ok(new ApiResponse<List<CategoryListDto>>
         {
             StatusCode = System.Net.HttpStatusCode.OK,
-            TraceId = _traceId,
+            TraceId = traceId,
             Result = list
         });
     }
