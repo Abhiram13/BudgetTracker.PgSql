@@ -28,20 +28,20 @@ public class DueController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<ApiResponse<string>>> InsertDueAsync([FromBody] InsertDueDto payload)
     {
-        DateTime now = DateTime.UtcNow;
+        DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
         Due due = new Due
         {
             Comments = payload.Comments ?? "",
-            CreatedAt = now,
+            CreatedAt = today,
             Creditor = payload.Creditor,
             Debtor = payload.Debtor,
             Description = payload.Description,
             DueAmount = payload.TotalAmount,
-            StartDate = DateTime.Parse(payload.StartDate),
+            StartDate = DateOnly.Parse(payload.StartDate),
             Status = Enums.DueType.Active,
             Title = payload.Title,
             TotalAmount = payload.TotalAmount,
-            UpdatedAt = now,            
+            UpdatedAt = today,            
         };
 
         await _dueService.InsertOneAsync(due);

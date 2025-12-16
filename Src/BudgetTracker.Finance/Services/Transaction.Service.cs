@@ -20,7 +20,7 @@ public class TransactionService
     public async Task<Transaction> InsertTransactionAsync(Transaction payload)
     {
         Transaction transaction = await _repository.InsertOneTransactionAsync(payload);
-        TransactionListDto<DateTime>? result = await _repository.GetDebitCreditByDateAsync(payload.Date);
+        TransactionsByMonthDto? result = await _repository.GetDebitCreditByDateAsync(payload.Date);
         
         if (result is not null)
         {

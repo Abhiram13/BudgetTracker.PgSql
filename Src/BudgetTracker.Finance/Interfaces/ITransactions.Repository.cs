@@ -6,7 +6,6 @@ namespace BudgetTracker.Finance.Interfaces;
 public interface ITransactionRepository
 {
     Task<Transaction> InsertOneTransactionAsync(Transaction payload);
-    Task<List<TransactionListDto<string>>> GetTransactionsAsync(int? month = null, int? year = null);
     Task<TransactionByDateDto> GetAllTransactionsByDateAsync(string transactionDate);
 
     /// <summary>
@@ -14,5 +13,6 @@ public interface ITransactionRepository
     /// </summary>
     /// <param name="transactionDate"></param>
     /// <returns></returns>
-    Task<TransactionListDto<DateTime>?> GetDebitCreditByDateAsync(DateTime transactionDate);
+    Task<TransactionsByMonthDto?> GetDebitCreditByDateAsync(DateOnly transactionDate);
+    Task<CategoryTransactionsSumDto> GetTransactionsSumsByCategoryAsync();
 }

@@ -15,44 +15,12 @@ public class TransactionRepository : ITransactionRepository
         _writeDbContext = write;
     }
 
-    public async Task<List<TransactionListDto<string>>> GetTransactionsAsync(int? month = null, int? year = null)
-    {
-        IQueryable<Transaction> query = _writeDbContext.Transactions.AsQueryable();
-
-        if (month is not null)
-        {
-            query = query.Where(q => q.Date.Month == month);
-        }
-
-        if (year is not null)
-        {
-            query = query.Where(q => q.Date.Year == year);
-        }
-
-        if (month is not null && year is not null)
-        {
-            query = query.Where(q => q.Date.Month == month && q.Date.Year == year);
-        }
-
-        List<TransactionListDto<string>> list = await query
-            .GroupBy(t => t.Date.Date)
-            .Select(g => new TransactionListDto<string>
-            {
-                Date = g.Key.ToString("yyyy-MM-dd"),
-                Debit = g.Where(t => t.Type == TransactionType.Debit).Sum(t => t.ActualAmount),
-                Credit = g.Where(t => t.Type == TransactionType.Credit).Sum(t => t.ActualAmount),
-            })
-            .ToListAsync();
-
-        return list;
-    }
-
     public async Task<TransactionByDateDto> GetAllTransactionsByDateAsync(string transactionDate)
     {
-        DateTime date = DateTime.Parse(transactionDate);
+        DateOnly date = DateOnly.Parse(transactionDate);
         TransactionByDateDto? result = await _writeDbContext.Transactions
-            .Where(t => t.Date.Date == date.Date)
-            .GroupBy(t => t.Date.Date)
+            .Where(t => t.Date == date)
+            .GroupBy(t => t.Date)
             .Select(t => new TransactionByDateDto
             {
                 Debit = t.Where(d => d.Type == TransactionType.Debit).Sum(d => d.ActualAmount),
@@ -75,19 +43,24 @@ public class TransactionRepository : ITransactionRepository
         return payload;
     }
     
-    public async Task<TransactionListDto<DateTime>?> GetDebitCreditByDateAsync(DateTime transactionDate)
+    public async Task<TransactionsByMonthDto?> GetDebitCreditByDateAsync(DateOnly transactionDate)
     {
-        TransactionListDto<DateTime>? result = await _writeDbContext.Transactions
-            .Where(t => t.Date == transactionDate.Date)
-            .GroupBy(t => t.Date.Date)
-            .Select(t => new TransactionListDto<DateTime>
+        TransactionsByMonthDto? result = await _writeDbContext.Transactions
+            .Where(t => t.Date == transactionDate)
+            .GroupBy(t => t.Date)
+            .Select(t => new TransactionsByMonthDto
             {
                 Credit = t.Where(d => d.Type == TransactionType.Credit).Sum(c => c.ActualAmount),
                 Debit = t.Where(d => d.Type == TransactionType.Debit).Sum(c => c.ActualAmount),
-                Date = transactionDate.Date
+                Date = transactionDate
             })
             .FirstOrDefaultAsync();
 
         return result;
+    }
+
+    public async Task<CategoryTransactionsSumDto> GetTransactionsSumsByCategoryAsync()
+    {
+        throw new NotImplementedException();
     }
 }

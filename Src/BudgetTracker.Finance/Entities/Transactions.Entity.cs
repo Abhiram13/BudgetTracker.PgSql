@@ -24,19 +24,19 @@ public class Transaction : BaseEntity
 
     [Column("from_bank")]    
     [JsonPropertyName("from_bank")]
-    public int FromBank { get; set; }
+    public int? FromBank { get; set; }
 
     [Column("to_bank")]
     [JsonPropertyName("to_bank")]
-    public int ToBank { get; set; }
+    public int? ToBank { get; set; }
 
     [Column("category_id")]
     [JsonPropertyName("category_id")]
     public int CategoryId { get; set; }
 
-    [Column(name: "date", TypeName = "timestamp without time zone")]
+    [Column(name: "date")]
     [JsonPropertyName("date")]
-    public DateTime Date { get; set; }
+    public DateOnly Date { get; set; }
 
     [Column("type")]
     [JsonPropertyName("type")]

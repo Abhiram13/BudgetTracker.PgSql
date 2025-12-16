@@ -26,11 +26,11 @@ public class BankController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<ApiResponse<string>>> InsertAsync([FromBody] InsertBankDto payload)
     {
-        DateTime now = DateTime.UtcNow;
+        DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
         Bank bank = new Bank
         {
-            CreatedAt = now,
-            UpdatedAt = now,
+            CreatedAt = today,
+            UpdatedAt = today,
             Name = payload.Name
         };
 

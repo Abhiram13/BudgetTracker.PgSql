@@ -35,11 +35,11 @@ public class MonthlyInstallment : BaseEntity
 
     [Column("start_date")]
     [JsonPropertyName("start_date")]
-    public DateTime StartDate { get; set; }
+    public DateOnly StartDate { get; set; }
 
     [Column("end_date")]
     [JsonPropertyName("end_date")]
-    public DateTime EndDate { get; set; }
+    public DateOnly EndDate { get; set; }
 
     [Column("status")]
     [JsonPropertyName("status")]

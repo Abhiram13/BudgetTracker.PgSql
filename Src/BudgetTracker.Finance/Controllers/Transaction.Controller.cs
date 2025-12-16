@@ -26,16 +26,16 @@ public class TransactionController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<ApiResponse<string>>> InsertAsync([FromBody] InsertTransactionDto payload)
     {
-        DateTime now = DateTime.UtcNow;
+        DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
         Transaction transaction = new Transaction
         {
-            CreatedAt = now,
-            UpdatedAt = now,
+            CreatedAt = today,
+            UpdatedAt = today,
             ActualAmount = payload.ActualAmount,
             Amount = payload.Amount,
             Description = payload.Description,
             CategoryId = payload.CategoryId,
-            Date = DateTime.Parse(payload.Date),
+            Date = DateOnly.Parse(payload.Date),
             FromBank = payload.FromBank,
             ToBank = payload.ToBank,
             Type = payload.Type

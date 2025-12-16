@@ -24,12 +24,12 @@ public class CategoryController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<ApiResponse<string>>> InsertAsync([FromBody] InsertCategoryDto payload)
     {
-        DateTime now = DateTime.UtcNow;
+        DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
         string traceId = Request.Headers["X-Trace-Id"]!;
         Category category = new Category
         {
-            CreatedAt = now,
-            UpdatedAt = now,
+            CreatedAt = today,
+            UpdatedAt = today,
             Name = payload.Name
         };
 
