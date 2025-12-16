@@ -1,34 +1,42 @@
 using BudgetTracker.Finance.Interfaces;
 using BudgetTracker.Finance.Entities;
 using BudgetTracker.Finance.Models;
-using BudgetTracker.Shared.Exceptions;
 using BudgetTracker.Shared.Models;
+using System.Text.Json;
 
 namespace BudgetTracker.Finance.Services;
 
 public class TransactionService
 {
     private readonly ITransactionRepository _repository;
-    private readonly BigQueryService _bigQueryService;
+    private readonly PublisherService _publisher;
+    private readonly ILogger<TransactionService> _logger;
 
-    public TransactionService(ITransactionRepository repository, BigQueryService bigQueryService)
+    public TransactionService(ITransactionRepository repository, PublisherService publisherService, ILogger<TransactionService> logger)
     {
         _repository = repository;
-        _bigQueryService = bigQueryService;
+        _publisher = publisherService;
+        _logger = logger;
     }
 
     public async Task<Transaction> InsertTransactionAsync(Transaction payload)
     {
         Transaction transaction = await _repository.InsertOneTransactionAsync(payload);
-        TransactionsByMonthDto? result = await _repository.GetDebitCreditByDateAsync(payload.Date);
-        
+        TransactionsListByMonthDto? result = null;
+
+        try
+        {
+            result = await _repository.GetDebitCreditByDateAsync(payload.Date);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Exception at Transaction Service insert. Message = {0}", e.Message);
+        }
+
         if (result is not null)
         {
-            await _bigQueryService.InsertTransactionsByDateAsync(new DateTransactionsDto { 
-                Credit = (double) result.Credit, 
-                Debit = (double) result.Debit, 
-                Date = result.Date
-            });
+            string message = JsonSerializer.Serialize(result!);
+            await _publisher.PublishMessageAsync(requestMessage: message, eventType: PubSubFinanceEvents.DATEWISE_TRANSACTIONS_LIST, traceId: null);
         }
 
         return transaction;

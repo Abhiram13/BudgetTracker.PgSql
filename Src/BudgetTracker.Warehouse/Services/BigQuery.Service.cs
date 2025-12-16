@@ -8,14 +8,14 @@ namespace BudgetTracker.Warehouse.Services;
 public class BigQueryService
 {
     private readonly BigQueryClient _client;
-    private readonly string _projectId = "budget-tracker-453204";
+    private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_ID") ?? "";
 
     public BigQueryService()
     {
         _client = BigQueryClient.Create(_projectId);
     }
 
-    public async Task InsertTransactionByDateAsync([FromBody] DateTransactionsDto payload)
+    public async Task InsertTransactionByDateAsync([FromBody] TransactionsListByMonthDto payload)
     {
         string sql = @"
             MERGE `budgettracker.transactions_by_date` T
@@ -45,7 +45,7 @@ public class BigQueryService
         await _client.ExecuteQueryAsync(sql, parameters);
     }
 
-    public async Task<List<DateTransactionsDto>> GetAllTransactionsAsync(int? month, int? year)
+    public async Task<List<TransactionsListByMonthDto>> GetAllTransactionsAsync(int? month, int? year)
     {
         int valueMonth = month ?? DateTime.UtcNow.Month;
         int valueYear = year ?? DateTime.UtcNow.Year;
@@ -64,11 +64,11 @@ public class BigQueryService
         };
 
         BigQueryResults result = await _client.ExecuteQueryAsync(sql: query, parameters: parameters);
-        List<DateTransactionsDto> list = result.Select(r => new DateTransactionsDto
+        List<TransactionsListByMonthDto> list = result.Select(r => new TransactionsListByMonthDto
         {
-            Credit = double.Parse(r["credit"].ToString()!),
-            Debit = double.Parse(r["debit"].ToString()!),
-            Date = DateTime.Parse(r["date"].ToString()!)
+            Credit = decimal.Parse(r["credit"].ToString()!),
+            Debit = decimal.Parse(r["debit"].ToString()!),
+            Date = DateOnly.Parse(r["date"].ToString()!)
         }).ToList();
 
         return list;

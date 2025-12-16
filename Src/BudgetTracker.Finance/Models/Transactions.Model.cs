@@ -29,18 +29,6 @@ public record class InsertTransactionDto
     public TransactionType Type { get; init; }
 }
 
-public record class TransactionsByMonthDto
-{
-    [JsonPropertyName("debit")]
-    public decimal Debit { get; init; }
-
-    [JsonPropertyName("credit")]
-    public decimal Credit { get; init; }
-
-    [JsonPropertyName("date")]
-    public DateOnly Date { get; init; } = default!;
-}
-
 public record class TransactionByDateDto
 {
     [JsonPropertyName("debit")]
