@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Google.Cloud.PubSub.V1;
 using BudgetTracker.Shared.Models;
+using BudgetTracker.Warehouse.Interfaces;
 
 namespace BudgetTracker.Warehouse.Services;
 
@@ -11,11 +12,11 @@ public class SubscriberService
     private readonly ILogger<SubscriberService> _logger;
     private readonly BigQueryService _bigQueryService;
 
-    public SubscriberService(BigQueryService service, ILogger<SubscriberService> logger)
+    public SubscriberService(BigQueryService service, ILogger<SubscriberService> logger, IWarehouseAppSecrets appSecrets)
     {
         _bigQueryService = service;
-        _projectId = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_ID") ?? "";
-        _subscriberId = Environment.GetEnvironmentVariable("PUBSUB_DATEWISE_TRANSACTIONS_SUBSCRIBER")!;
+        _projectId = appSecrets.GoogleProjectId;
+        _subscriberId = appSecrets.DatewiseTransactionSubscriber;
         _logger = logger;
     }
 

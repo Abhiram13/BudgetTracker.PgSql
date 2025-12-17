@@ -1,19 +1,37 @@
 using System.Net;
+using Abhiram.Abstractions.Logging;
 using Abhiram.Extensions.DotEnv;
+using Abhiram.Secrets.Providers;
+using Abhiram.Secrets.Providers.Interface;
+using BudgetTracker.Shared.Interfaces;
 using BudgetTracker.Shared.Middlwares;
+using BudgetTracker.Shared.Security;
 using BudgetTracker.Shared.Utilities;
+using BudgetTracker.Warehouse.Interfaces;
+using BudgetTracker.Warehouse.Models;
 using BudgetTracker.Warehouse.Services;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 DotEnvironmentVariables.Load();
 
+builder.AddConsoleGoogleSeriLog(template: "[{Level:u3}] [Source: {SourceContext}] {Message:lj}{NewLine}{Exception}");
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
-builder.Services.AddHostedService<SubscriberBackgroundService>();
+builder.Services.AddSingleton<ISecretManager, SecretManagerService>();
+builder.Services.AddSingleton<IYarpApiKeyAppSecret, WarehouseAppSecrets>();
+builder.Services.AddSingleton<IWarehouseAppSecrets, WarehouseAppSecrets>();
 builder.Services.AddSingleton<BigQueryService>();
 builder.Services.AddScoped<TraceIdProvider>();
 builder.Services.AddScoped<SubscriberService>();
+builder.Services.AddHostedService<SecretHostService>();
+builder.Services.AddHostedService<SubscriberBackgroundService>();
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = YarpApiKeySchemaOptions.DefaultSchema;
+    options.DefaultChallengeScheme = YarpApiKeySchemaOptions.DefaultSchema;
+}).AddScheme<YarpApiKeySchemaOptions, YarpApiKeyHandler>(YarpApiKeySchemaOptions.DefaultSchema, _ => {});
+
 builder.WebHost.ConfigureKestrel((_, server) => {
     string portNumber = Environment.GetEnvironmentVariable("PORT") ?? "3004";
     int port = int.Parse(portNumber);

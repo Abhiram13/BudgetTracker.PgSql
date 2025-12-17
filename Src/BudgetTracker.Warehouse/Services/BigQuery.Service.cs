@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text.Json;
 using BudgetTracker.Shared.Models;
+using BudgetTracker.Warehouse.Interfaces;
 using Google.Cloud.BigQuery.V2;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,10 +10,11 @@ namespace BudgetTracker.Warehouse.Services;
 public class BigQueryService
 {
     private readonly BigQueryClient _client;
-    private readonly string _projectId = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_ID") ?? "";
+    private readonly string _projectId;
 
-    public BigQueryService()
+    public BigQueryService(IWarehouseAppSecrets appSecrets)
     {
+        _projectId = appSecrets.GoogleProjectId;
         _client = BigQueryClient.Create(_projectId);
     }
 

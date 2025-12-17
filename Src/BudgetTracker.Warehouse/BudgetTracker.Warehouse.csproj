@@ -9,6 +9,7 @@
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
         <PackageReference Include="Swashbuckle.AspNetCore" />
         <PackageReference Include="Abhiram.Extensions.DotEnv" />
+        <PackageReference Include="Abhiram.Secrets.Providers" />
         <PackageReference Include="Google.Cloud.PubSub.V1" />
     </ItemGroup>
 
