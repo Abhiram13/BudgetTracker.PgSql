@@ -8,6 +8,10 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc;
 using BudgetTracker.Shared.Models;
 using System.Net;
+using Abhiram.Secrets.Providers.Interface;
+using Abhiram.Secrets.Providers;
+using BudgetTracker.Shared.Interfaces;
+using BudgetTracker.Finance.Models;
 
 namespace BudgetTracker.Finance.Extensions;
 
@@ -15,6 +19,8 @@ public static class ServiceExtension
 {
     public static IServiceCollection AddCollections(this IServiceCollection serviceCollection)
     {
+        AddScopedServices(serviceCollection);
+        AddDbContext(serviceCollection);
         serviceCollection.AddAuthentication().AddScheme<YarpApiKeySchemaOptions, YarpApiKeyHandler>(YarpApiKeySchemaOptions.DefaultSchema, _ => {});
         serviceCollection.AddAuthorization();
         serviceCollection.AddEndpointsApiExplorer();
@@ -30,8 +36,6 @@ public static class ServiceExtension
                 return new BadRequestObjectResult(new ApiResponse<string> { Message = errorMessage, StatusCode = HttpStatusCode.BadRequest });
             };
         });
-        AddDbContext(serviceCollection);
-        AddScopedServices(serviceCollection);
 
         return serviceCollection;
     }
@@ -40,11 +44,13 @@ public static class ServiceExtension
     {
         collection.AddDbContext<WriteDbContext>(async (provider, options) =>
         {
-            string? postgresHost = "localhost";
-            string? postgresPort = "5432";
-            string? postgresDatabase = "BudgetTracker.Finance";
-            string? postgresUsername = "postgres";
-            string? postgresPassword = "postgres";
+            IFinanceAppSecrets secrets = provider.GetRequiredService<IFinanceAppSecrets>();
+
+            string? postgresHost = secrets.PostgresHost;
+            string? postgresPort = secrets.PostgresPort;
+            string? postgresDatabase = secrets.PostgresDatabase;
+            string? postgresUsername = secrets.PostgresUsername;
+            string? postgresPassword = secrets.PostgresPassword;
             string connectionString = $"Host={postgresHost};Port={postgresPort};Database={postgresDatabase};Username={postgresUsername};Password={postgresPassword}";
             options.UseNpgsql(connectionString);
         });
@@ -60,6 +66,9 @@ public static class ServiceExtension
         collection.AddScoped<TransactionService>();
         collection.AddScoped<CategoryService>();
         collection.AddScoped<TraceIdProvider>();
+        collection.AddSingleton<ISecretManager, SecretManagerService>();
+        collection.AddSingleton<IFinanceAppSecrets, AppSecrets>();
+        collection.AddSingleton<IYarpApiKeyAppSecret, AppSecrets>();
         collection.AddSingleton<PublisherService>();
     }
 }

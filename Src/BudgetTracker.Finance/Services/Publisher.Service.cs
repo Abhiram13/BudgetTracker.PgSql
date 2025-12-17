@@ -1,17 +1,19 @@
 using Google.Protobuf;
 using Google.Cloud.PubSub.V1;
+using BudgetTracker.Finance.Interfaces;
 
 namespace BudgetTracker.Finance.Services;
 
 public class PublisherService
 {
-    private readonly string _topicName = Environment.GetEnvironmentVariable("PUB_SUB_TOPIC")!;
+    private readonly string _topicName;
     private readonly ILogger<PublisherService> _logger;
     private readonly string _projectId;
 
-    public PublisherService(ILogger<PublisherService> logger)
+    public PublisherService(ILogger<PublisherService> logger, IFinanceAppSecrets appSecrets)
     {
-        _projectId = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_ID")!;
+        _topicName = appSecrets.PubSubTopic;
+        _projectId = appSecrets.GoogleCloudProjectId;
         _logger = logger;
     }
 

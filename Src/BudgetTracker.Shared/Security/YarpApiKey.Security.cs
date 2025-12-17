@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Text.Encodings.Web;
+using BudgetTracker.Shared.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -14,7 +15,12 @@ public class YarpApiKeySchemaOptions : AuthenticationSchemeOptions
 
 public class YarpApiKeyHandler : AuthenticationHandler<YarpApiKeySchemaOptions>
 {
-    public YarpApiKeyHandler(IOptionsMonitor<YarpApiKeySchemaOptions> options, ILoggerFactory logger, UrlEncoder encoder) : base(options, logger, encoder) { }
+    private readonly IYarpApiKeyAppSecret _appSecrets;
+
+    public YarpApiKeyHandler(IOptionsMonitor<YarpApiKeySchemaOptions> options, ILoggerFactory logger, UrlEncoder encoder, IYarpApiKeyAppSecret appSecrets) : base(options, logger, encoder)
+    {
+        _appSecrets = appSecrets;
+    }
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
@@ -26,7 +32,7 @@ public class YarpApiKeyHandler : AuthenticationHandler<YarpApiKeySchemaOptions>
         }
 
         string? HEADER_API_KEY = Request.Headers[YarpApiKeySchemaOptions.HeaderName];
-        string? API_KEY = Environment.GetEnvironmentVariable("YARP_API_KEY");
+        string? API_KEY = _appSecrets.YarpApiKey;
 
         if (HEADER_API_KEY != API_KEY)
         {
