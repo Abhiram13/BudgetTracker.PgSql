@@ -8,7 +8,7 @@ COPY BudgetTracker.sln ./
 COPY Directory.Build.props ./
 COPY Directory.Packages.props ./
 
-COPY Src/BudgetTracker.Finance/ ./BudgetTracker.Finance/
+COPY Src/BudgetTracker.Gateway/ ./BudgetTracker.Gateway/
 COPY Src/BudgetTracker.Shared/ ./BudgetTracker.Shared/
 
 # Re-declare the build argument to make it available in this stage
@@ -21,8 +21,8 @@ RUN dotnet nuget add source --name "github" "https://nuget.pkg.github.com/Abhira
 # COPY *.csproj ./
 # RUN dotnet restore
 
-RUN dotnet restore BudgetTracker.Finance/BudgetTracker.Finance.csproj
-RUN dotnet publish BudgetTracker.Finance/BudgetTracker.Finance.csproj -c Release -o /out
+RUN dotnet restore BudgetTracker.Gateway/BudgetTracker.Gateway.csproj
+RUN dotnet publish BudgetTracker.Gateway/BudgetTracker.Gateway.csproj -c Release -o /out
 
 # Copy everything else and build
 # COPY . .
@@ -34,4 +34,4 @@ WORKDIR /app
 # COPY --from=build-env /app/out .
 COPY --from=build-env /out ./
 
-ENTRYPOINT [ "dotnet", "/app/BudgetTracker.Finance.dll" ]
+ENTRYPOINT [ "dotnet", "/app/BudgetTracker.Gateway.dll" ]
