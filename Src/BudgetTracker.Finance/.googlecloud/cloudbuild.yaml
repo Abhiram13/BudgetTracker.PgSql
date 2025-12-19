@@ -26,10 +26,7 @@ steps:
       - 'ssh'
       - $_VM_USERNAME
       - '--zone=asia-south1-b'
-      - '--command'
-      - |
-        bash -c '/home/abhiramnagadi/deploy-bt-finance.sh
-        $_LOCATION-docker.pkg.dev/$_PROJECT_ID/$_REPOSITORY/$_IMAGE:$COMMIT_SHA
+      - --command=bash -c "/home/abhiramnagadi/deploy-bt-finance.sh $_LOCATION-docker.pkg.dev/$_PROJECT_ID/$_REPOSITORY/$_IMAGE:$COMMIT_SHA"
 
 # Optional: declare the image for metadata
 images:
