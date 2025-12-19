@@ -1,0 +1,39 @@
+steps:
+  # Step 1: Build the Docker image and pass NUGET_PAT as build arg
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'Docker Build'
+    args:
+      - 'build'
+      - '-t'
+      - '$_LOCATION-docker.pkg.dev/$_PROJECT_ID/$_REPOSITORY/$_IMAGE:$COMMIT_SHA'
+      - '-f'
+      - 'BudgetTracker.Finance/Dockerfile'
+      - '--build-arg'
+      - 'NUGET_PAT=$_NUGET_PAT'
+      - '.'
+
+  # Step 2: Push the image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'Docker Push'
+    args: ['push', '$_LOCATION-docker.pkg.dev/$_PROJECT_ID/$_REPOSITORY/$_IMAGE:$COMMIT_SHA']
+
+  # Step 3: Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+    id: 'Deploy to Cloud Run'
+    entrypoint: 'gcloud'
+    args:
+      - 'compute'    
+      - 'ssh'
+      - $_VM_USERNAME
+      - '--zone=asia-south1-b'
+      - '--command'
+      - |
+        bash -c '/home/abhiramnagadi/deploy-bt-finance.sh
+        $_LOCATION-docker.pkg.dev/$_PROJECT_ID/$_REPOSITORY/$_IMAGE:$COMMIT_SHA
+
+# Optional: declare the image for metadata
+images:
+    - '$_LOCATION-docker.pkg.dev/$_PROJECT_ID/$_REPOSITORY/$_IMAGE:$COMMIT_SHA'
+
+options:
+    logging: CLOUD_LOGGING_ONLY
