@@ -22,12 +22,12 @@ namespace BudgetTracker.Dues.Migrations
                     total_amount DECIMAL,
                     due_amount DECIMAL,
                     status INT,
-                    start_date TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
-                    completed_date TIMESTAMP WITHOUT TIME ZONE,
+                    start_date DATE,
+                    completed_date DATE,
                     remarks TEXT,
                     comments TEXT,
-                    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
-                    updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW()
+                    created_at DATE,
+                    updated_at DATE
                 )
             ");
         }

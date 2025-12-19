@@ -16,8 +16,8 @@ namespace BudgetTracker.Finance.Infrastructure.Migrations
                 CREATE TABLE IF NOT EXISTS categories (
                     id SERIAL PRIMARY KEY NOT NULL,
                     name VARCHAR NOT NULL,
-                    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
-                    updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW()
+                    created_at DATE,
+                    updated_at DATE
                 )
             ");
 
@@ -25,8 +25,8 @@ namespace BudgetTracker.Finance.Infrastructure.Migrations
                 CREATE TABLE IF NOT EXISTS banks (
                     id SERIAL PRIMARY KEY NOT NULL,
                     name VARCHAR NOT NULL,
-                    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
-                    updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW()
+                    created_at DATE,
+                    updated_at DATE
                 )
             ");
 
@@ -76,10 +76,10 @@ namespace BudgetTracker.Finance.Infrastructure.Migrations
                     from_bank INT,
                     to_bank INT,
                     category_id INT,
-                    date TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW(),
+                    date DATE,
                     type INT,
-                    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
-                    updated_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
+                    created_at DATE,
+                    updated_at DATE,
                     FOREIGN KEY (from_bank) REFERENCES banks(id),
                     FOREIGN KEY (to_bank) REFERENCES banks(id),
                     FOREIGN KEY (category_id) REFERENCES categories(id)
@@ -92,8 +92,8 @@ namespace BudgetTracker.Finance.Infrastructure.Migrations
 	                due_id INT,
 	                emi_id INT,
 	                tags VARCHAR,
-	                created_at TIMESTAMP WITHOUT TIME ZONE,
-	                updated_at TIMESTAMP WITHOUT TIME ZONE,
+	                created_at DATE,
+	                updated_at DATE,
 	                FOREIGN KEY (transaction_id) REFERENCES transactions(id)
                 )
             ");
