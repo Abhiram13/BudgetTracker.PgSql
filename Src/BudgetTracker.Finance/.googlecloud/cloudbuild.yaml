@@ -7,7 +7,7 @@ steps:
       - '-t'
       - '$_LOCATION-docker.pkg.dev/$_PROJECT_ID/$_REPOSITORY/$_IMAGE:$COMMIT_SHA'
       - '-f'
-      - 'BudgetTracker.Finance/Dockerfile'
+      - 'Src/BudgetTracker.Finance/Dockerfile'
       - '--build-arg'
       - 'NUGET_PAT=$_NUGET_PAT'
       - '.'
