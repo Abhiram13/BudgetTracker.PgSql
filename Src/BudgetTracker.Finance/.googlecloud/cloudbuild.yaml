@@ -27,15 +27,21 @@ steps:
   #     - $_VM_USERNAME
   #     - '--zone=asia-south1-b'
   #     - --command=bash -c "/home/abhiramnagadi/deploy-bt-finance.sh $_LOCATION-docker.pkg.dev/$_PROJECT_ID/$_REPOSITORY/$_IMAGE:$COMMIT_SHA"
-  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+    id: 'Deploy to Cloud run'
     args:
-      - run
-      - deploy
-      - budget-tracker-finance
-      - --image=$_LOCATION-docker.pkg.dev/$_PROJECT_ID/$_REPOSITORY/$_IMAGE:$COMMIT_SHA
-      - --region=$_LOCATION
-      - --platform=managed
+      - 'run'
+      - 'deploy'
+      - 'budget-tracker-finance'
+      - '--image'
+      - '$_LOCATION-docker.pkg.dev/$_PROJECT_ID/$_REPOSITORY/$_IMAGE:$COMMIT_SHA'
+      - '--region'
+      - '$_LOCATION'
+      - '--platform'
+      - 'managed'
       - --allow-unauthenticated
+      - '--set-env-vars'
+      - 'GOOGLE_CLOUD_PROJECT_ID=$_PROJECT_ID'
 
 # Optional: declare the image for metadata
 images:
