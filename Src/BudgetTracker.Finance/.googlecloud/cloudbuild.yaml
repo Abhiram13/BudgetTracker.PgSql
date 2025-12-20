@@ -18,15 +18,24 @@ steps:
     args: ['push', '$_LOCATION-docker.pkg.dev/$_PROJECT_ID/$_REPOSITORY/$_IMAGE:$COMMIT_SHA']
 
   # Step 3: Deploy to Cloud Run
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
-    id: 'Deploy to Cloud Run'
-    entrypoint: 'gcloud'
+  # - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+  #   id: 'Deploy to Cloud Run'
+  #   entrypoint: 'gcloud'
+  #   args:
+  #     - 'compute'    
+  #     - 'ssh'
+  #     - $_VM_USERNAME
+  #     - '--zone=asia-south1-b'
+  #     - --command=bash -c "/home/abhiramnagadi/deploy-bt-finance.sh $_LOCATION-docker.pkg.dev/$_PROJECT_ID/$_REPOSITORY/$_IMAGE:$COMMIT_SHA"
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
     args:
-      - 'compute'    
-      - 'ssh'
-      - $_VM_USERNAME
-      - '--zone=asia-south1-b'
-      - --command=bash -c "/home/abhiramnagadi/deploy-bt-finance.sh $_LOCATION-docker.pkg.dev/$_PROJECT_ID/$_REPOSITORY/$_IMAGE:$COMMIT_SHA"
+      - run
+      - deploy
+      - budget-tracker-finance
+      - --image=$_LOCATION-docker.pkg.dev/$_PROJECT_ID/$_REPOSITORY/$_IMAGE:$COMMIT_SHA
+      - --region=$_LOCATION
+      - --platform=managed
+      - --allow-unauthenticated
 
 # Optional: declare the image for metadata
 images:
