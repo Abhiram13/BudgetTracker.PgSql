@@ -29,6 +29,7 @@ steps:
   #     - --command=bash -c "/home/abhiramnagadi/deploy-bt-finance.sh $_LOCATION-docker.pkg.dev/$_PROJECT_ID/$_REPOSITORY/$_IMAGE:$COMMIT_SHA"
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
     id: 'Deploy to Cloud run'
+    entrypoint: 'gcloud'
     args:
       - 'run'
       - 'deploy'
