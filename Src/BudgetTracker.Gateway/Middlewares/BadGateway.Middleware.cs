@@ -12,6 +12,7 @@ public class BadGatewayMiddleware : ICustomMiddleware
         _next = requestDelegate;
     }
 
+    // TODO: Add loggers
     public async Task InvokeAsync(HttpContext httpContext)
     {
         await _next(httpContext);

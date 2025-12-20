@@ -38,6 +38,7 @@ public static class GatewayConfiguration
         }
     };
 
+    // TODO: Change to GCP Secrets
     public static ClusterConfig[] Clusters = new ClusterConfig[]
     {
         new ClusterConfig

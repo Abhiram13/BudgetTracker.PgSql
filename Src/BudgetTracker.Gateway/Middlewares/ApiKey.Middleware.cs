@@ -11,8 +11,10 @@ public class ApiKeyMiddleware : ICustomMiddleware
         _next = next;
     }
 
+    // TODO: Add loggers
     public async Task InvokeAsync(HttpContext httpContext)
     {
+        // TODO: Change to GCP Secrets
         string? apiKey = Environment.GetEnvironmentVariable("YARP_API_KEY");
 
         if (string.IsNullOrEmpty(apiKey))

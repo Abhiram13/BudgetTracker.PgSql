@@ -26,7 +26,7 @@ public class ApiKeyHandler : AuthenticationHandler<ApiKeySchemaOptions>
         }
 
         string? HEADER_API_KEY = Request.Headers[ApiKeySchemaOptions.HeaderName];
-        string? API_KEY = Environment.GetEnvironmentVariable("API_KEY");
+        string? API_KEY = Environment.GetEnvironmentVariable("API_KEY"); // TODO: Change to GCP Secrets
 
         if (HEADER_API_KEY != API_KEY)
         {
@@ -50,7 +50,7 @@ public class ApiKeyHandler : AuthenticationHandler<ApiKeySchemaOptions>
         Response.StatusCode = StatusCodes.Status401Unauthorized;
         Response.ContentType = "application/json";
 
-        string traceId = Request.Headers["X-Trace-Id"]!;
+        string traceId = Request.Headers["X-Trace-Id"]!; // FIX: Default Trace ID should be generated incase none from headers
 
         ApiResponse<string> response = new ApiResponse<string>
         {
