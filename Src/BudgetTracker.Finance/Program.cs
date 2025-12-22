@@ -6,6 +6,7 @@ using Abhiram.Extensions.DotEnv;
 using Abhiram.Abstractions.Logging;
 using BudgetTracker.Finance.Services;
 using BudgetTracker.Finance.Interfaces;
+using Serilog;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 DotEnvironmentVariables.Load();
@@ -27,8 +28,11 @@ using (IServiceScope scope = app.Services.CreateScope())
     try
     {
         IFinanceAppSecrets appSecrets = scope.ServiceProvider.GetRequiredService<IFinanceAppSecrets>();
+        logger.LogInformation("Starting Migration");
+        logger.LogInformation("Postgres Host name: {0}", appSecrets.PostgresHost);
         if (!string.IsNullOrEmpty(appSecrets.PostgresHost))
         {
+            logger.LogInformation("HERE WE ARE STARTING THE MIGRATION");
             WriteDbContext context = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
             context.Database.Migrate();
         }        
