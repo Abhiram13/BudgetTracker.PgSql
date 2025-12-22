@@ -5,7 +5,7 @@
   <ItemGroup>
     <PackageVersion Include="Abhiram.Abstractions.Logging" Version="2.0.0" />
     <PackageVersion Include="Abhiram.Extensions.DotEnv" Version="1.1.0" />
-    <PackageVersion Include="Abhiram.Secrets.Providers" Version="2.1.0" />
+    <PackageVersion Include="Abhiram.Secrets.Providers" Version="2.1.1" />
     <PackageVersion Include="EntityFramework6.Npgsql" Version="6.4.3" />
     <PackageVersion Include="Google.Cloud.BigQuery.V2" Version="3.11.0" />
     <PackageVersion Include="Google.Cloud.PubSub.V1" Version="3.30.0" />
