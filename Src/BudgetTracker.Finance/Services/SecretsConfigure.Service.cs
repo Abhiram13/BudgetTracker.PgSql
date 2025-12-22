@@ -36,7 +36,7 @@ public class SecretHostService : IHostedService
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        _appSecrets.PostgresDatabase = await _secretManager.GetSecretAsync("POSTGRES_DATABASE");
+        _appSecrets.PostgresDatabase = await _secretManager.GetSecretAsync("FINANCE_POSTGRES_DATABASE");
         _appSecrets.PostgresHost = await _secretManager.GetSecretAsync("POSTGRES_HOST");
         _appSecrets.PostgresPassword = await _secretManager.GetSecretAsync("POSTGRES_PASSWORD");
         _appSecrets.PostgresUsername = await _secretManager.GetSecretAsync("POSTGRES_USERNAME");        
