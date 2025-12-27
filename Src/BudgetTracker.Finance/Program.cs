@@ -6,13 +6,16 @@ using Abhiram.Extensions.DotEnv;
 using Abhiram.Abstractions.Logging;
 using BudgetTracker.Finance.Services;
 using BudgetTracker.Finance.Interfaces;
-using Serilog;
+using Abhiram.Secrets.Providers;
+using BudgetTracker.Finance.Models;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 DotEnvironmentVariables.Load();
 
 builder.AddConsoleGoogleSeriLog(template: "[{Level:u3}] [Source: {SourceContext}] {Message:lj}{NewLine}{Exception}");
-builder.Services.AddHostedService<SecretHostService>();
+builder.Configuration.Sources.Add(new FinanceAppSecretsSource(new SecretManagerService()));
+builder.Services.AddOptions<AppSecrets>().Bind(builder.Configuration.GetSection("Postgres")).ValidateOnStart();
+builder.Services.AddOptions<AppSecrets>().Bind(builder.Configuration.GetSection("Yarp")).ValidateOnStart();
 builder.Services.AddCollections();
 builder.WebHost.ConfigureKestrel((_, server) => {
     string portNumber = Environment.GetEnvironmentVariable("PORT") ?? "3001";
@@ -27,15 +30,10 @@ using (IServiceScope scope = app.Services.CreateScope())
     ILogger<Program> logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
     try
     {
-        IFinanceAppSecrets appSecrets = scope.ServiceProvider.GetRequiredService<IFinanceAppSecrets>();
-        logger.LogInformation("Starting Migration");
-        logger.LogInformation("Postgres Host name: {0}", appSecrets.PostgresHost);
-        if (!string.IsNullOrEmpty(appSecrets.PostgresHost))
-        {
-            logger.LogInformation("HERE WE ARE STARTING THE MIGRATION");
-            WriteDbContext context = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
-            context.Database.Migrate();
-        }        
+        logger.LogInformation("DB Migration is starting...");
+        WriteDbContext context = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
+        context.Database.Migrate();
+        logger.LogInformation("DB Migration completed");
     }
     catch (Exception e)
     {
