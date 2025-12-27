@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Text.Encodings.Web;
+using BudgetTracker.Gateway.Interfaces;
 using BudgetTracker.Shared.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
@@ -14,7 +15,12 @@ public class ApiKeySchemaOptions : AuthenticationSchemeOptions
 
 public class ApiKeyHandler : AuthenticationHandler<ApiKeySchemaOptions>
 {
-    public ApiKeyHandler(IOptionsMonitor<ApiKeySchemaOptions> options, ILoggerFactory logger, UrlEncoder encoder) : base(options, logger, encoder) { }
+    private readonly IGatewayAppSecrets _secrets;
+
+    public ApiKeyHandler(IOptionsMonitor<ApiKeySchemaOptions> options, ILoggerFactory logger, UrlEncoder encoder, IGatewayAppSecrets secrets) : base(options, logger, encoder)
+    {
+        _secrets = secrets;
+    }
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
@@ -26,7 +32,7 @@ public class ApiKeyHandler : AuthenticationHandler<ApiKeySchemaOptions>
         }
 
         string? HEADER_API_KEY = Request.Headers[ApiKeySchemaOptions.HeaderName];
-        string? API_KEY = Environment.GetEnvironmentVariable("API_KEY"); // TODO: Change to GCP Secrets
+        string? API_KEY = _secrets.ApiKey;
 
         if (HEADER_API_KEY != API_KEY)
         {

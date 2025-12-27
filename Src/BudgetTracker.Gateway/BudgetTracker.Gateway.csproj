@@ -10,6 +10,7 @@
         <PackageReference Include="Yarp.ReverseProxy" />
         <PackageReference Include="Abhiram.Extensions.DotEnv" />
         <PackageReference Include="Abhiram.Abstractions.Logging" />
+        <PackageReference Include="Abhiram.Secrets.Providers" />
     </ItemGroup>
 
     <ItemGroup>

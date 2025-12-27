@@ -5,17 +5,18 @@ namespace BudgetTracker.Gateway.Middlewares;
 public class ApiKeyMiddleware : ICustomMiddleware
 {
     private readonly RequestDelegate _next;
+    private readonly IYarpApiKeyAppSecret _yarpAppSecret;
 
-    public ApiKeyMiddleware(RequestDelegate next)
+    public ApiKeyMiddleware(RequestDelegate next, IYarpApiKeyAppSecret yarpAppSecret)
     {
         _next = next;
+        _yarpAppSecret = yarpAppSecret;
     }
 
     // TODO: Add loggers
     public async Task InvokeAsync(HttpContext httpContext)
     {
-        // TODO: Change to GCP Secrets
-        string? apiKey = Environment.GetEnvironmentVariable("YARP_API_KEY");
+        string? apiKey = _yarpAppSecret.YarpApiKey;
 
         if (string.IsNullOrEmpty(apiKey))
         {

@@ -12,6 +12,7 @@ using Abhiram.Secrets.Providers.Interface;
 using Abhiram.Secrets.Providers;
 using BudgetTracker.Shared.Interfaces;
 using BudgetTracker.Finance.Models;
+using Microsoft.Extensions.Options;
 
 namespace BudgetTracker.Finance.Extensions;
 
@@ -67,8 +68,8 @@ public static class ServiceExtension
         collection.AddScoped<CategoryService>();
         collection.AddScoped<TraceIdProvider>();
         collection.AddSingleton<ISecretManager, SecretManagerService>();
-        collection.AddSingleton<IFinanceAppSecrets, AppSecrets>();
-        collection.AddSingleton<IYarpApiKeyAppSecret, AppSecrets>();
+        collection.AddSingleton<IFinanceAppSecrets>(sp => sp.GetRequiredService<IOptions<AppSecrets>>().Value);
+        collection.AddSingleton<IYarpApiKeyAppSecret>(sp => sp.GetRequiredService<IOptions<AppSecrets>>().Value);
         collection.AddSingleton<PublisherService>();
     }
 }
