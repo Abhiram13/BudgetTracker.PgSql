@@ -10,6 +10,7 @@ using BudgetTracker.Shared.Utilities;
 using BudgetTracker.Warehouse.Interfaces;
 using BudgetTracker.Warehouse.Models;
 using BudgetTracker.Warehouse.Services;
+using Microsoft.Extensions.Options;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 DotEnvironmentVariables.Load();
@@ -18,9 +19,11 @@ builder.AddConsoleGoogleSeriLog(template: "[{Level:u3}] [Source: {SourceContext}
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
+builder.Services.AddOptions<WarehouseAppSecrets>().Bind(builder.Configuration.GetSection("PubSub")).ValidateOnStart();
+builder.Services.AddOptions<WarehouseAppSecrets>().Bind(builder.Configuration.GetSection("Yarp")).ValidateOnStart();
 builder.Services.AddSingleton<ISecretManager, SecretManagerService>();
-builder.Services.AddSingleton<IYarpApiKeyAppSecret, WarehouseAppSecrets>();
-builder.Services.AddSingleton<IWarehouseAppSecrets, WarehouseAppSecrets>();
+builder.Services.AddSingleton<IYarpApiKeyAppSecret>(sp => sp.GetRequiredService<IOptions<WarehouseAppSecrets>>().Value);
+builder.Services.AddSingleton<IWarehouseAppSecrets>(sp => sp.GetRequiredService<IOptions<WarehouseAppSecrets>>().Value);
 builder.Services.AddSingleton<BigQueryService>();
 builder.Services.AddScoped<TraceIdProvider>();
 builder.Services.AddScoped<SubscriberService>();
