@@ -13,6 +13,7 @@ using Abhiram.Secrets.Providers.Interface;
 using Abhiram.Secrets.Providers;
 using Abhiram.Abstractions.Logging;
 using Abhiram.Extensions.DotEnv;
+using Microsoft.Extensions.Options;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 DotEnvironmentVariables.Load();
@@ -22,13 +23,14 @@ builder.Services.AddRouting();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddOptions<DueAppSecrets>().Bind(builder.Configuration.GetSection("Postgres")).ValidateOnStart();
+builder.Services.AddOptions<DueAppSecrets>().Bind(builder.Configuration.GetSection("Yarp")).ValidateOnStart();
 builder.Services.AddScoped<IDueRepository, DueRepository>();
 builder.Services.AddScoped<DueService>();
 builder.Services.AddScoped<TraceIdProvider>();
 builder.Services.AddSingleton<ISecretManager, SecretManagerService>();
-builder.Services.AddSingleton<IYarpApiKeyAppSecret, DueAppSecrets>();
-builder.Services.AddSingleton<IDueAppSecrets, DueAppSecrets>();
-builder.Services.AddHostedService<SecretHostService>();
+builder.Services.AddSingleton<IYarpApiKeyAppSecret, DueAppSecrets>(sp => sp.GetRequiredService<IOptions<DueAppSecrets>>().Value);
+builder.Services.AddSingleton<IDueAppSecrets, DueAppSecrets>(sp => sp.GetRequiredService<IOptions<DueAppSecrets>>().Value);
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = YarpApiKeySchemaOptions.DefaultSchema;
