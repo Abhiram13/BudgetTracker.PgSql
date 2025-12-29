@@ -7,7 +7,7 @@ steps:
       - '-t'
       - '$_LOCATION-docker.pkg.dev/$_PROJECT_ID/$_REPOSITORY/$_IMAGE:latest'
       - '-f'
-      - 'Src/BudgetTracker.Finance/Dockerfile'
+      - 'Src/BudgetTracker.Warehouse/Dockerfile'
       - '--build-arg'
       - 'NUGET_PAT=$_NUGET_PAT'
       - '.'
@@ -24,7 +24,7 @@ steps:
     args:
       - 'run'
       - 'deploy'
-      - 'budget-tracker-finance'
+      - 'budget-tracker-warehouse'
       - '--image'
       - '$_LOCATION-docker.pkg.dev/$_PROJECT_ID/$_REPOSITORY/$_IMAGE:latest'
       - '--region'
