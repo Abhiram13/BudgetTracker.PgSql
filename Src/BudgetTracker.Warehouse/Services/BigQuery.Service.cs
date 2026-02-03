@@ -24,25 +24,27 @@ public class BigQueryService
             MERGE `budgettracker.transactions_by_date` T
             USING (
                 SELECT
-                    @date   AS date,
-                    @debit  AS debit,
-                    @credit AS credit
+                    @date AS date,
+                    @debit AS debit,
+                    @credit AS credit,
+                    @count AS count
                 ) S
             ON T.date = S.date
             
             WHEN MATCHED THEN
-                UPDATE SET debit  = S.debit, credit = S.credit
+                UPDATE SET debit = S.debit, credit = S.credit, count = S.count
 
             WHEN NOT MATCHED THEN
-                INSERT (date, debit, credit)
-                VALUES (S.date, S.debit, S.credit)
+                INSERT (date, debit, credit, count)
+                VALUES (S.date, S.debit, S.credit, S.count)
             ";
 
         BigQueryParameter[] parameters = new BigQueryParameter[]
         {
             new BigQueryParameter("date", BigQueryDbType.Date, payload.Date.ToString("yyyy-MM-dd")),
             new BigQueryParameter("debit", BigQueryDbType.Numeric, payload.Debit.ToString()),
-            new BigQueryParameter("credit", BigQueryDbType.Numeric, payload.Credit.ToString())
+            new BigQueryParameter("credit", BigQueryDbType.Numeric, payload.Credit.ToString()),
+            new BigQueryParameter("count", BigQueryDbType.Int64, payload.Count.ToString()),
         };
 
         await _client.ExecuteQueryAsync(sql, parameters);
@@ -69,6 +71,7 @@ public class BigQueryService
         BigQueryResults result = await _client.ExecuteQueryAsync(sql: query, parameters: parameters);
         List<TransactionsListByMonthDto> list = result.Select(r => new TransactionsListByMonthDto
         {
+            Count = int.Parse(r["count"].ToString()!),
             Credit = decimal.Parse(r["credit"].ToString()!),
             Debit = decimal.Parse(r["debit"].ToString()!),
             Date = DateOnly.FromDateTime(

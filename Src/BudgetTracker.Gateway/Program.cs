@@ -26,6 +26,11 @@ builder.Services.AddSingleton<IGatewayAppSecrets>(sp => sp.GetRequiredService<IO
 builder.Services.AddSingleton<IYarpApiKeyAppSecret>(sp => sp.GetRequiredService<IOptions<GatewayAppSecrets>>().Value);
 builder.Services.AddAuthentication().AddScheme<ApiKeySchemaOptions, ApiKeyHandler>(ApiKeySchemaOptions.DefaultSchema, _ => {});
 builder.Services.AddScoped<TraceIdProvider>();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy => policy.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod());
+});
+
 builder.WebHost.ConfigureKestrel((_, server) => {
     string portNumber = Environment.GetEnvironmentVariable("PORT") ?? "3000";
     int port = int.Parse(portNumber);
@@ -42,6 +47,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseRouting();
+app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapReverseProxy().RequireAuthorization();

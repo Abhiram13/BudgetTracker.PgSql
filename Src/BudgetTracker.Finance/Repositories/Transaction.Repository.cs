@@ -53,7 +53,8 @@ public class TransactionRepository : ITransactionRepository
             {
                 Credit = t.Where(d => d.Type == TransactionType.Credit).Sum(c => c.ActualAmount) ?? 0,
                 Debit = t.Where(d => d.Type == TransactionType.Debit).Sum(c => c.ActualAmount) ?? 0,
-                Date = transactionDate
+                Date = transactionDate,
+                Count = t.Count()
             })
             .FirstOrDefaultAsync();
 
