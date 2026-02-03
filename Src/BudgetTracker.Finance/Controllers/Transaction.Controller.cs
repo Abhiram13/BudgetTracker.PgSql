@@ -38,7 +38,9 @@ public class TransactionController : ControllerBase
             Date = payload.Date,
             FromBank = payload.FromBank,
             ToBank = payload.ToBank,
-            Type = payload.Type
+            Type = payload.Type,
+            DueId = payload.DueId,
+            EMIId = payload.EmiId
         };
 
         await _transactionService.InsertTransactionAsync(transaction);

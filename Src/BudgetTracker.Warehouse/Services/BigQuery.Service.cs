@@ -10,18 +10,21 @@ namespace BudgetTracker.Warehouse.Services;
 public class BigQueryService
 {
     private readonly BigQueryClient _client;
+    private readonly IWarehouseAppSecrets _appSecrets;
     private readonly string _projectId;
+    private const string TRANSACTIONS_BY_MONTH = "transactions_by_month";
 
     public BigQueryService(IWarehouseAppSecrets appSecrets)
     {
         _projectId = appSecrets.GoogleProjectId;
         _client = BigQueryClient.Create(_projectId);
+        _appSecrets = appSecrets;
     }
 
     public async Task InsertTransactionByDateAsync([FromBody] TransactionsListByMonthDto payload)
     {
-        string sql = @"
-            MERGE `budgettracker.transactions_by_date` T
+        string sql = $@"
+            MERGE `{_appSecrets.DataSet}.{TRANSACTIONS_BY_MONTH}` T
             USING (
                 SELECT
                     @date AS date,
@@ -55,9 +58,9 @@ public class BigQueryService
         int valueMonth = month ?? DateTime.UtcNow.Month;
         int valueYear = year ?? DateTime.UtcNow.Year;
 
-        string query = @"
+        string query = $@"
             SELECT *
-            FROM budgettracker.transactions_by_date
+            FROM {_appSecrets.DataSet}.{TRANSACTIONS_BY_MONTH}
             WHERE EXTRACT(MONTH FROM DATE) = @month
             AND EXTRACT (YEAR FROM DATE) = @year
         ";

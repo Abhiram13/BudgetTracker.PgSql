@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using BudgetTracker.Shared.Interfaces;
 using BudgetTracker.Gateway.Services;
 using Abhiram.Secrets.Providers;
+using BudgetTracker.Warehouse.Services;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 DotEnvironmentVariables.Load();
@@ -20,6 +21,7 @@ builder.Configuration.Sources.Add(new GatewayAppSecretsSource(new SecretManagerS
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddReverseProxy().LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+builder.Configuration.Sources.Add(new WarehouseAppSecretsSource(new SecretManagerService()));
 builder.Services.AddOptions<GatewayAppSecrets>().Bind(builder.Configuration.GetSection("Api")).ValidateOnStart();
 builder.Services.AddOptions<GatewayAppSecrets>().Bind(builder.Configuration.GetSection("Yarp")).ValidateOnStart();
 builder.Services.AddSingleton<IGatewayAppSecrets>(sp => sp.GetRequiredService<IOptions<GatewayAppSecrets>>().Value);
