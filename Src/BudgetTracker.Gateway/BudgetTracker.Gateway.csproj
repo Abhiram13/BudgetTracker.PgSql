@@ -15,6 +15,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\BudgetTracker.Shared\BudgetTracker.Shared.csproj" />
+      <ProjectReference Include="..\BudgetTracker.Warehouse\BudgetTracker.Warehouse.csproj" />
     </ItemGroup>
 
 </Project>

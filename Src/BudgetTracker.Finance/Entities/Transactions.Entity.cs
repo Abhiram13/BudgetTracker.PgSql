@@ -6,6 +6,7 @@ using BudgetTracker.Shared.Entities;
 namespace BudgetTracker.Finance.Entities;
 
 [Table("transactions")]
+// TODO: Change Set to Init
 public class Transaction : BaseEntity
 {
     [Column("amount")]
@@ -20,6 +21,7 @@ public class Transaction : BaseEntity
 
     [Column("description")]
     [JsonPropertyName("description")]
+    // TODO: Setup character limit
     public string Description { get; set; } = string.Empty;
 
     [Column("from_bank")]    
@@ -41,6 +43,14 @@ public class Transaction : BaseEntity
     [Column("type")]
     [JsonPropertyName("type")]
     public TransactionType Type { get; set; }
+    
+    [Column("due_id")]
+    [JsonPropertyName("due_id")]
+    public int? DueId { get; init; }
+    
+    [Column("emi_id")]
+    [JsonPropertyName("emi_id")]
+    public int? EMIId { get; init; }
 
     // Foreign Key Navigation properties
     [ForeignKey(nameof(CategoryId))]

@@ -51,8 +51,8 @@ public class TransactionRepository : ITransactionRepository
             .GroupBy(t => t.Date)
             .Select(t => new TransactionsListByMonthDto
             {
-                Credit = t.Where(d => d.Type == TransactionType.Credit).Sum(c => c.ActualAmount) ?? 0,
-                Debit = t.Where(d => d.Type == TransactionType.Debit).Sum(c => c.ActualAmount) ?? 0,
+                Credit = t.Where(d => d.Type == TransactionType.Credit).Sum(c => c.Amount),
+                Debit = t.Where(d => d.Type == TransactionType.Debit).Sum(c => c.Amount),
                 Date = transactionDate,
                 Count = t.Count()
             })

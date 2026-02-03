@@ -19,7 +19,7 @@ builder.AddConsoleGoogleSeriLog(template: "[{Level:u3}] [Source: {SourceContext}
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
-builder.Services.AddOptions<WarehouseAppSecrets>().Bind(builder.Configuration.GetSection("PubSub")).ValidateOnStart();
+builder.Services.AddOptions<WarehouseAppSecrets>().Bind(builder.Configuration.GetSection("Config")).ValidateOnStart();
 builder.Services.AddOptions<WarehouseAppSecrets>().Bind(builder.Configuration.GetSection("Yarp")).ValidateOnStart();
 builder.Services.AddSingleton<ISecretManager, SecretManagerService>();
 builder.Services.AddSingleton<IYarpApiKeyAppSecret>(sp => sp.GetRequiredService<IOptions<WarehouseAppSecrets>>().Value);

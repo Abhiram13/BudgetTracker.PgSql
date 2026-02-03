@@ -15,7 +15,8 @@ public class WarehouseAppSecretsProvider : ConfigurationProvider
 
     public override void Load()
     {
-        Set("PubSub:DatewiseTransactionSubscriber", "PUBSUB_DATEWISE_TRANSACTIONS_SUBSCRIBER");
+        Set("Config:DatewiseTransactionSubscriber", "PUBSUB_DATEWISE_TRANSACTIONS_SUBSCRIBER");
+        Set("Config:DataSet", "DATASET");
         Set("Yarp:YarpApiKey", "YARP_API_KEY");
     }
 

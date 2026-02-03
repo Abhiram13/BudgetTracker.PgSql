@@ -31,6 +31,7 @@ public static class ServiceExtension
             options.SuppressModelStateInvalidFilter = false;
             options.InvalidModelStateResponseFactory = action =>
             {
+                // TODO: Get custom API response and trace id
                 KeyValuePair<string, ModelStateEntry?> modelState = action.ModelState.FirstOrDefault();
                 string errorAt = modelState.Key;
                 string errorMessage = modelState.Value?.Errors?[0].ErrorMessage ?? $"Something went wrong at {errorAt}";

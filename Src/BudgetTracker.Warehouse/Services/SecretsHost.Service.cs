@@ -39,6 +39,7 @@ public class SecretHostService : IHostedService
     {
         _appSecrets.GoogleProjectId = await _secretManager.GetSecretAsync("GOOGLE_CLOUD_PROJECT_ID");
         _appSecrets.DatewiseTransactionSubscriber = await _secretManager.GetSecretAsync("PUBSUB_DATEWISE_TRANSACTIONS_SUBSCRIBER");
+        _appSecrets.DataSet = await _secretManager.GetSecretAsync("DATASET");
         _yarpSecretKey.YarpApiKey = await _secretManager.GetSecretAsync("YARP_API_KEY");
     }
 

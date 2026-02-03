@@ -8,4 +8,5 @@ public sealed class WarehouseAppSecrets : IWarehouseAppSecrets, IYarpApiKeyAppSe
     public string GoogleProjectId { get; set; } = string.Empty;
     public string DatewiseTransactionSubscriber { get; set; } = string.Empty;
     public string YarpApiKey { get; set; } = string.Empty;
+    public string DataSet { get; set; } = string.Empty;
 }

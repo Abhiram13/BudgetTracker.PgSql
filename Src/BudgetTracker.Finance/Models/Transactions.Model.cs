@@ -3,7 +3,7 @@ using BudgetTracker.Finance.Enums;
 
 namespace BudgetTracker.Finance.Models;
 
-public record class InsertTransactionDto
+public record InsertTransactionDto
 {
     [JsonPropertyName("amount")]
     public decimal Amount { get; init; }
@@ -24,14 +24,20 @@ public record class InsertTransactionDto
     public int CategoryId { get; init; }
 
     [JsonPropertyName("date")]
-    [MaxDate(ErrorMessage = "Provided date is out of range or invalid.")]
+    [MaxDate(ErrorMessage = "Provided date is out of range or invalid.")] // BUG: Getting error for today's date 
     public DateOnly Date { get; init; }
 
     [JsonPropertyName("type")]
     public TransactionType Type { get; init; }
+    
+    [JsonPropertyName("due_id")]
+    public int? DueId { get; init; }
+    
+    [JsonPropertyName("emi_id")]
+    public int? EmiId { get; init; }
 }
 
-public record class TransactionByDateDto
+public record TransactionByDateDto
 {
     [JsonPropertyName("debit")]
     public decimal Debit { get; init; }
