@@ -1,6 +1,6 @@
 namespace BudgetTracker.Shared.Models;
 
-public record class TransactionsListByMonthDto
+public record TransactionsListByMonthDto
 {
     [JsonPropertyName("debit")]
     public decimal Debit { get; init; }
@@ -10,4 +10,7 @@ public record class TransactionsListByMonthDto
 
     [JsonPropertyName("date")]
     public DateOnly Date { get; init; } = default!;
+    
+    [JsonPropertyName("count")]
+    public long Count { get; init; }
 }

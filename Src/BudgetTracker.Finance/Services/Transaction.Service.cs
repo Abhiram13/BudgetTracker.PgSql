@@ -19,14 +19,14 @@ public class TransactionService
         _logger = logger;
     }
 
-    public async Task<Transaction> InsertTransactionAsync(Transaction payload)
+    public async Task InsertTransactionAsync(Transaction payload)
     {
         if (payload.FromBank is null && payload.ToBank is null)
         {
             throw new BadHttpRequestException("Invalid payload provided");
         }
 
-        Transaction transaction = await _repository.InsertOneTransactionAsync(payload);
+        await _repository.InsertOneTransactionAsync(payload);
         TransactionsListByMonthDto? result = null;
 
         try
@@ -41,10 +41,10 @@ public class TransactionService
         if (result is not null)
         {
             string message = JsonSerializer.Serialize(result!);
+            
+            // TODO: Get Trace ID here
             await _publisher.PublishMessageAsync(requestMessage: message, eventType: PubSubFinanceEvents.DATEWISE_TRANSACTIONS_LIST, traceId: null);
         }
-
-        return transaction;
     }
 
     public async Task<TransactionByDateDto> GetTransactionsByDateAsync(string transactionDate)

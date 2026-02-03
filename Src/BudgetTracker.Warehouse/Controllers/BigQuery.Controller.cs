@@ -18,8 +18,8 @@ public class BigQueryController : ControllerBase
         _traceProvider = traceIdProvider;
     }
 
-    [HttpGet("transactionsByDate")]
-    public async Task<IActionResult> GetAllTransactionsAsync([FromQuery] int? month, [FromQuery] int? year)
+    [HttpGet("transactionsByMonth")]
+    public async Task<IActionResult> GetAllTransactionsByMonthAsync([FromQuery] int? month, [FromQuery] int? year)
     {
         List<TransactionsListByMonthDto> result = await _bigQueryService.GetAllTransactionsAsync(month, year);
         return Ok(new ApiResponse<List<TransactionsListByMonthDto>>
