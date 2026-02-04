@@ -32,6 +32,14 @@ public class BankRepository : IBankRepository
         return bank;
     }
 
+    public async Task UpdateBankAsync(Bank payload)
+    {
+        Bank bank = await GetBankByIdAsync(payload.Id);
+        bank.Name = payload.Name;
+        bank.UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
+        await _writeDbContext.SaveChangesAsync();
+    }
+
     public async Task<Bank> InsertOneBankAsync(Bank payload)
     {
         await _writeDbContext.Banks.AddAsync(payload);
