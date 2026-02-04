@@ -112,4 +112,14 @@ public class TransactionService
             await _publisher.PublishMessageAsync(requestMessage: message, eventType: PubSubFinanceEvents.DATEWISE_TRANSACTIONS_LIST, traceId: null);
         }   
     }
+
+    public async Task BigQueryUpdatesAsync()
+    {
+        List<DateOnly> dates = await _repository.GetGroupOfDatesAsync();
+
+        foreach (DateOnly date in dates)
+        {
+            await UpdateTransactionsByMonthAsync(date);
+        }
+    }
 }
