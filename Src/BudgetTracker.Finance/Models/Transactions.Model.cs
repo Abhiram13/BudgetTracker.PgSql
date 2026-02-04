@@ -35,6 +35,9 @@ public record InsertTransactionDto
     
     [JsonPropertyName("emi_id")]
     public int? EmiId { get; init; }
+    
+    [JsonPropertyName("tags")]
+    public string? Tags { get; init; }
 }
 
 public record TransactionByDateDto
@@ -62,14 +65,6 @@ public record TransactionByDateDto
         [JsonPropertyName("description")]
         public string Description { get; init; } = string.Empty;
     }
-}
-
-public record CategoryTransactionsSumDto
-{
-    public string CategoryName { get; init; } = string.Empty;
-    public decimal CurrentMonth { get; init; }
-    public decimal PreviousMonth { get; init; }
-    public decimal Difference { get; init; }
 }
 
 public record UpdateTransactionDto
@@ -104,4 +99,7 @@ public record UpdateTransactionDto
     
     [JsonPropertyName("emi_id")]
     public int? EmiId { get; init; }
+    
+    [JsonPropertyName("tags")]
+    public string? Tags { get; init; }
 }

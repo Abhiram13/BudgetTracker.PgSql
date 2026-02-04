@@ -26,24 +26,7 @@ public class TransactionController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<ApiResponse<string>>> InsertAsync([FromBody] InsertTransactionDto payload)
     {
-        DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
-        Transaction transaction = new Transaction
-        {
-            CreatedAt = today,
-            UpdatedAt = today,
-            ActualAmount = payload.ActualAmount,
-            Amount = payload.Amount,
-            Description = payload.Description,
-            CategoryId = payload.CategoryId,
-            Date = payload.Date,
-            FromBank = payload.FromBank,
-            ToBank = payload.ToBank,
-            Type = payload.Type,
-            DueId = payload.DueId,
-            EMIId = payload.EmiId
-        };
-
-        await _transactionService.InsertTransactionAsync(transaction);
+        await _transactionService.InsertTransactionAsync(payload);
         return Ok(new ApiResponse<string>
         {
             StatusCode = System.Net.HttpStatusCode.Created,

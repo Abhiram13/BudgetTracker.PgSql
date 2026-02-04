@@ -87,8 +87,6 @@ public class TransactionRepository : ITransactionRepository
         tx.Amount = payload.Amount;
         tx.Date = payload.Date;
         tx.CategoryId = payload.CategoryId;
-        tx.DueId = payload.DueId;
-        tx.EMIId = payload.EmiId;
         tx.FromBank = payload.FromBank;
         tx.ToBank = payload.ToBank;
         tx.UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow);

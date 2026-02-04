@@ -11,22 +11,55 @@ public class TransactionService
     private readonly ITransactionRepository _repository;
     private readonly PublisherService _publisher;
     private readonly ILogger<TransactionService> _logger;
+    private readonly TransactionsMetaService _transactionsMetaService;
 
-    public TransactionService(ITransactionRepository repository, PublisherService publisherService, ILogger<TransactionService> logger)
+    public TransactionService(ITransactionRepository repository, PublisherService publisherService, ILogger<TransactionService> logger, TransactionsMetaService transactionsMetaService)
     {
         _repository = repository;
         _publisher = publisherService;
         _logger = logger;
+        _transactionsMetaService = transactionsMetaService;
     }
 
-    public async Task InsertTransactionAsync(Transaction payload)
+    public async Task InsertTransactionAsync(InsertTransactionDto payload)
     {
         if (payload.FromBank is null && payload.ToBank is null)
         {
             throw new BadHttpRequestException("Invalid payload provided");
         }
+        
+        DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
+        Transaction transaction = new Transaction
+        {
+            CreatedAt = today,
+            UpdatedAt = today,
+            ActualAmount = payload.ActualAmount,
+            Amount = payload.Amount,
+            Description = payload.Description,
+            CategoryId = payload.CategoryId,
+            Date = payload.Date,
+            FromBank = payload.FromBank,
+            ToBank = payload.ToBank,
+            Type = payload.Type,
+        };
 
-        await _repository.InsertOneTransactionAsync(payload);
+        await _repository.InsertOneTransactionAsync(transaction);
+
+        if (payload.DueId is not null || payload.EmiId is not null || !string.IsNullOrEmpty(payload.Tags))
+        {
+            TransactionsMeta meta = new TransactionsMeta
+            {
+                TransactionId = transaction.Id,
+                DueId = payload.DueId,
+                EmiId = payload.EmiId,
+                Tags = payload.Tags,
+                CreatedAt = today,
+                UpdatedAt = today,
+            };
+
+            await _transactionsMetaService.InsertTransactionMetaAsync(meta);
+        }
+        
         TransactionsListByMonthDto? result = null;
 
         try
@@ -60,5 +93,16 @@ public class TransactionService
     public async Task UpdateTransactionAsync(UpdateTransactionDto payload, int id)
     {
         await _repository.UpdateTransactionAsync(payload, id);
+
+        if (payload.DueId is not null || payload.EmiId is not null || !string.IsNullOrEmpty(payload.Tags))
+        {
+            UpdateTransactionMetaDto metaDto = new UpdateTransactionMetaDto
+            {
+                DueId = payload.DueId,
+                EmiId = payload.EmiId,
+                Tags = payload.Tags,
+            };
+            await _transactionsMetaService.UpdateTransactionMetaAsync(metaDto, transactionId: id);
+        }
     }
 }
