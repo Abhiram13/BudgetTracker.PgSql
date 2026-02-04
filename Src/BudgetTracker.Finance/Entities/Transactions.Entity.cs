@@ -46,11 +46,11 @@ public class Transaction : BaseEntity
     
     [Column("due_id")]
     [JsonPropertyName("due_id")]
-    public int? DueId { get; init; }
+    public int? DueId { get; set; }
     
     [Column("emi_id")]
     [JsonPropertyName("emi_id")]
-    public int? EMIId { get; init; }
+    public int? EMIId { get; set; }
 
     // Foreign Key Navigation properties
     [ForeignKey(nameof(CategoryId))]
