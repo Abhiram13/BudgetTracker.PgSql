@@ -71,4 +71,17 @@ public class BankController : ControllerBase
             }
         });
     }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateOneAsync([FromRoute] int id, [FromBody] InsertBankDto payload)
+    {
+        await _bankService.UpdateBankAsync(new Bank { Name = payload.Name, Id = id });
+
+        return Ok(new ApiResponse<string>
+        {
+            StatusCode = System.Net.HttpStatusCode.OK,
+            TraceId = _traceProvider.TraceId,
+            Message = "Bank updated successfully"
+        });
+    }
 }

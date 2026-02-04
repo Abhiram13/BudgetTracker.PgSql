@@ -28,4 +28,9 @@ public class BankService
     {
         return await _bankRepository.GetBankByIdAsync(id);
     }
+
+    public async Task UpdateBankAsync(Bank payload)
+    {
+        await _bankRepository.UpdateBankAsync(payload);
+    }
 }

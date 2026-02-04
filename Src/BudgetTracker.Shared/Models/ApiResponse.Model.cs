@@ -2,7 +2,7 @@ using System.Net;
 
 namespace BudgetTracker.Shared.Models;
 
-public record class ApiResponse<T>
+public record ApiResponse<T>
 {
     [JsonPropertyName("status_code")]
     public required HttpStatusCode StatusCode { get; init; }
