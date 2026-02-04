@@ -13,27 +13,27 @@ public class TransactionsMeta
     [Column("transaction_id")]
     [ForeignKey(nameof(Transaction))]
     [JsonPropertyName("transaction_id")]
-    public required int TransactionId { get; init; }
+    public required int TransactionId { get; set; }
 
     [Column("due_id")]
     [JsonPropertyName("due_id")]
-    public int? DueId { get; init; }
+    public int? DueId { get; set; }
 
     [Column("emi_id")]
     [JsonPropertyName("emi_id")]
-    public int? EmiId { get; init; }
+    public int? EmiId { get; set; }
 
     [Column("created_at")]
     [JsonPropertyName("created_at")]
-    public DateOnly CreatedAt { get; init; }
+    public DateOnly CreatedAt { get; set; }
 
     [Column("updated_at")]
     [JsonPropertyName("updated_at")]
-    public DateOnly UpdatedAt { get; init; }
+    public DateOnly UpdatedAt { get; set; }
 
     [Column("tags")]
     [JsonPropertyName("tags")]
-    public string? Tags { get; init; }
+    public string? Tags { get; set; }
 
     public Transaction TransactionF { get; init; } = default!;
 }

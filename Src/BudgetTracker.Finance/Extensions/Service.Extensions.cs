@@ -12,6 +12,7 @@ using Abhiram.Secrets.Providers.Interface;
 using Abhiram.Secrets.Providers;
 using BudgetTracker.Shared.Interfaces;
 using BudgetTracker.Finance.Models;
+using BudgetTracker.Finance.Repositories;
 using Microsoft.Extensions.Options;
 
 namespace BudgetTracker.Finance.Extensions;
@@ -64,8 +65,10 @@ public static class ServiceExtension
         collection.AddScoped<IBankRepository, BankRepository>();
         collection.AddScoped<ITransactionRepository, TransactionRepository>();
         collection.AddScoped<ICategoryRepository, CategoryRepository>();
+        collection.AddScoped<ITransactionsMetaRepository, TransactionsMetaRepository>();
         collection.AddScoped<BankService>();
         collection.AddScoped<TransactionService>();
+        collection.AddScoped<TransactionsMetaService>();
         collection.AddScoped<CategoryService>();
         collection.AddScoped<TraceIdProvider>();
         collection.AddSingleton<ISecretManager, SecretManagerService>();
