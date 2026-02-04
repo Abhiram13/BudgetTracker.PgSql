@@ -28,4 +28,9 @@ public class CategoryService
     {
         return await _categoryRepository.SearchByIdAsync(id);
     }
+
+    public async Task UpdateCategoryAsync(Category payload)
+    {
+        await _categoryRepository.UpdateOneCategoryAsync(payload);
+    }
 }

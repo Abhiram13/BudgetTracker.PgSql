@@ -32,12 +32,7 @@ public class CategoryRepository : ICategoryRepository
 
     public async Task UpdateOneCategoryAsync(Category payload)
     {
-        Category? category = await _writeDbContext.Categories.FirstOrDefaultAsync(c => c.Id == payload.Id);
-
-        if (category == null)
-        {
-            throw new BadHttpRequestException("Category not found");
-        }
+        Category category = await SearchByIdAsync(payload.Id);
         
         category.Name = payload.Name;
         category.UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow);

@@ -70,4 +70,17 @@ public class CategoryController : ControllerBase
             }
         });
     }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateOnAsync([FromRoute] int id, [FromBody] InsertCategoryDto payload)
+    {
+        await _categoryService.UpdateCategoryAsync(new Category { Id = id, Name = payload.Name });
+
+        return Ok(new ApiResponse<string>
+        {
+            StatusCode = System.Net.HttpStatusCode.OK,
+            TraceId = _traceIdProvider.TraceId,
+            Message = "Category updated successfully"
+        });
+    }
 }
