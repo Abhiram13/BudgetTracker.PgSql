@@ -93,4 +93,11 @@ public class TransactionRepository : ITransactionRepository
         
         await _writeDbContext.SaveChangesAsync();
     }
+
+    public async Task<List<DateOnly>> GetGroupOfDatesAsync()
+    {
+        List<DateOnly> dates = await _writeDbContext.Transactions.GroupBy(t => t.Date).Select(t => t.Key).ToListAsync();
+
+        return dates;
+    }
 }

@@ -73,4 +73,17 @@ public class TransactionController : ControllerBase
             Message = "Transaction updated successfully"
         });
     }
+
+    // [HttpGet("bigQuery")]
+    // public async Task<IActionResult> BigQueryUpdatesAsync()
+    // {
+    //     await _transactionService.BigQueryUpdatesAsync();
+    //     
+    //     return Ok(new  ApiResponse<string>
+    //     {
+    //         StatusCode = System.Net.HttpStatusCode.OK,
+    //         TraceId = _traceProvider.TraceId,
+    //         Message = "Big query updated successfully"
+    //     });
+    // }
 }

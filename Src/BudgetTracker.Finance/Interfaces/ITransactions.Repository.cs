@@ -17,4 +17,5 @@ public interface ITransactionRepository
     Task<TransactionsListByMonthDto?> GetDebitCreditByDateAsync(DateOnly transactionDate);
     Task<int> CountOfAllTransactionsAsync(int?  month, int? year);
     Task UpdateTransactionAsync(UpdateTransactionDto payload, int id);
+    Task<List<DateOnly>> GetGroupOfDatesAsync();
 }
