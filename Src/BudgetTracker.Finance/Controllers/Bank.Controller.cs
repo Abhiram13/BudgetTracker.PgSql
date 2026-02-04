@@ -54,4 +54,21 @@ public class BankController : ControllerBase
             Result = list
         });
     }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetBankByIdAsync([FromRoute] int id)
+    {
+        Bank bank = await _bankService.GetBankByIdAsync(id);
+
+        return Ok(new ApiResponse<BankByIdResponseDto>
+        {
+            StatusCode = System.Net.HttpStatusCode.OK,
+            TraceId = _traceProvider.TraceId,
+            Result = new BankByIdResponseDto
+            {
+                Id = bank.Id,
+                Name = bank.Name
+            }
+        });
+    }
 }

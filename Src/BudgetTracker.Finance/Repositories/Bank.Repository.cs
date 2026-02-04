@@ -23,6 +23,15 @@ public class BankRepository : IBankRepository
         return list;
     }
 
+    public async Task<Bank> GetBankByIdAsync(int id)
+    {
+        Bank? bank = await _writeDbContext.Banks.FirstOrDefaultAsync(b => b.Id == id);
+        
+        if (bank == null) throw new BadHttpRequestException($"Bank with id {id} not found");
+        
+        return bank;
+    }
+
     public async Task<Bank> InsertOneBankAsync(Bank payload)
     {
         await _writeDbContext.Banks.AddAsync(payload);
