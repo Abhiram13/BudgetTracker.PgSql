@@ -78,4 +78,16 @@ public class TransactionController : ControllerBase
             Result = count
         });
     }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateTransactionAsync([FromRoute] int id, [FromBody] UpdateTransactionDto payload)
+    {
+        await _transactionService.UpdateTransactionAsync(payload, id);
+        return Ok(new ApiResponse<string>
+        {
+            StatusCode = System.Net.HttpStatusCode.OK,
+            TraceId = _traceProvider.TraceId,
+            Message = "Transaction updated successfully"
+        });
+    }
 }

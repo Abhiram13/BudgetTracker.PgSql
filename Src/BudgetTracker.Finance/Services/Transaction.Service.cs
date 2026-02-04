@@ -56,4 +56,9 @@ public class TransactionService
     {
         return await _repository.CountOfAllTransactionsAsync(month, year);
     }
+
+    public async Task UpdateTransactionAsync(UpdateTransactionDto payload, int id)
+    {
+        await _repository.UpdateTransactionAsync(payload, id);
+    }
 }

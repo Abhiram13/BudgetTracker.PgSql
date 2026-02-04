@@ -63,11 +63,6 @@ public class TransactionRepository : ITransactionRepository
         return result;
     }
 
-    public async Task<CategoryTransactionsSumDto> GetTransactionsSumsByCategoryAsync()
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task<int> CountOfAllTransactionsAsync(int? month, int? year)
     {
         int m = month ?? DateTime.Now.Month;
@@ -80,5 +75,24 @@ public class TransactionRepository : ITransactionRepository
             .CountAsync();
         
         return count;
+    }
+
+    public async Task UpdateTransactionAsync(UpdateTransactionDto payload, int id)
+    {
+        Transaction? tx = await _writeDbContext.Transactions.FirstOrDefaultAsync(t => t.Id == id);
+        if (tx == null) throw new BadHttpRequestException("Transaction not found");
+        
+        tx.ActualAmount = payload.ActualAmount;
+        tx.Description = payload.Description;
+        tx.Amount = payload.Amount;
+        tx.Date = payload.Date;
+        tx.CategoryId = payload.CategoryId;
+        tx.DueId = payload.DueId;
+        tx.EMIId = payload.EmiId;
+        tx.FromBank = payload.FromBank;
+        tx.ToBank = payload.ToBank;
+        tx.UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
+        
+        await _writeDbContext.SaveChangesAsync();
     }
 }
