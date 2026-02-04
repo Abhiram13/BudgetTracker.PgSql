@@ -60,24 +60,7 @@ public class TransactionService
             await _transactionsMetaService.InsertTransactionMetaAsync(meta);
         }
         
-        TransactionsListByMonthDto? result = null;
-
-        try
-        {
-            result = await _repository.GetDebitCreditByDateAsync(payload.Date);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Exception at Transaction Service insert. Message = {0}", e.Message);
-        }
-
-        if (result is not null)
-        {
-            string message = JsonSerializer.Serialize(result!);
-            
-            // TODO: Get Trace ID here
-            await _publisher.PublishMessageAsync(requestMessage: message, eventType: PubSubFinanceEvents.DATEWISE_TRANSACTIONS_LIST, traceId: null);
-        }
+        await UpdateTransactionsByMonthAsync(payload.Date);
     }
 
     public async Task<TransactionByDateDto> GetTransactionsByDateAsync(string transactionDate)
@@ -104,5 +87,29 @@ public class TransactionService
             };
             await _transactionsMetaService.UpdateTransactionMetaAsync(metaDto, transactionId: id);
         }
+
+        await UpdateTransactionsByMonthAsync(payload.Date);
+    }
+    
+    private async Task UpdateTransactionsByMonthAsync(DateOnly date)
+    {
+        TransactionsListByMonthDto? result = null;
+        
+        try
+        {
+            result = await _repository.GetDebitCreditByDateAsync(date);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Exception at Transaction Service insert. Message = {0}", e.Message);
+        }
+
+        if (result is not null)
+        {
+            string message = JsonSerializer.Serialize(result!);
+            
+            // TODO: Get Trace ID here
+            await _publisher.PublishMessageAsync(requestMessage: message, eventType: PubSubFinanceEvents.DATEWISE_TRANSACTIONS_LIST, traceId: null);
+        }   
     }
 }
