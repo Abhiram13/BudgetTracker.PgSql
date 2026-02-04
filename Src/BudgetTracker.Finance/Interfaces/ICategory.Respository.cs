@@ -7,4 +7,6 @@ public interface ICategoryRepository
 {
     Task<Category> InsertOneCategoryAsync(Category payload);
     Task<List<CategoryListDto>> ListOfCategoryAsync();
+    Task UpdateOneCategoryAsync(Category payload);
+    Task<Category> SearchByIdAsync(int id);
 }

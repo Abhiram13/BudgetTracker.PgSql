@@ -23,4 +23,9 @@ public class CategoryService
     {
         return await _categoryRepository.ListOfCategoryAsync();
     }
+
+    public async Task<Category> GetCategoryByIdAsync(int id)
+    {
+        return await _categoryRepository.SearchByIdAsync(id);
+    }
 }

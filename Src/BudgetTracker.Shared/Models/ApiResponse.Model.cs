@@ -15,6 +15,6 @@ public record class ApiResponse<T>
     public string? Message { get; init; }
 
     [JsonPropertyName("result")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public T? Result { get; init; }
 }
