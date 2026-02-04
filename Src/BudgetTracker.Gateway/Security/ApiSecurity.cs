@@ -61,7 +61,7 @@ public class ApiKeyHandler : AuthenticationHandler<ApiKeySchemaOptions>
         ApiResponse<string> response = new ApiResponse<string>
         {
             StatusCode = System.Net.HttpStatusCode.Unauthorized,
-            TraceId = traceId,
+            TraceId = traceId, // TODO: Trace Id is null here.
             Message = "Unauthorised"
         };
 

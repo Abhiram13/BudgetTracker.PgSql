@@ -29,4 +29,28 @@ public class CategoryRepository : ICategoryRepository
 
         return list;
     }
+
+    public async Task UpdateOneCategoryAsync(Category payload)
+    {
+        Category? category = await _writeDbContext.Categories.FirstOrDefaultAsync(c => c.Id == payload.Id);
+
+        if (category == null)
+        {
+            throw new BadHttpRequestException("Category not found");
+        }
+        
+        category.Name = payload.Name;
+        category.UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
+        
+        await _writeDbContext.SaveChangesAsync();
+    }
+
+    public async Task<Category> SearchByIdAsync(int id)
+    {
+        Category? category = await _writeDbContext.Categories.FirstOrDefaultAsync(c => c.Id == id);
+        
+        if (category is null) throw new BadHttpRequestException("Category not found");
+        
+        return category;
+    }
 }

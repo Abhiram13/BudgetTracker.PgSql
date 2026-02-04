@@ -15,17 +15,18 @@ namespace BudgetTracker.Finance.Controllers;
 public class CategoryController : ControllerBase
 {
     private readonly CategoryService _categoryService;
+    private readonly TraceIdProvider _traceIdProvider;
 
-    public CategoryController(CategoryService categoryService)
+    public CategoryController(CategoryService categoryService, TraceIdProvider traceIdProvider)
     {
         _categoryService = categoryService;
+        _traceIdProvider = traceIdProvider;
     }
 
     [HttpPost]
     public async Task<ActionResult<ApiResponse<string>>> InsertAsync([FromBody] InsertCategoryDto payload)
     {
         DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
-        string traceId = Request.Headers["X-Trace-Id"]!;
         Category category = new Category
         {
             CreatedAt = today,
@@ -37,7 +38,7 @@ public class CategoryController : ControllerBase
         return Ok(new ApiResponse<string>
         {
             StatusCode = System.Net.HttpStatusCode.Created,
-            TraceId = traceId,
+            TraceId = _traceIdProvider.TraceId,
             Message = "Category created successfully"
         });
     }
@@ -46,12 +47,27 @@ public class CategoryController : ControllerBase
     public async Task<ActionResult<ApiResponse<List<CategoryListDto>>>> GetCategoriesAsync()
     {
         List<CategoryListDto> list = await _categoryService.GetAllCategoriesAsync();
-        string traceId = Request.Headers["X-Trace-Id"]!;
         return Ok(new ApiResponse<List<CategoryListDto>>
         {
             StatusCode = System.Net.HttpStatusCode.OK,
-            TraceId = traceId,
+            TraceId = _traceIdProvider.TraceId,
             Result = list
+        });
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById([FromRoute] int id)
+    {
+        Category category = await _categoryService.GetCategoryByIdAsync(id);
+        return Ok(new ApiResponse<CategoryByIdResponseDto>
+        {
+            StatusCode = System.Net.HttpStatusCode.OK,
+            TraceId = _traceIdProvider.TraceId,
+            Result = new CategoryByIdResponseDto
+            {
+                Id = category.Id,
+                Name = category.Name
+            }
         });
     }
 }

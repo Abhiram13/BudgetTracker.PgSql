@@ -16,4 +16,5 @@ public interface ITransactionRepository
     /// <returns></returns>
     Task<TransactionsListByMonthDto?> GetDebitCreditByDateAsync(DateOnly transactionDate);
     Task<CategoryTransactionsSumDto> GetTransactionsSumsByCategoryAsync();
+    Task<int> CountOfAllTransactionsAsync(int?  month, int? year); 
 }

@@ -24,11 +24,12 @@ builder.Services.AddOptions<WarehouseAppSecrets>().Bind(builder.Configuration.Ge
 builder.Services.AddSingleton<ISecretManager, SecretManagerService>();
 builder.Services.AddSingleton<IYarpApiKeyAppSecret>(sp => sp.GetRequiredService<IOptions<WarehouseAppSecrets>>().Value);
 builder.Services.AddSingleton<IWarehouseAppSecrets>(sp => sp.GetRequiredService<IOptions<WarehouseAppSecrets>>().Value);
+builder.Configuration.Sources.Add(new WarehouseAppSecretsSource(new SecretManagerService()));
 builder.Services.AddSingleton<BigQueryService>();
 builder.Services.AddScoped<TraceIdProvider>();
 builder.Services.AddScoped<SubscriberService>();
 builder.Services.AddHostedService<SecretHostService>();
-builder.Services.AddHostedService<SubscriberBackgroundService>();
+builder.Services.AddHostedService<SubscriberBackgroundService>(); // TODO: This step blocking application shutdown
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = YarpApiKeySchemaOptions.DefaultSchema;

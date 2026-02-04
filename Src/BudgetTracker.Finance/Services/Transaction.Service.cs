@@ -51,4 +51,9 @@ public class TransactionService
     {
         return await _repository.GetAllTransactionsByDateAsync(transactionDate);
     }
+
+    public async Task<int> CountOfAllTransactionsAsync(int? month, int? year)
+    {
+        return await _repository.CountOfAllTransactionsAsync(month, year);
+    }
 }

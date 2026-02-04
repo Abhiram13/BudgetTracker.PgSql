@@ -1,15 +1,24 @@
 namespace BudgetTracker.Finance.Models;
 
-public record class InsertCategoryDto
+public record InsertCategoryDto
 {
     public string Name { get; set; } = string.Empty;
 }
 
-public record class CategoryListDto
+public record CategoryListDto
 {
     [JsonPropertyName("id")]
     public int Id { get; init; }
 
+    [JsonPropertyName("name")]
+    public string Name { get; init; } = string.Empty;
+}
+
+public record CategoryByIdResponseDto
+{
+    [JsonPropertyName("id")]
+    public int Id { get; init; }
+    
     [JsonPropertyName("name")]
     public string Name { get; init; } = string.Empty;
 }

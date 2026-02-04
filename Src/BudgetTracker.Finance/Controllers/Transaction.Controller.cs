@@ -63,4 +63,19 @@ public class TransactionController : ControllerBase
             Result = result
         });
     }
+
+    [HttpGet("count")]
+    public async Task<IActionResult> CountOfTransactionsAsync([FromQuery] int? month, [FromQuery] int? year)
+    {
+        int count = await _transactionService.CountOfAllTransactionsAsync(month, year);
+        
+        Console.WriteLine(count);
+
+        return Ok(new ApiResponse<int>
+        {
+            StatusCode = System.Net.HttpStatusCode.OK,
+            TraceId = _traceProvider.TraceId,
+            Result = count
+        });
+    }
 }

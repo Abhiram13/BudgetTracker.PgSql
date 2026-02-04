@@ -24,12 +24,14 @@ public class TransactionRepository : ITransactionRepository
             .GroupBy(t => t.Date)
             .Select(t => new TransactionByDateDto
             {
-                Debit = t.Where(d => d.Type == TransactionType.Debit).Sum(d => d.ActualAmount) ?? 0,
-                Credit = t.Where(c => c.Type == TransactionType.Credit).Sum(c => c.ActualAmount) ?? 0,
+                Debit = t.Where(d => d.Type == TransactionType.Debit).Sum(d => d.Amount),
+                Credit = t.Where(c => c.Type == TransactionType.Credit).Sum(c => c.Amount),
                 TransactionsList = t.Select(l => new TransactionByDateDto.Transactions
                 {
                     Amount = l.Amount,
-                    Type = l.Type
+                    Type = l.Type,
+                    Description = l.Description,
+                    TransactionId = l.Id
                 }).ToList()
             })
             .FirstOrDefaultAsync();
@@ -64,5 +66,19 @@ public class TransactionRepository : ITransactionRepository
     public async Task<CategoryTransactionsSumDto> GetTransactionsSumsByCategoryAsync()
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<int> CountOfAllTransactionsAsync(int? month, int? year)
+    {
+        int m = month ?? DateTime.Now.Month;
+        int y = year ?? DateTime.Now.Year;
+        DateOnly start = new DateOnly(y, m, 1);
+        DateOnly end = start.AddMonths(1);
+
+        int count = await _writeDbContext.Transactions
+            .Where(t => t.Date >= start && t.Date < end)
+            .CountAsync();
+        
+        return count;
     }
 }
