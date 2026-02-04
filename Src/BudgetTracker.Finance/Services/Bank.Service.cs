@@ -23,4 +23,9 @@ public class BankService
     {
         return await _bankRepository.GetAllBanksAsync();
     }
+
+    public async Task<Bank> GetBankByIdAsync(int id)
+    {
+        return await _bankRepository.GetBankByIdAsync(id);
+    }
 }
