@@ -1,5 +1,7 @@
 /.config
-/Src/*/bin
-/Src/*/obj
-/Src/*/.env
+/*/*/bin
+/*/*/obj
+/*/*/.env
 *.DS_Store
+.idea
+*.user

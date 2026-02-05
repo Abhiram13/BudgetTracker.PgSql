@@ -106,7 +106,7 @@ public class TransactionService
 
         if (result is not null)
         {
-            string message = JsonSerializer.Serialize(result!);
+            string message = JsonSerializer.Serialize(result);
             
             // TODO: Get Trace ID here
             await _publisher.PublishMessageAsync(requestMessage: message, eventType: PubSubFinanceEvents.DATEWISE_TRANSACTIONS_LIST, traceId: null);
