@@ -14,7 +14,7 @@ public class ValidateTraceIdMiddleware : ICustomMiddleware
 
     public async Task InvokeAsync(HttpContext httpContext)
     {
-        string? traceId = httpContext.Request.Headers["X-Trace-Id"];
+        string? traceId = httpContext.Request.Headers["X-Trace-Id"]; // TODO: How to validate Trace ID?
 
         if (string.IsNullOrEmpty(traceId))
         {
