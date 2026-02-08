@@ -44,4 +44,7 @@ using (IServiceScope scope = app.Services.CreateScope())
 app.UseApplicationServices();
 app.Run();
 
-public partial class Program { }
+namespace BudgetTracker.Finance
+{
+    public partial class Program { }
+}

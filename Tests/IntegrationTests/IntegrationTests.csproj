@@ -36,4 +36,10 @@
         <ProjectReference Include="..\..\Src\BudgetTracker.Gateway\BudgetTracker.Gateway.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Data\" />
+      <Folder Include="Definations\" />
+      <Folder Include="Tests\" />
+    </ItemGroup>
+
 </Project>

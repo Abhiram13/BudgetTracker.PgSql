@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace IntegrationTests;
 
-public static class TestDbContextFactory
+public static class FinanceTestDbContextFactory
 {
     public static string? GetConnectionString()
     {
@@ -13,7 +13,7 @@ public static class TestDbContextFactory
             .AddJsonFile(path: "./appsettings.test.json", optional: false)
             .Build();
 
-        string? connectionString = configuration.GetConnectionString("TestDb");
+        string? connectionString = configuration.GetSection("DbConnectionStrings")["FinanceDb"];
 
         return connectionString;
     }
@@ -38,7 +38,7 @@ public abstract class TestBase : IDisposable
     
     protected TestBase()
     {
-        _dbContext = TestDbContextFactory.Create();
+        _dbContext = FinanceTestDbContextFactory.Create();
         _dbContext.Database.BeginTransaction();
     }
 
