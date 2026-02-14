@@ -17,6 +17,7 @@ builder.Configuration.Sources.Add(new FinanceAppSecretsSource(new SecretManagerS
 builder.Services.AddOptions<AppSecrets>().Bind(builder.Configuration.GetSection("Postgres")).ValidateOnStart();
 builder.Services.AddOptions<AppSecrets>().Bind(builder.Configuration.GetSection("Yarp")).ValidateOnStart();
 builder.Services.AddCollections();
+builder.Services.AddSwaggerGen();
 builder.WebHost.ConfigureKestrel((_, server) => {
     string portNumber = Environment.GetEnvironmentVariable("PORT") ?? "3001";
     int port = int.Parse(portNumber);
