@@ -1,12 +1,19 @@
 using BudgetTracker.Shared.Interfaces;
-using BudgetTracker.Warehouse.Interfaces;
+using BudgetTracker.Shared.Models;
 
 namespace BudgetTracker.Warehouse.Models;
 
-public sealed class WarehouseAppSecrets : IWarehouseAppSecrets, IYarpApiKeyAppSecret
+public record WarehouseAppSecrets
 {
-    public string GoogleProjectId { get; set; } = string.Empty;
-    public string DatewiseTransactionSubscriber { get; set; } = string.Empty;
-    public string YarpApiKey { get; set; } = string.Empty;
-    public string DataSet { get; set; } = string.Empty;
+    public YarpApiKeySecret Secrets { get; set; } =  default!;
+    public BigQuerySecrets BigQuery { get; set; } = default!;
+}
+
+public record BigQuerySecrets
+{
+    [ConfigurationKeyName("DATASET")]
+    public string DataSet { get; init; } = string.Empty;
+    
+    [ConfigurationKeyName("PUBSUB_DATEWISE_TRANSACTIONS_SUBSCRIBER")]
+    public string DateWiseTransactionSubscriber { get; init; } = string.Empty;
 }

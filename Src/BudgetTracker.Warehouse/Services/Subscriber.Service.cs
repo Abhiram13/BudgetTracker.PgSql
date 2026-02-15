@@ -1,7 +1,8 @@
 using System.Text.Json;
+using Abhiram.Secrets.Providers.Exceptions;
 using Google.Cloud.PubSub.V1;
 using BudgetTracker.Shared.Models;
-using BudgetTracker.Warehouse.Interfaces;
+using BudgetTracker.Warehouse.Models;
 
 namespace BudgetTracker.Warehouse.Services;
 
@@ -12,11 +13,11 @@ public class SubscriberService
     private readonly ILogger<SubscriberService> _logger;
     private readonly BigQueryService _bigQueryService;
 
-    public SubscriberService(BigQueryService service, ILogger<SubscriberService> logger, IWarehouseAppSecrets appSecrets)
+    public SubscriberService(BigQueryService service, ILogger<SubscriberService> logger, WarehouseAppSecrets appSecrets)
     {
         _bigQueryService = service;
-        _projectId = appSecrets.GoogleProjectId;
-        _subscriberId = appSecrets.DatewiseTransactionSubscriber;
+        _projectId = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_ID") ?? throw new ProjectNotFoundException();
+        _subscriberId = appSecrets.BigQuery.DateWiseTransactionSubscriber;
         _logger = logger;
     }
 

@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using BudgetTracker.Shared.Interfaces;
+using BudgetTracker.Shared.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -15,9 +16,9 @@ public class YarpApiKeySchemaOptions : AuthenticationSchemeOptions
 
 public class YarpApiKeyHandler : AuthenticationHandler<YarpApiKeySchemaOptions>
 {
-    private readonly IYarpApiKeyAppSecret _appSecrets;
+    private readonly YarpApiKeySecret _appSecrets;
 
-    public YarpApiKeyHandler(IOptionsMonitor<YarpApiKeySchemaOptions> options, ILoggerFactory logger, UrlEncoder encoder, IYarpApiKeyAppSecret appSecrets) : base(options, logger, encoder)
+    public YarpApiKeyHandler(IOptionsMonitor<YarpApiKeySchemaOptions> options, ILoggerFactory logger, UrlEncoder encoder, YarpApiKeySecret appSecrets) : base(options, logger, encoder)
     {
         _appSecrets = appSecrets;
     }

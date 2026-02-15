@@ -1,7 +1,8 @@
 using System.Globalization;
 using System.Text.Json;
+using Abhiram.Secrets.Providers.Exceptions;
 using BudgetTracker.Shared.Models;
-using BudgetTracker.Warehouse.Interfaces;
+using BudgetTracker.Warehouse.Models;
 using Google.Cloud.BigQuery.V2;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,13 +11,13 @@ namespace BudgetTracker.Warehouse.Services;
 public class BigQueryService
 {
     private readonly BigQueryClient _client;
-    private readonly IWarehouseAppSecrets _appSecrets;
+    private readonly WarehouseAppSecrets _appSecrets;
     private readonly string _projectId;
     private const string TRANSACTIONS_BY_MONTH = "transactions_by_month";
 
-    public BigQueryService(IWarehouseAppSecrets appSecrets)
+    public BigQueryService(WarehouseAppSecrets appSecrets)
     {
-        _projectId = appSecrets.GoogleProjectId;
+        _projectId = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_ID") ?? throw new ProjectNotFoundException();
         _client = BigQueryClient.Create(_projectId);
         _appSecrets = appSecrets;
     }
@@ -24,7 +25,7 @@ public class BigQueryService
     public async Task InsertTransactionByDateAsync([FromBody] TransactionsListByMonthDto payload)
     {
         string sql = $@"
-            MERGE `{_appSecrets.DataSet}.{TRANSACTIONS_BY_MONTH}` T
+            MERGE `{_appSecrets.BigQuery.DataSet}.{TRANSACTIONS_BY_MONTH}` T
             USING (
                 SELECT
                     @date AS date,
@@ -60,7 +61,7 @@ public class BigQueryService
 
         string query = $@"
             SELECT *
-            FROM {_appSecrets.DataSet}.{TRANSACTIONS_BY_MONTH}
+            FROM {_appSecrets.BigQuery.DataSet}.{TRANSACTIONS_BY_MONTH}
             WHERE EXTRACT(MONTH FROM DATE) = @month
             AND EXTRACT (YEAR FROM DATE) = @year
         ";

@@ -1,6 +1,6 @@
 using System.Security.Claims;
 using System.Text.Encodings.Web;
-using BudgetTracker.Gateway.Interfaces;
+using BudgetTracker.Gateway.Models;
 using BudgetTracker.Shared.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
@@ -15,9 +15,9 @@ public class ApiKeySchemaOptions : AuthenticationSchemeOptions
 
 public class ApiKeyHandler : AuthenticationHandler<ApiKeySchemaOptions>
 {
-    private readonly IGatewayAppSecrets _secrets;
+    private readonly GatewayAppSecrets _secrets;
 
-    public ApiKeyHandler(IOptionsMonitor<ApiKeySchemaOptions> options, ILoggerFactory logger, UrlEncoder encoder, IGatewayAppSecrets secrets) : base(options, logger, encoder)
+    public ApiKeyHandler(IOptionsMonitor<ApiKeySchemaOptions> options, ILoggerFactory logger, UrlEncoder encoder, GatewayAppSecrets secrets) : base(options, logger, encoder)
     {
         _secrets = secrets;
     }
@@ -32,7 +32,7 @@ public class ApiKeyHandler : AuthenticationHandler<ApiKeySchemaOptions>
         }
 
         string? HEADER_API_KEY = Request.Headers[ApiKeySchemaOptions.HeaderName];
-        string? API_KEY = _secrets.ApiKey;
+        string? API_KEY = _secrets.Secrets.ApiKey;
 
         if (HEADER_API_KEY != API_KEY)
         {

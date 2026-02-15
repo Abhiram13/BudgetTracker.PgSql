@@ -1,34 +1,30 @@
 using System.Net;
+using Microsoft.Extensions.Options;
 using Abhiram.Abstractions.Logging;
 using Abhiram.Extensions.DotEnv;
-using Abhiram.Secrets.Providers;
-using Abhiram.Secrets.Providers.Interface;
+using Abhiram.Secrets.Configuration;
 using BudgetTracker.Shared.Interfaces;
 using BudgetTracker.Shared.Middlwares;
+using BudgetTracker.Shared.Models;
 using BudgetTracker.Shared.Security;
 using BudgetTracker.Shared.Utilities;
-using BudgetTracker.Warehouse.Interfaces;
 using BudgetTracker.Warehouse.Models;
 using BudgetTracker.Warehouse.Services;
-using Microsoft.Extensions.Options;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 DotEnvironmentVariables.Load();
 
 builder.AddConsoleGoogleSeriLog(template: "[{Level:u3}] [Source: {SourceContext}] {Message:lj}{NewLine}{Exception}");
+builder.Configuration.AddSecrets(environment: builder.Environment, optional: false);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
-builder.Services.AddOptions<WarehouseAppSecrets>().Bind(builder.Configuration.GetSection("Config")).ValidateOnStart();
-builder.Services.AddOptions<WarehouseAppSecrets>().Bind(builder.Configuration.GetSection("Yarp")).ValidateOnStart();
-builder.Services.AddSingleton<ISecretManager, SecretManagerService>();
-builder.Services.AddSingleton<IYarpApiKeyAppSecret>(sp => sp.GetRequiredService<IOptions<WarehouseAppSecrets>>().Value);
-builder.Services.AddSingleton<IWarehouseAppSecrets>(sp => sp.GetRequiredService<IOptions<WarehouseAppSecrets>>().Value);
-builder.Configuration.Sources.Add(new WarehouseAppSecretsSource(new SecretManagerService()));
+builder.Services.AddOptions<WarehouseAppSecrets>().Bind(builder.Configuration).ValidateDataAnnotations().ValidateOnStart();
+builder.Services.AddSingleton<WarehouseAppSecrets>(sp => sp.GetRequiredService<IOptions<WarehouseAppSecrets>>().Value);
+builder.Services.AddSingleton<YarpApiKeySecret>(sp => sp.GetRequiredService<IOptions<WarehouseAppSecrets>>().Value.Secrets);
 builder.Services.AddSingleton<BigQueryService>();
 builder.Services.AddScoped<TraceIdProvider>();
 builder.Services.AddScoped<SubscriberService>();
-builder.Services.AddHostedService<SecretHostService>();
 builder.Services.AddHostedService<SubscriberBackgroundService>(); // TODO: This step blocking application shutdown
 builder.Services.AddAuthentication(options =>
 {
@@ -37,7 +33,7 @@ builder.Services.AddAuthentication(options =>
 }).AddScheme<YarpApiKeySchemaOptions, YarpApiKeyHandler>(YarpApiKeySchemaOptions.DefaultSchema, _ => {});
 
 builder.WebHost.ConfigureKestrel((_, server) => {
-    string portNumber = Environment.GetEnvironmentVariable("PORT") ?? "3004";
+    string portNumber = Environment.GetEnvironmentVariable("PORT") ?? "3003";
     int port = int.Parse(portNumber);
     server.Listen(IPAddress.Any, port);
 });

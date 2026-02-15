@@ -1,12 +1,18 @@
-namespace BudgetTracker.Finance.Interfaces;
-
-public interface IFinanceAppSecrets
-{
-    string PostgresHost { get; set; }
-    string PostgresDatabase { get; set; }
-    string PostgresUsername { get; set; }
-    string PostgresPassword { get; set; }
-    string PostgresPort { get; set; }    
-    string GoogleCloudProjectId { get; set; }
-    string PubSubTopic { get; set; }
-}
+// namespace BudgetTracker.Finance.Interfaces;
+//
+// public interface IFinanceAppSecrets : IPostgresSecrets, IPubSubSecrets { }
+//
+// public interface IPostgresSecrets
+// {
+//     string Host { get; set; }
+//     string Database { get; set; }
+//     string Username { get; set; }
+//     string Password { get; set; }
+//     string Port { get; set; }
+// }
+//
+// public interface IPubSubSecrets
+// {
+//     [ConfigurationKeyName("Topic")]
+//     string PubSubTopic { get; set; }
+// }
