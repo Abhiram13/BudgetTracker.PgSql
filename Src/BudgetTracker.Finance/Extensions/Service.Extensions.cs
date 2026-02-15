@@ -1,19 +1,18 @@
+using System.Net;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Abhiram.Secrets.Configuration;
 using BudgetTracker.Finance.Interfaces;
 using BudgetTracker.Finance.Repository;
 using BudgetTracker.Finance.Services;
 using BudgetTracker.Shared.Utilities;
 using BudgetTracker.Shared.Security;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc;
 using BudgetTracker.Shared.Models;
-using System.Net;
-using Abhiram.Secrets.Providers.Interface;
-using Abhiram.Secrets.Providers;
 using BudgetTracker.Shared.Interfaces;
 using BudgetTracker.Finance.Models;
 using BudgetTracker.Finance.Repositories;
-using Microsoft.Extensions.Options;
 
 namespace BudgetTracker.Finance.Extensions;
 
@@ -45,19 +44,18 @@ public static class ServiceExtension
 
     private static void AddDbContext(IServiceCollection collection)
     {
-        collection.AddDbContext<WriteDbContext>(async (provider, options) =>
+        collection.AddDbContext<WriteDbContext>((provider, options) =>
         {
-            IFinanceAppSecrets secrets = provider.GetRequiredService<IFinanceAppSecrets>();
+            PostgresSecrets secrets = provider.GetRequiredService<AppSecrets>().Postgres;
 
-            string? postgresHost = secrets.PostgresHost;
-            string? postgresPort = secrets.PostgresPort;
-            string? postgresDatabase = secrets.PostgresDatabase;
-            string? postgresUsername = secrets.PostgresUsername;
-            string? postgresPassword = secrets.PostgresPassword;
+            string? postgresHost = secrets.Host;
+            string? postgresPort = secrets.Port;
+            string? postgresDatabase = secrets.Database;
+            string? postgresUsername = secrets.Username;
+            string? postgresPassword = secrets.Password;
             string connectionString = $"Host={postgresHost};Port={postgresPort};Database={postgresDatabase};Username={postgresUsername};Password={postgresPassword}";
             options.UseNpgsql(connectionString);
         });
-
     }
 
     private static void AddScopedServices(IServiceCollection collection)
@@ -71,9 +69,8 @@ public static class ServiceExtension
         collection.AddScoped<TransactionsMetaService>();
         collection.AddScoped<CategoryService>();
         collection.AddScoped<TraceIdProvider>();
-        collection.AddSingleton<ISecretManager, SecretManagerService>();
-        collection.AddSingleton<IFinanceAppSecrets>(sp => sp.GetRequiredService<IOptions<AppSecrets>>().Value);
-        collection.AddSingleton<IYarpApiKeyAppSecret>(sp => sp.GetRequiredService<IOptions<AppSecrets>>().Value);
+        collection.AddSingleton<AppSecrets>(sp => sp.GetRequiredService<IOptions<AppSecrets>>().Value);
+        collection.AddSingleton<YarpApiKeySecret>(sp => sp.GetRequiredService<IOptions<AppSecrets>>().Value.Secrets);
         collection.AddSingleton<PublisherService>();
     }
 }

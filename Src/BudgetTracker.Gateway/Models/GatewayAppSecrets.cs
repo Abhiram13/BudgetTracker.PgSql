@@ -1,10 +1,15 @@
-using BudgetTracker.Gateway.Interfaces;
 using BudgetTracker.Shared.Interfaces;
+using BudgetTracker.Shared.Models;
 
 namespace BudgetTracker.Gateway.Models;
 
-public class GatewayAppSecrets : IYarpApiKeyAppSecret, IGatewayAppSecrets
+public record Secrets : YarpApiKeySecret
 {
-    public string YarpApiKey { get; set; } = string.Empty;
+    [ConfigurationKeyName("API_KEY")]
     public string ApiKey { get; set; } = string.Empty;
+}
+
+public record GatewayAppSecrets
+{
+    public Secrets Secrets { get; set; } = default!;
 }

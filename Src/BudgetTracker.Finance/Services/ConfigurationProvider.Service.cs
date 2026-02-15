@@ -4,6 +4,7 @@ using Abhiram.Secrets.Providers.Interface;
 
 namespace BudgetTracker.Finance.Services;
 
+[Obsolete(message: "Directly use .AddSecrets() method in WebApplication from Abhiram.Secrets.Configuration namespace", error: true)]
 public class FinanceAppSecretsProvider : ConfigurationProvider
 {
     private readonly ISecretManager _secretManager;
@@ -36,6 +37,7 @@ public class FinanceAppSecretsProvider : ConfigurationProvider
     }
 }
 
+[Obsolete(message: "Directly use .AddSecrets() method in WebApplication from Abhiram.Secrets.Configuration namespace", error: true)]
 public sealed class FinanceAppSecretsSource : IConfigurationSource
 {
     private readonly ISecretManager _secretManager;

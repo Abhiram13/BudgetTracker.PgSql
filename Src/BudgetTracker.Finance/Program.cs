@@ -1,21 +1,20 @@
 using System.Net;
-using BudgetTracker.Finance;
-using BudgetTracker.Finance.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Abhiram.Extensions.DotEnv;
 using Abhiram.Abstractions.Logging;
+using Abhiram.Secrets.Configuration;
+using BudgetTracker.Finance;
+using BudgetTracker.Finance.Extensions;
 using BudgetTracker.Finance.Services;
 using BudgetTracker.Finance.Interfaces;
-using Abhiram.Secrets.Providers;
 using BudgetTracker.Finance.Models;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 DotEnvironmentVariables.Load();
 
 builder.AddConsoleGoogleSeriLog(template: "[{Level:u3}] [Source: {SourceContext}] {Message:lj}{NewLine}{Exception}");
-builder.Configuration.Sources.Add(new FinanceAppSecretsSource(new SecretManagerService()));
-builder.Services.AddOptions<AppSecrets>().Bind(builder.Configuration.GetSection("Postgres")).ValidateOnStart();
-builder.Services.AddOptions<AppSecrets>().Bind(builder.Configuration.GetSection("Yarp")).ValidateOnStart();
+builder.Configuration.AddSecrets(environment: builder.Environment, optional: false);
+builder.Services.AddOptions<AppSecrets>().Bind(builder.Configuration).ValidateDataAnnotations().ValidateOnStart();
 builder.Services.AddCollections();
 builder.Services.AddSwaggerGen();
 builder.WebHost.ConfigureKestrel((_, server) => {

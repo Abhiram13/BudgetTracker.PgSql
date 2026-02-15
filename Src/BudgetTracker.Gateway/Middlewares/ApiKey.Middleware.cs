@@ -1,13 +1,14 @@
 using BudgetTracker.Shared.Interfaces;
+using BudgetTracker.Shared.Models;
 
 namespace BudgetTracker.Gateway.Middlewares;
 
 public class ApiKeyMiddleware : ICustomMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly IYarpApiKeyAppSecret _yarpAppSecret;
+    private readonly YarpApiKeySecret _yarpAppSecret;
 
-    public ApiKeyMiddleware(RequestDelegate next, IYarpApiKeyAppSecret yarpAppSecret)
+    public ApiKeyMiddleware(RequestDelegate next, YarpApiKeySecret yarpAppSecret)
     {
         _next = next;
         _yarpAppSecret = yarpAppSecret;

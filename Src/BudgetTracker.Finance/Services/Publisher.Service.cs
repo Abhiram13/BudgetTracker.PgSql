@@ -1,6 +1,8 @@
+using Abhiram.Secrets.Providers.Exceptions;
 using Google.Protobuf;
 using Google.Cloud.PubSub.V1;
 using BudgetTracker.Finance.Interfaces;
+using BudgetTracker.Finance.Models;
 
 namespace BudgetTracker.Finance.Services;
 
@@ -10,10 +12,11 @@ public class PublisherService
     private readonly ILogger<PublisherService> _logger;
     private readonly string _projectId;
 
-    public PublisherService(ILogger<PublisherService> logger, IFinanceAppSecrets appSecrets)
+    public PublisherService(ILogger<PublisherService> logger, AppSecrets appSecrets)
     {
-        _topicName = appSecrets.PubSubTopic;
-        _projectId = appSecrets.GoogleCloudProjectId;
+        _topicName = appSecrets.PubSub.Topic;
+        _projectId = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_ID") 
+                     ?? throw new EnvironmentVariableNotFoundException("Google cloud project ID EnvironmentVariable not found");
         _logger = logger;
     }
 

@@ -1,15 +1,14 @@
 using System.Net;
-using BudgetTracker.Gateway.Middlewares;
+using Microsoft.Extensions.Options;
 using Abhiram.Extensions.DotEnv;
+using Abhiram.Abstractions.Logging;
+using Abhiram.Secrets.Configuration;
+using BudgetTracker.Gateway.Middlewares;
 using BudgetTracker.Gateway.Security;
 using BudgetTracker.Shared.Utilities;
-using Abhiram.Abstractions.Logging;
 using BudgetTracker.Gateway.Models;
-using BudgetTracker.Gateway.Interfaces;
-using Microsoft.Extensions.Options;
 using BudgetTracker.Shared.Interfaces;
-using BudgetTracker.Gateway.Services;
-using Abhiram.Secrets.Providers;
+using BudgetTracker.Shared.Models;
 using BudgetTracker.Warehouse.Services;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -17,14 +16,13 @@ DotEnvironmentVariables.Load();
 
 builder.AddConsoleGoogleSeriLog(template: "[{Level:u3}] [Source: {SourceContext}] {Message:lj}{NewLine}{Exception}");
 builder.Logging.AddFilter("Yarp.ReverseProxy.Forwarder.HttpForwarder", LogLevel.Warning);
-builder.Configuration.Sources.Add(new GatewayAppSecretsSource(new SecretManagerService()));
+builder.Configuration.AddSecrets(environment: builder.Environment, optional: false);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddReverseProxy().LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
-builder.Services.AddOptions<GatewayAppSecrets>().Bind(builder.Configuration.GetSection("Api")).ValidateOnStart();
-builder.Services.AddOptions<GatewayAppSecrets>().Bind(builder.Configuration.GetSection("Yarp")).ValidateOnStart();
-builder.Services.AddSingleton<IGatewayAppSecrets>(sp => sp.GetRequiredService<IOptions<GatewayAppSecrets>>().Value);
-builder.Services.AddSingleton<IYarpApiKeyAppSecret>(sp => sp.GetRequiredService<IOptions<GatewayAppSecrets>>().Value);
+builder.Services.AddOptions<GatewayAppSecrets>().Bind(builder.Configuration).ValidateDataAnnotations().ValidateOnStart();
+builder.Services.AddSingleton<GatewayAppSecrets>(option => option.GetRequiredService<IOptions<GatewayAppSecrets>>().Value);
+builder.Services.AddSingleton<YarpApiKeySecret>(opt => opt.GetRequiredService<IOptions<GatewayAppSecrets>>().Value.Secrets);
 builder.Services.AddAuthentication().AddScheme<ApiKeySchemaOptions, ApiKeyHandler>(ApiKeySchemaOptions.DefaultSchema, _ => {});
 builder.Services.AddScoped<TraceIdProvider>();
 builder.Services.AddCors(options =>

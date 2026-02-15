@@ -1,5 +1,9 @@
-using Microsoft.EntityFrameworkCore;
 using System.Net;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Abhiram.Abstractions.Logging;
+using Abhiram.Extensions.DotEnv;
+using Abhiram.Secrets.Configuration;
 using BudgetTracker.Dues;
 using BudgetTracker.Dues.Interfaces;
 using BudgetTracker.Dues.Repository;
@@ -9,42 +13,35 @@ using BudgetTracker.Shared.Security;
 using BudgetTracker.Shared.Middlwares;
 using BudgetTracker.Shared.Interfaces;
 using BudgetTracker.Dues.Models;
-using Abhiram.Secrets.Providers.Interface;
-using Abhiram.Secrets.Providers;
-using Abhiram.Abstractions.Logging;
-using Abhiram.Extensions.DotEnv;
-using Microsoft.Extensions.Options;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 DotEnvironmentVariables.Load();
 
 builder.AddConsoleGoogleSeriLog(template: "[{Level:u3}] [Source: {SourceContext}] {Message:lj}{NewLine}{Exception}");
+builder.Configuration.AddSecrets(environment: builder.Environment, optional: false);
+builder.Services.AddOptions<DueAppSecrets>().Bind(builder.Configuration).ValidateDataAnnotations().ValidateOnStart();
 builder.Services.AddRouting();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddOptions<DueAppSecrets>().Bind(builder.Configuration.GetSection("Postgres")).ValidateOnStart();
-builder.Services.AddOptions<DueAppSecrets>().Bind(builder.Configuration.GetSection("Yarp")).ValidateOnStart();
+builder.Services.AddSingleton<DueAppSecrets>(sp => sp.GetRequiredService<IOptions<DueAppSecrets>>().Value);
 builder.Services.AddScoped<IDueRepository, DueRepository>();
 builder.Services.AddScoped<DueService>();
 builder.Services.AddScoped<TraceIdProvider>();
-builder.Services.AddSingleton<ISecretManager, SecretManagerService>();
-builder.Services.AddSingleton<IYarpApiKeyAppSecret, DueAppSecrets>(sp => sp.GetRequiredService<IOptions<DueAppSecrets>>().Value);
-builder.Services.AddSingleton<IDueAppSecrets, DueAppSecrets>(sp => sp.GetRequiredService<IOptions<DueAppSecrets>>().Value);
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = YarpApiKeySchemaOptions.DefaultSchema;
     options.DefaultChallengeScheme = YarpApiKeySchemaOptions.DefaultSchema;
 }).AddScheme<YarpApiKeySchemaOptions, YarpApiKeyHandler>(YarpApiKeySchemaOptions.DefaultSchema, _ => {});
-builder.Services.AddDbContext<WriteDBContext>(async (provider, options) =>
+builder.Services.AddDbContext<WriteDBContext>((provider, options) =>
 {
-    IDueAppSecrets appSecrets = provider.GetRequiredService<IDueAppSecrets>();
+    PostgresSecrets appSecrets = provider.GetRequiredService<DueAppSecrets>().Postgres;
 
-    string? postgresHost = appSecrets.PostgresHost;
-    string? postgresPort = appSecrets.PostgresPort;
-    string? postgresDatabase = appSecrets.PostgresDatabase;
-    string? postgresUsername = appSecrets.PostgresUsername;
-    string? postgresPassword = appSecrets.PostgresPassword;
+    string? postgresHost = appSecrets.Host;
+    string? postgresPort = appSecrets.Port;
+    string? postgresDatabase = appSecrets.Database;
+    string? postgresUsername = appSecrets.Username;
+    string? postgresPassword = appSecrets.Password;
     string connectionString = $"Host={postgresHost};Port={postgresPort};Database={postgresDatabase};Username={postgresUsername};Password={postgresPassword}";
     options.UseNpgsql(connectionString);
 });
@@ -63,8 +60,9 @@ using (IServiceScope? scope = app.Services.CreateScope())
 
     try
     {
-        IDueAppSecrets appSecrets = scope.ServiceProvider.GetRequiredService<IDueAppSecrets>();
-        if (!string.IsNullOrEmpty(appSecrets.PostgresHost))
+        DueAppSecrets appSecrets = scope.ServiceProvider.GetRequiredService<DueAppSecrets>();
+        
+        if (!string.IsNullOrEmpty(appSecrets.Postgres.Host))
         {
             WriteDBContext context = scope.ServiceProvider.GetRequiredService<WriteDBContext>();
             context.Database.Migrate();
