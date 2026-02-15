@@ -19,7 +19,7 @@
     <PackageVersion Include="Yarp.ReverseProxy" Version="2.3.0" />
   </ItemGroup>
   <ItemGroup Label="My Packages">
-    <PackageVersion Include="Abhiram.Abstractions.Logging" Version="2.0.0" />
+    <PackageVersion Include="Abhiram.Abstractions.Logging" Version="2.1.0" />
     <PackageVersion Include="Abhiram.Extensions.DotEnv" Version="1.1.0" />
     <PackageVersion Include="Abhiram.Secrets.Providers" Version="3.0.0" />
   </ItemGroup>
