@@ -21,7 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\BudgetTracker.Shared\BudgetTracker.Shared.csproj" />
+        <ProjectReference Include="..\BudgetTracker.Shared\BudgetTracker.Shared.csproj" />
     </ItemGroup>
 
 </Project>
