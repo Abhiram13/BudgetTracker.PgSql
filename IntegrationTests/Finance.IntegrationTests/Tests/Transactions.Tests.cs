@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using BudgetTracker.Finance.Entities;
 using BudgetTracker.Finance.Enums;
 using BudgetTracker.Finance.Models;
 using BudgetTracker.Shared.Models;
@@ -7,7 +8,12 @@ namespace IntegrationTests.Tests;
 
 public class TransactionsTests : BaseIntegrationTests
 {
-    public TransactionsTests(IntegrationTestFixture fixture) : base(fixture) { }
+    private readonly Category _testCategory;
+
+    public TransactionsTests(IntegrationTestFixture fixture) : base(fixture)
+    {
+        _testCategory = fixture._testCategory;
+    }
 
     [Fact]
     public async Task InsertTransaction_200_SuccessResponse()
@@ -16,7 +22,7 @@ public class TransactionsTests : BaseIntegrationTests
         {
             ActualAmount = 200,
             Amount = 200,
-            CategoryId = 1,
+            CategoryId = _testCategory.Id,
             Description = "",
             Type = TransactionType.Debit,
             FromBank = 1,

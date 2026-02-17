@@ -1,3 +1,6 @@
+using BudgetTracker.Finance;
+using BudgetTracker.Finance.Entities;
+using IntegrationTests.Builders;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using IntegrationTests.Exceptions;
@@ -8,15 +11,24 @@ public class IntegrationTestFixture : IAsyncLifetime
 {
     private FinanceTestWebApplicationFactory? _factory { get; set; }
     public HttpClient? Client { get; private set; }
+    public Category _testCategory; 
     
-    public Task InitializeAsync()
+    public async Task InitializeAsync()
     {
         _factory = new FinanceTestWebApplicationFactory();
         Client = _factory.CreateClient();
         
-        SetClientHeaders();
+        using var scope = _factory.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
+
+        // optional but recommended
+        await context.Database.EnsureCreatedAsync();
+
+        _testCategory = await new CategoryBuilder(context).CreateCategoryAsync();
         
-        return Task.CompletedTask;
+        SetClientHeaders();
+
+        return;
     }
 
     private void SetClientHeaders()
