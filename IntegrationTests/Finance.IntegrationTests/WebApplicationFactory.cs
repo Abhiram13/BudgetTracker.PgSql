@@ -31,8 +31,10 @@ public class FinanceTestWebApplicationFactory : WebApplicationFactory<Program>
 
         builder.ConfigureAppConfiguration((context, config) =>
         {
-            config.AddSecrets(environment: context.HostingEnvironment, optional: false);
-            config.AddEnvironmentVariables();
+            config.SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional: false, reloadOnChange: true)
+                .AddSecrets(environment: context.HostingEnvironment, optional: false)
+                .AddEnvironmentVariables();
         });
 
         builder.ConfigureServices(services =>
