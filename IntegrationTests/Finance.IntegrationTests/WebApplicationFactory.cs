@@ -8,16 +8,12 @@ using BudgetTracker.Finance;
 using BudgetTracker.Shared.Models;
 using Abhiram.Extensions.DotEnv;
 using Abhiram.Secrets.Configuration;
+using IntegrationTests.Exceptions;
 
-namespace IntegrationTests;
+namespace IntegrationTests.Setup;
 
 public class FinanceTestWebApplicationFactory : WebApplicationFactory<Program>
 {
-    public WriteDbContext GetDbContext()
-    {
-        return Services.CreateScope().ServiceProvider.GetRequiredService<WriteDbContext>();
-    }
-
     public IServiceScope CreateScope()
     {
         return Services.CreateScope();
@@ -37,14 +33,16 @@ public class FinanceTestWebApplicationFactory : WebApplicationFactory<Program>
                 .AddEnvironmentVariables();
         });
 
-        builder.ConfigureServices(services =>
+        builder.ConfigureServices((context, services) =>
         {
             ServiceDescriptor descriptor = services.Single(s => s.ServiceType == typeof(DbContextOptions<WriteDbContext>));
             services.Remove(descriptor);
-
             services.AddDbContext<WriteDbContext>(option =>
             {
-                option.UseNpgsql(FinanceTestDbContextFactory.GetConnectionString());
+                string connectionString = context.Configuration.GetSection("DbConnectionStrings")["FinanceDb"] 
+                                          ?? throw new NotFoundException("FinanceDb connection string not found");
+                
+                option.UseNpgsql(connectionString);
             });
         });
     }
