@@ -1,10 +1,13 @@
-using Abhiram.Extensions.DotEnv;
-using BudgetTracker.Finance;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using BudgetTracker.Finance;
+using BudgetTracker.Shared.Models;
+using Abhiram.Extensions.DotEnv;
+using Abhiram.Secrets.Configuration;
 
 namespace IntegrationTests;
 
@@ -23,9 +26,12 @@ public class FinanceTestWebApplicationFactory : WebApplicationFactory<Program>
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         DotEnvironmentVariables.Load();
+        
+        builder.UseEnvironment("Development");
 
-        builder.ConfigureAppConfiguration((_, config) =>
+        builder.ConfigureAppConfiguration((context, config) =>
         {
+            config.AddSecrets(environment: context.HostingEnvironment, optional: false);
             config.AddEnvironmentVariables();
         });
 

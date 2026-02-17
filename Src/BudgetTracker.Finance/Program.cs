@@ -8,6 +8,7 @@ using BudgetTracker.Finance.Extensions;
 using BudgetTracker.Finance.Services;
 using BudgetTracker.Finance.Interfaces;
 using BudgetTracker.Finance.Models;
+using BudgetTracker.Shared.Models;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 DotEnvironmentVariables.Load();
