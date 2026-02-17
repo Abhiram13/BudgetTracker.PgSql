@@ -10,7 +10,7 @@ public static class FinanceTestDbContextFactory
     {
         IConfigurationRoot? configuration = new ConfigurationBuilder()
             .SetBasePath(AppContext.BaseDirectory)
-            .AddJsonFile(path: "./appsettings.test.json", optional: false)
+            .AddJsonFile(path: "./appsettings.Development.json", optional: false)
             .Build();
 
         string? connectionString = configuration.GetSection("DbConnectionStrings")["FinanceDb"];

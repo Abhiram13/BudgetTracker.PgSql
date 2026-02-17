@@ -1,3 +1,7 @@
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using IntegrationTests.Exceptions;
+
 namespace IntegrationTests;
 
 public class IntegrationTestFixture : IAsyncLifetime
@@ -18,16 +22,22 @@ public class IntegrationTestFixture : IAsyncLifetime
     private void SetClientHeaders()
     {
         string traceId = Guid.NewGuid().ToString();
-        string? YARPAPIKEY = Environment.GetEnvironmentVariable("YARP_API_KEY");
+        string? yarpApiKey;
 
-        if (Client is null) return;
+        if (_factory == null) throw new NotFoundException($"FinanceWebApplicationFactory ({_factory}) not found");
+        
+        using (IServiceScope scope = _factory.CreateScope())
+        {
+            IConfiguration configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+            yarpApiKey = configuration.GetSection("SECRETS")["YARP_API_KEY"];
+        }
+        
+        if (yarpApiKey == null) throw new NotFoundException($"YARP_API_KEY ({yarpApiKey}) is missing");
+        
+        if (Client == null) throw new NotFoundException($"Client ({Client}) is missing");
         
         Client.DefaultRequestHeaders.Add("X-Trace-Id", traceId);
-            
-        if (YARPAPIKEY is not null)
-        {
-            Client.DefaultRequestHeaders.Add("YARP_API_KEY", YARPAPIKEY);
-        }
+        Client.DefaultRequestHeaders.Add("YARP_API_KEY", yarpApiKey);
     }
 
     public Task DisposeAsync()
