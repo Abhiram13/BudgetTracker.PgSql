@@ -21,7 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Src\BudgetTracker.Finance\BudgetTracker.Finance.csproj" />
+        <ProjectReference Include="..\..\Src\BudgetTracker.Finance\BudgetTracker.Finance.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -31,8 +31,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Data\" />
-      <Folder Include="Definations\" />
+        <Folder Include="Data\" />
+        <Folder Include="Definations\" />
     </ItemGroup>
 
 </Project>
