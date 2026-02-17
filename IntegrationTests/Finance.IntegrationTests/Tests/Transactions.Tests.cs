@@ -3,16 +3,21 @@ using BudgetTracker.Finance.Entities;
 using BudgetTracker.Finance.Enums;
 using BudgetTracker.Finance.Models;
 using BudgetTracker.Shared.Models;
+using IntegrationTests.Setup;
 
 namespace IntegrationTests.Tests;
 
-public class TransactionsTests : BaseIntegrationTests
+public class TransactionsTests : IClassFixture<IntegrationTestFixture>
 {
     private readonly Category _testCategory;
+    private readonly Bank _testBank;
+    private readonly HttpClient _client;
 
-    public TransactionsTests(IntegrationTestFixture fixture) : base(fixture)
+    public TransactionsTests(IntegrationTestFixture fixture)
     {
-        _testCategory = fixture._testCategory;
+        _client = fixture.Client;
+        _testCategory = fixture.TestCategory;
+        _testBank = fixture.TestBank;
     }
 
     [Fact]
@@ -25,8 +30,8 @@ public class TransactionsTests : BaseIntegrationTests
             CategoryId = _testCategory.Id,
             Description = "",
             Type = TransactionType.Debit,
-            FromBank = 1,
-            ToBank = 1,
+            FromBank = _testBank.Id,
+            ToBank = null,
             Date = new DateOnly(2026, 01, 01),
         };
         
