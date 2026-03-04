@@ -6,19 +6,15 @@ namespace IntegrationTests.Setup;
 
 public sealed class FinanceDbDisposal : IAsyncDisposable
 {
-    private readonly FinanceTestWebApplicationFactory _factory;
+    private readonly WriteDbContext _dbContext;
 
-    public FinanceDbDisposal(FinanceTestWebApplicationFactory factory)
+    public FinanceDbDisposal(WriteDbContext dbContext)
     {
-        _factory = factory;
+        _dbContext = dbContext;
     }
     
     public async ValueTask DisposeAsync()
     {
-        using (IServiceScope scope = _factory.Services.CreateScope())
-        {
-            WriteDbContext db = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
-            await db.Transactions.ExecuteDeleteAsync();
-        }
+        await _dbContext.Transactions.ExecuteDeleteAsync();
     }
 }
