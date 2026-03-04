@@ -8,6 +8,7 @@ using BudgetTracker.Finance;
 using BudgetTracker.Shared.Models;
 using Abhiram.Extensions.DotEnv;
 using Abhiram.Secrets.Configuration;
+using IntegrationTests.Builders;
 using IntegrationTests.Exceptions;
 
 namespace IntegrationTests.Setup;
@@ -44,6 +45,8 @@ public class FinanceTestWebApplicationFactory : WebApplicationFactory<Program>
                 
                 option.UseNpgsql(connectionString);
             });
+            services.AddScoped<CategoryBuilder>();
+            services.AddScoped<BankBuilder>();
         });
     }
 }

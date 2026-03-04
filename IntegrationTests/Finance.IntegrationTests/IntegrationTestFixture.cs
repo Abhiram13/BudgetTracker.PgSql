@@ -4,28 +4,33 @@ using IntegrationTests.Builders;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using IntegrationTests.Exceptions;
+using Microsoft.EntityFrameworkCore;
 
 namespace IntegrationTests.Setup;
 
 public class IntegrationTestFixture : IAsyncLifetime
 {
-    private FinanceTestWebApplicationFactory _factory { get; set; } = default!;
-    public HttpClient Client { get; private set; }
+    public FinanceTestWebApplicationFactory Factory { get; set; } = default!;
+    public HttpClient Client { get; private set; } = default!;
     public Category TestCategory { get; private set; } = default!;
     public Bank TestBank { get; private set; } = default!;
+    private CategoryBuilder _categoryBuilder = default!;
+    private BankBuilder _bankBuilder = default!;
     
     public async Task InitializeAsync()
     {
-        _factory = new FinanceTestWebApplicationFactory();
-        Client = _factory.CreateClient();
+        Factory = new FinanceTestWebApplicationFactory();
+        Client = Factory.CreateClient();
         
-        using (IServiceScope scope = _factory.CreateScope())
+        using (IServiceScope scope = Factory.CreateScope())
         {
             WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
             IConfiguration config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
             await dbContext.Database.EnsureCreatedAsync();
-            TestCategory = await new CategoryBuilder(dbContext).CreateCategoryAsync();
-            TestBank = await new BankBuilder(dbContext).CreateBankAsync();
+            _categoryBuilder = scope.ServiceProvider.GetRequiredService<CategoryBuilder>();
+            _bankBuilder = scope.ServiceProvider.GetRequiredService<BankBuilder>();
+            TestCategory = await _categoryBuilder.CreateCategoryAsync();
+            TestBank = await _bankBuilder.CreateBankAsync();
             SetClientHeaders(config);
         }
     }
@@ -48,11 +53,17 @@ public class IntegrationTestFixture : IAsyncLifetime
         return yarpApiKey;
     }
 
-    public Task DisposeAsync()
+    public async Task DisposeAsync()
     {
-        Client.Dispose();
-        _factory.Dispose();
+        using (IServiceScope scope = Factory.CreateScope())
+        {
+            WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
+
+            await dbContext.Categories.ExecuteDeleteAsync();
+            await dbContext.Banks.ExecuteDeleteAsync();
+        }
         
-        return Task.CompletedTask;
+        Client.Dispose();
+        Factory.Dispose();
     }
 }
