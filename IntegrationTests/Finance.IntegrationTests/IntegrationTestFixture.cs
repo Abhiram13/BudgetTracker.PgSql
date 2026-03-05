@@ -61,6 +61,8 @@ public class IntegrationTestFixture : IAsyncLifetime
 
             await dbContext.Categories.ExecuteDeleteAsync();
             await dbContext.Banks.ExecuteDeleteAsync();
+            await dbContext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE categories RESTART IDENTITY CASCADE");
+            await dbContext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE banks RESTART IDENTITY CASCADE");
         }
         
         Client.Dispose();

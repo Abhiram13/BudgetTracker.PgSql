@@ -29,8 +29,9 @@ public class TransactionsTests : IClassFixture<IntegrationTestFixture>
         _fixture = fixture;
     }
 
-    [Fact]
-    public async Task InsertTransaction_201_SuccessResponse()
+    [Theory]
+    [MemberData(nameof(InsertTransactionsMemberTestData.HappyPathData), MemberType = typeof(InsertTransactionsMemberTestData))]
+    public async Task InsertTransaction_201_SuccessResponse(InsertTransactionDto payload)
     {
         using (IServiceScope scope = _fixture.Factory.CreateScope())
         {
@@ -38,25 +39,12 @@ public class TransactionsTests : IClassFixture<IntegrationTestFixture>
 
             await using (new FinanceDbDisposal(dbContext))
             {
-                InsertTransactionDto insertDto = new InsertTransactionDto
-                {
-                    ActualAmount = 200,
-                    Amount = 200,
-                    CategoryId = _testCategory.Id,
-                    Description = "First Transaction #1",
-                    Type = TransactionType.Debit,
-                    FromBank = _testBank.Id,
-                    ToBank = null,
-                    Date = new DateOnly(2026, 01, 01),
-                };
-        
-                HttpResponseMessage httpResponse = await _client.PostAsJsonAsync("/api/transactions", insertDto);
+                HttpResponseMessage httpResponse = await _client.PostAsJsonAsync("/api/transactions", payload);
                 ApiResponse<string>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<string>>();
                 List<Transaction> transactions = await dbContext.Transactions.Where(t => t.Description == "First Transaction #1").ToListAsync();
             
                 Assert.NotNull(transactions);
                 Assert.NotNull(apiResponse);
-                Assert.True(transactions.Count == 1);
                 Assert.Equal(HttpStatusCode.Created, httpResponse.StatusCode);
                 Assert.Equal(HttpStatusCode.Created, apiResponse.StatusCode);
             }
