@@ -52,6 +52,32 @@ public class TransactionsTests : IClassFixture<IntegrationTestFixture>
     }
 
     [Theory]
+    [MemberData(nameof(InsertTransactionsMemberTestData.BadRequestValidationData), MemberType = typeof(InsertTransactionsMemberTestData))]
+    public async Task InsertTransaction_Validation_BadRequestResponse(InsertTransactionDto payload)
+    {
+        using (IServiceScope scope = _fixture.Factory.CreateScope())
+        {
+            WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
+
+            await using (new FinanceDbDisposal(dbContext))
+            {
+                HttpResponseMessage httpResponse = await _client.PostAsJsonAsync("/api/transactions", payload);
+                ApiResponse<string>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<string>>();
+                List<Transaction> transactions = await dbContext.Transactions.ToListAsync();
+            
+                Assert.Empty(transactions);
+                Assert.NotNull(apiResponse);
+                Assert.Null(apiResponse.Result);
+                Assert.NotNull(apiResponse.Message);
+                Assert.NotEmpty(apiResponse.Message);
+                Assert.NotEmpty(apiResponse.TraceId);
+                Assert.Equal(HttpStatusCode.BadRequest, httpResponse.StatusCode);
+                Assert.Equal(HttpStatusCode.BadRequest, apiResponse.StatusCode);
+            }
+        }
+    }
+
+    [Theory]
     [ClassData(typeof(TransactionsInsertDateValidationTestData))]
     public async Task InsertTransaction_DateValidation_ReturnsExpectedStatus(InsertTransactionDateDef payload)
     {

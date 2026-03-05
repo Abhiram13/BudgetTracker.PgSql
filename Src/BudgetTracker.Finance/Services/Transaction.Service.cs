@@ -22,12 +22,60 @@ public class TransactionService
         _transactionsMetaService = transactionsMetaService;
     }
 
-    public async Task InsertTransactionAsync(InsertTransactionDto payload)
+    private void InsertValidations(InsertTransactionDto payload)
     {
-        if (payload.FromBank is null && payload.ToBank is null)
+        bool IsNotValidBanks() => payload.FromBank is 0 || payload.ToBank is 0 || (payload.FromBank is null && payload.ToBank is null);
+        
+        bool IsNotValidAmount() => payload.Amount is 0 || payload.Amount < 0 || payload.ActualAmount < 0;
+        
+        bool IsNotValidDescription() => string.IsNullOrEmpty(payload.Description);
+        
+        bool IsNotValidCategoryId() => payload.CategoryId is 0 || payload.CategoryId < 0;
+        
+        if (IsNotValidBanks())
         {
             throw new InvalidPayloadException("Invalid payload provided");
         }
+
+        if (IsNotValidAmount())
+        {
+            throw new InvalidPayloadException("Invalid amount provided");
+        }
+        
+        if (IsNotValidDescription())
+        {
+            throw new InvalidPayloadException("Invalid description provided");
+        }
+        
+        if (IsNotValidCategoryId())
+        {
+            throw new InvalidPayloadException("Invalid category Id provided");
+        }
+    }
+
+    private async Task InsertTransactionsMetaAsync(InsertTransactionDto payload, DateOnly currentDate, int transactionId)
+    {
+        bool ShouldCreateTransactionsMeta() => payload.DueId is not null || payload.EmiId is not null || !string.IsNullOrEmpty(payload.Tags);
+        
+        if (ShouldCreateTransactionsMeta())
+        {
+            TransactionsMeta meta = new TransactionsMeta
+            {
+                TransactionId = transactionId,
+                DueId = payload.DueId,
+                EmiId = payload.EmiId,
+                Tags = payload.Tags,
+                CreatedAt = currentDate,
+                UpdatedAt = currentDate,
+            };
+
+            await _transactionsMetaService.InsertTransactionMetaAsync(meta);
+        }
+    }
+
+    public async Task InsertTransactionAsync(InsertTransactionDto payload)
+    {
+        InsertValidations(payload);
         
         DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
         Transaction transaction = new Transaction
@@ -45,22 +93,7 @@ public class TransactionService
         };
 
         await _repository.InsertOneTransactionAsync(transaction);
-
-        if (payload.DueId is not null || payload.EmiId is not null || !string.IsNullOrEmpty(payload.Tags))
-        {
-            TransactionsMeta meta = new TransactionsMeta
-            {
-                TransactionId = transaction.Id,
-                DueId = payload.DueId,
-                EmiId = payload.EmiId,
-                Tags = payload.Tags,
-                CreatedAt = today,
-                UpdatedAt = today,
-            };
-
-            await _transactionsMetaService.InsertTransactionMetaAsync(meta);
-        }
-        
+        await InsertTransactionsMetaAsync(payload, currentDate: today, transactionId: transaction.Id);
         await UpdateTransactionsByMonthAsync(payload.Date);
     }
 
