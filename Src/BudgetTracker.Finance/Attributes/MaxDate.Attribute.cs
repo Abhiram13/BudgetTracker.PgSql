@@ -24,6 +24,6 @@ public class MaxDateAttribute : ValidationAttribute
 
         DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);        
 
-        return today > date;
+        return today >= date;
     }
 }

@@ -3,6 +3,7 @@ using BudgetTracker.Finance.Entities;
 using BudgetTracker.Finance.Models;
 using BudgetTracker.Shared.Models;
 using System.Text.Json;
+using BudgetTracker.Shared.Exceptions;
 
 namespace BudgetTracker.Finance.Services;
 
@@ -25,7 +26,7 @@ public class TransactionService
     {
         if (payload.FromBank is null && payload.ToBank is null)
         {
-            throw new BadHttpRequestException("Invalid payload provided");
+            throw new InvalidPayloadException("Invalid payload provided");
         }
         
         DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
