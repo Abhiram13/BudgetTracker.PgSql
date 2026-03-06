@@ -79,8 +79,8 @@ public static class InsertTransactionsMemberTestData
                 CategoryId = 1,
                 Description = "First Transaction #1",
                 Type = TransactionType.Debit,
-                FromBank = null,
-                ToBank = 1,
+                FromBank = 1,
+                ToBank = null,
                 Date = _currentDate,
             }
         };
@@ -127,8 +127,8 @@ public static class InsertTransactionsMemberTestData
                 CategoryId = 1,
                 Description = "First Credit Transaction #1",
                 Type = TransactionType.Credit,
-                FromBank = 1,
-                ToBank = null,
+                FromBank = null,
+                ToBank = 1,
                 Date = _currentDate,
             }
         };
@@ -159,8 +159,8 @@ public static class InsertTransactionsMemberTestData
                 CategoryId = 1,
                 Description = "First Credit Transaction #1",
                 Type = TransactionType.Credit,
-                FromBank = 1,
-                ToBank = null,
+                FromBank = null,
+                ToBank = 1,
                 Date = _pastDate,
             }
         };
@@ -295,6 +295,113 @@ public static class InsertTransactionsMemberTestData
                 Date = _currentDate,
             }
         };
+    }
+}
+
+public class TransactionsInsertDebitCreditBusinessTestData : TheoryData<InsertTransactionDebitCreditBusinessDataDef>
+{
+    public TransactionsInsertDebitCreditBusinessTestData()
+    {
+        // Debit with from bank allowed
+        Add(new InsertTransactionDebitCreditBusinessDataDef
+        {
+            FromBank = 1,
+            ToBank = null,
+            ExpectedApiStatusCode = HttpStatusCode.Created,
+            ExpectedHttpStatusCode = HttpStatusCode.Created,
+            TransactionType = TransactionType.Debit
+        });
+        
+        // Credit with to bank allowed
+        Add(new InsertTransactionDebitCreditBusinessDataDef
+        {
+            FromBank = null,
+            ToBank = 1,
+            ExpectedApiStatusCode = HttpStatusCode.Created,
+            ExpectedHttpStatusCode = HttpStatusCode.Created,
+            TransactionType = TransactionType.Credit
+        });
+        
+        // Credit with same from & to bank not allowed
+        Add(new InsertTransactionDebitCreditBusinessDataDef
+        {
+            FromBank = 1,
+            ToBank = 1,
+            ExpectedApiStatusCode = HttpStatusCode.BadRequest,
+            ExpectedHttpStatusCode = HttpStatusCode.BadRequest,
+            TransactionType = TransactionType.Credit
+        });
+        
+        // Debit with same from & to bank not allowed
+        Add(new InsertTransactionDebitCreditBusinessDataDef
+        {
+            FromBank = 1,
+            ToBank = 1,
+            ExpectedApiStatusCode = HttpStatusCode.BadRequest,
+            ExpectedHttpStatusCode = HttpStatusCode.BadRequest,
+            TransactionType = TransactionType.Debit
+        });
+        
+        // Debit with no from bank not allowed
+        Add(new InsertTransactionDebitCreditBusinessDataDef
+        {
+            FromBank = null,
+            ToBank = 1,
+            ExpectedApiStatusCode = HttpStatusCode.BadRequest,
+            ExpectedHttpStatusCode = HttpStatusCode.BadRequest,
+            TransactionType = TransactionType.Debit
+        });
+        
+        // Credit with no to bank not allowed
+        Add(new InsertTransactionDebitCreditBusinessDataDef
+        {
+            FromBank = 1,
+            ToBank = null,
+            ExpectedApiStatusCode = HttpStatusCode.BadRequest,
+            ExpectedHttpStatusCode = HttpStatusCode.BadRequest,
+            TransactionType = TransactionType.Credit
+        });
+    }
+}
+
+public class TransactionsInsertSecurityEdgeCasesTestData : TheoryData<InsertTransactionSecurityEdgeCasesDataDef>
+{
+    public TransactionsInsertSecurityEdgeCasesTestData()
+    {
+        Add(new InsertTransactionSecurityEdgeCasesDataDef
+        {
+            Description = new string('a', 500),
+            ActualAmount = 100,
+            Amount = 100
+        });
+        
+        Add(new InsertTransactionSecurityEdgeCasesDataDef
+        {
+            Description = "CREATE TABLE IF NOT EXISTS Injection (id INT NOT NULL)",
+            ActualAmount = 100,
+            Amount = 100
+        });
+        
+        Add(new InsertTransactionSecurityEdgeCasesDataDef
+        {
+            Description = "</script>",
+            ActualAmount = 100,
+            Amount = 100
+        });
+        
+        Add(new InsertTransactionSecurityEdgeCasesDataDef
+        {
+            Description = "Hello world",
+            ActualAmount = 9999999999999.99m,
+            Amount = 100
+        });
+        
+        Add(new InsertTransactionSecurityEdgeCasesDataDef
+        {
+            Description = "Hello world",
+            ActualAmount = 100,
+            Amount = 9999999999999.99m
+        });
     }
 }
 

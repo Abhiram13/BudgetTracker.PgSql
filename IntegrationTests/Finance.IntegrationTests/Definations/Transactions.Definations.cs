@@ -1,4 +1,5 @@
 using System.Net;
+using BudgetTracker.Finance.Enums;
 
 namespace IntegrationTests.Definations.Transactions;
 
@@ -11,5 +12,21 @@ public record InsertTransactionDateDef
     public required HttpStatusCode ExpectedHttpStatusCode { get; init; }
     public required HttpStatusCode ExpectedApiStatusCode { get; init; }
     public required bool ShouldDataExists { get; init; }
+}
+
+public record InsertTransactionDebitCreditBusinessDataDef
+{
+    public required TransactionType TransactionType { get; init; }
+    public required int? FromBank { get; init; }
+    public required int? ToBank { get; init; }
+    public required HttpStatusCode ExpectedHttpStatusCode { get; init; }
+    public required HttpStatusCode ExpectedApiStatusCode { get; init; }
+}
+
+public record InsertTransactionSecurityEdgeCasesDataDef
+{
+    public required string Description { get; init; }
+    public required decimal Amount { get; init; }
+    public required decimal ActualAmount { get; init; }
 }
 

@@ -3,6 +3,7 @@ using BudgetTracker.Finance.Entities;
 using BudgetTracker.Finance.Models;
 using BudgetTracker.Shared.Models;
 using System.Text.Json;
+using BudgetTracker.Finance.Enums;
 using BudgetTracker.Shared.Exceptions;
 
 namespace BudgetTracker.Finance.Services;
@@ -32,25 +33,25 @@ public class TransactionService
         
         bool IsNotValidCategoryId() => payload.CategoryId is 0 || payload.CategoryId < 0;
         
-        if (IsNotValidBanks())
-        {
-            throw new InvalidPayloadException("Invalid payload provided");
-        }
+        bool IsBanksSame() => payload.FromBank == payload.ToBank;
 
-        if (IsNotValidAmount())
-        {
-            throw new InvalidPayloadException("Invalid amount provided");
-        }
+        bool IsNotValidDebit() => payload.Type == TransactionType.Debit && payload.FromBank is null;
         
-        if (IsNotValidDescription())
-        {
-            throw new InvalidPayloadException("Invalid description provided");
-        }
+        bool IsNotValidCredit() => payload.Type == TransactionType.Credit && payload.ToBank is null;
         
-        if (IsNotValidCategoryId())
-        {
-            throw new InvalidPayloadException("Invalid category Id provided");
-        }
+        if (IsNotValidBanks()) throw new InvalidPayloadException("Invalid payload provided");
+
+        if (IsNotValidAmount()) throw new InvalidPayloadException("Invalid amount provided");
+        
+        if (IsNotValidDescription()) throw new InvalidPayloadException("Invalid description provided");
+        
+        if (IsNotValidCategoryId()) throw new InvalidPayloadException("Invalid category Id provided");
+        
+        if (IsBanksSame()) throw new InvalidPayloadException("Same banks for a transaction is not allowed");
+        
+        if (IsNotValidDebit()) throw new InvalidPayloadException("Invalid debit for a transaction is not allowed");
+        
+        if (IsNotValidCredit()) throw new InvalidPayloadException("Invalid credit for a transaction is not allowed");
     }
 
     private async Task InsertTransactionsMetaAsync(InsertTransactionDto payload, DateOnly currentDate, int transactionId)
