@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using BudgetTracker.Finance.Attributes;
 using BudgetTracker.Finance.Enums;
 
@@ -5,13 +6,17 @@ namespace BudgetTracker.Finance.Models;
 
 public record InsertTransactionDto
 {
+    [Range(type: typeof(decimal), minimum: "0.01",  maximum: "1000000")]
     [JsonPropertyName("amount")]
     public decimal Amount { get; init; }
-
+    
+    [Range(type: typeof(decimal), minimum: "0",  maximum: "1000000")]
     [JsonPropertyName("actual_amount")]
     public decimal? ActualAmount { get; init; }
-
+    
+    [StringLength(maximumLength: 50, MinimumLength = 1)]
     [JsonPropertyName("description")]
+    [RegularExpression(@"^[a-zA-Z0-9#,\s]*$", ErrorMessage = "Only letters, numbers and spaces allowed")]
     public string Description { get; init; } = string.Empty;
 
     [JsonPropertyName("from_bank")]

@@ -113,8 +113,44 @@ public class TransactionsTests : IClassFixture<IntegrationTestFixture>
         }
     }
 
-    [Fact]
-    public async Task InsertTransaction_FromAndToBankEmpty_BadRequest()
+    [Theory]
+    [ClassData(typeof(TransactionsInsertDebitCreditBusinessTestData))]
+    public async Task InsertTransaction_DebitCredit_Rules_200_400_Response(InsertTransactionDebitCreditBusinessDataDef payload)
+    {
+        using (IServiceScope scope = _fixture.Factory.CreateScope())
+        {
+            WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
+
+            await using (new FinanceDbDisposal(dbContext))
+            {
+                string description = "Date validation Transaction #1";
+                InsertTransactionDto insertDto = new InsertTransactionDto
+                {
+                    ActualAmount = 200,
+                    Amount = 200,
+                    CategoryId = _testCategory.Id,
+                    Description = description,
+                    Type = payload.TransactionType,
+                    FromBank = payload.FromBank,
+                    ToBank = payload.ToBank,
+                    Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                };
+        
+                HttpResponseMessage httpResponse = await _client.PostAsJsonAsync("/api/transactions", insertDto);
+                ApiResponse<string>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<string>>();
+                List<Transaction> transactions = await dbContext.Transactions.Where(t => t.Description == description).ToListAsync();
+                
+                Assert.NotNull(transactions);
+                Assert.NotNull(apiResponse);
+                Assert.Equal(payload.ExpectedHttpStatusCode, httpResponse.StatusCode);
+                Assert.Equal(payload.ExpectedApiStatusCode, apiResponse.StatusCode);
+            }
+        }
+    }
+
+    [Theory]
+    [ClassData(typeof(TransactionsInsertSecurityEdgeCasesTestData))]
+    public async Task InsertTransaction_SecurityEdge_400_Response(InsertTransactionSecurityEdgeCasesDataDef payload)
     {
         using (IServiceScope scope = _fixture.Factory.CreateScope())
         {
@@ -124,26 +160,27 @@ public class TransactionsTests : IClassFixture<IntegrationTestFixture>
             {
                 InsertTransactionDto insertDto = new InsertTransactionDto
                 {
-                    ActualAmount = 200,
-                    Amount = 200,
+                    ActualAmount = payload.ActualAmount,
+                    Amount = payload.Amount,
                     CategoryId = _testCategory.Id,
-                    Description = "From and To bank empty Transaction #1",
+                    Description = payload.Description,
                     Type = TransactionType.Debit,
-                    FromBank = null,
+                    FromBank = _testBank.Id,
                     ToBank = null,
                     Date = DateOnly.FromDateTime(DateTime.UtcNow),
                 };
         
                 HttpResponseMessage httpResponse = await _client.PostAsJsonAsync("/api/transactions", insertDto);
                 ApiResponse<string>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<string>>();
-                List<Transaction> transactions = await dbContext.Transactions.Where(t => t.Description == "From and To bank empty Transaction #1").ToListAsync();
-            
+                List<Transaction> transactions = await dbContext.Transactions.ToListAsync();
+                
                 Assert.Empty(transactions);
                 Assert.NotNull(apiResponse);
-                Assert.True(transactions.Count == 0);
+                Assert.Null(apiResponse.Result);
+                Assert.NotNull(apiResponse.Message);
+                Assert.NotEmpty(apiResponse.Message);
                 Assert.Equal(HttpStatusCode.BadRequest, httpResponse.StatusCode);
                 Assert.Equal(HttpStatusCode.BadRequest, apiResponse.StatusCode);
-                Assert.Equal("Invalid Payload exception occured. Please check logs for more details", apiResponse.Message);
             }
         }
     }

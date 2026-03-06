@@ -29,15 +29,21 @@ public static class ServiceExtension
         serviceCollection.AddControllers().ConfigureApiBehaviorOptions(options =>
         {
             options.SuppressModelStateInvalidFilter = false;
-            options.InvalidModelStateResponseFactory = action =>
-            {
-                // TODO: Get custom API response and trace id
-                KeyValuePair<string, ModelStateEntry?> modelState = action.ModelState.FirstOrDefault();
-                string errorAt = modelState.Key;
-                string errorMessage = modelState.Value?.Errors?[0].ErrorMessage ?? $"Something went wrong at {errorAt}";
-                return new BadRequestObjectResult(new ApiResponse<string> { Message = errorMessage, StatusCode = HttpStatusCode.BadRequest });
-            };
+            options.InvalidModelStateResponseFactory = ModelValidation;
         });
+
+        IActionResult ModelValidation(ActionContext action)
+        {
+            HttpRequest request = action.HttpContext.Request;
+            KeyValuePair<string, ModelStateEntry?> modelState = action.ModelState.FirstOrDefault();
+            string errorAt = modelState.Key;
+            string errorMessage = modelState.Value?.Errors?[0].ErrorMessage ?? $"Something went wrong at {errorAt}";
+            string traceId = request.Headers["X-Trace-Id"]!;
+            ApiResponse<string> apiResponse = new ApiResponse<string> { Message = errorMessage, StatusCode = HttpStatusCode.BadRequest, TraceId = traceId };
+            BadRequestObjectResult badRequest = new BadRequestObjectResult(apiResponse);
+            
+            return badRequest;
+        };
 
         return serviceCollection;
     }
