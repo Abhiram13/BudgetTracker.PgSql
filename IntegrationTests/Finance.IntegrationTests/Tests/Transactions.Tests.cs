@@ -29,6 +29,8 @@ public class TransactionsTests : IClassFixture<IntegrationTestFixture>
         _fixture = fixture;
     }
 
+    #region Insert Transactions
+
     [Theory]
     [MemberData(nameof(InsertTransactionsMemberTestData.HappyPathData), MemberType = typeof(InsertTransactionsMemberTestData))]
     public async Task InsertTransaction_201_SuccessResponse(InsertTransactionDto payload)
@@ -184,4 +186,172 @@ public class TransactionsTests : IClassFixture<IntegrationTestFixture>
             }
         }
     }
+    
+    #endregion
+
+    #region Transactions By Date
+
+    [Fact]
+    public async Task TransactionByDate_DebitTransactions_SuccessResponse()
+    {
+        using (IServiceScope scope = _fixture.Factory.CreateScope())
+        {
+            WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
+
+            await using (new FinanceDbDisposal(dbContext))
+            {
+                List<Transaction> transactions = new List<Transaction>
+                {
+                    new Transaction
+                    {
+                        ActualAmount = 100, 
+                        Amount = 100, 
+                        CategoryId = 1, 
+                        Description = "smome description",
+                        Type = TransactionType.Debit,
+                        FromBank = _testBank.Id,
+                        ToBank = null,
+                        Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                        CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+                        UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+                    },
+                    new Transaction
+                    {
+                        ActualAmount = 100, 
+                        Amount = 100, 
+                        CategoryId = 1, 
+                        Description = "smome description",
+                        Type = TransactionType.Debit,
+                        FromBank = _testBank.Id,
+                        ToBank = null,
+                        Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                        CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+                        UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+                    },
+                };
+
+                foreach (Transaction transaction in transactions)
+                {
+                    await dbContext.Transactions.AddAsync(transaction);
+                    await dbContext.SaveChangesAsync();
+                }
+                
+                string date = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd");
+                HttpResponseMessage httpResponse = await _client.GetAsync($"/api/transactions/date/{date}");
+                ApiResponse<TransactionByDateDto>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<TransactionByDateDto>>();
+                
+                Assert.NotNull(apiResponse);
+                Assert.NotNull(apiResponse.Result);
+                Assert.NotEmpty(apiResponse.TraceId);
+                Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
+                Assert.Equal(HttpStatusCode.OK, apiResponse.StatusCode);
+                Assert.Equal(200, apiResponse.Result.Debit);
+                Assert.Equal((decimal) 0.0, apiResponse.Result.Credit);
+                Assert.NotEmpty(apiResponse.Result.TransactionsList);
+                Assert.True(apiResponse.Result.TransactionsList.Count == 2);
+
+                foreach (TransactionByDateDto.Transactions result in apiResponse.Result.TransactionsList)
+                {
+                    Assert.Equal(100, result.Amount);
+                    Assert.NotEmpty(result.Description);
+                    Assert.Equal(TransactionType.Debit, result.Type);
+                }
+            }
+        }
+    }
+    
+    [Fact]
+    public async Task TransactionByDate_CreditTransactions_SuccessResponse()
+    {
+        using (IServiceScope scope = _fixture.Factory.CreateScope())
+        {
+            WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
+
+            await using (new FinanceDbDisposal(dbContext))
+            {
+                List<Transaction> transactions = new List<Transaction>
+                {
+                    new Transaction
+                    {
+                        ActualAmount = 100, 
+                        Amount = 100, 
+                        CategoryId = 1, 
+                        Description = "some description",
+                        Type = TransactionType.Credit,
+                        FromBank = null,
+                        ToBank = _testBank.Id,
+                        Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                        CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+                        UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+                    },
+                    new Transaction
+                    {
+                        ActualAmount = 100, 
+                        Amount = 100, 
+                        CategoryId = 1, 
+                        Description = "some description",
+                        Type = TransactionType.Credit,
+                        FromBank = null,
+                        ToBank = _testBank.Id,
+                        Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                        CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+                        UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+                    },
+                };
+
+                foreach (Transaction transaction in transactions)
+                {
+                    await dbContext.Transactions.AddAsync(transaction);
+                    await dbContext.SaveChangesAsync();
+                }
+                
+                string date = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd");
+                HttpResponseMessage httpResponse = await _client.GetAsync($"/api/transactions/date/{date}");
+                ApiResponse<TransactionByDateDto>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<TransactionByDateDto>>();
+                
+                Assert.NotNull(apiResponse);
+                Assert.NotNull(apiResponse.Result);
+                Assert.NotEmpty(apiResponse.TraceId);
+                Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
+                Assert.Equal(HttpStatusCode.OK, apiResponse.StatusCode);
+                Assert.Equal(200, apiResponse.Result.Credit);
+                Assert.Equal((decimal) 0.0, apiResponse.Result.Debit);
+                Assert.NotEmpty(apiResponse.Result.TransactionsList);
+                Assert.True(apiResponse.Result.TransactionsList.Count == 2);
+
+                foreach (TransactionByDateDto.Transactions result in apiResponse.Result.TransactionsList)
+                {
+                    Assert.Equal(100, result.Amount);
+                    Assert.NotEmpty(result.Description);
+                    Assert.Equal(TransactionType.Credit, result.Type);
+                }
+            }
+        }
+    }
+
+    [Theory]
+    [ClassData(typeof(TransactionsByDateInvalidOfFutureTestData))]
+    public async Task TransactionByDate_DebitTransactions_InvalidOrFutureDate_BadResponse(string date)
+    {
+        using (IServiceScope scope = _fixture.Factory.CreateScope())
+        {
+            WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
+
+            await using (new FinanceDbDisposal(dbContext))
+            {
+                HttpResponseMessage httpResponse = await _client.GetAsync($"/api/transactions/date/{date}");
+                ApiResponse<TransactionByDateDto>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<TransactionByDateDto>>();
+                
+                Assert.NotNull(apiResponse);
+                Assert.Null(apiResponse.Result);
+                Assert.NotEmpty(apiResponse.TraceId);
+                Assert.NotNull(apiResponse.Message);
+                Assert.NotEmpty(apiResponse.Message);
+                Assert.Equal(HttpStatusCode.BadRequest, httpResponse.StatusCode);
+                Assert.Equal(HttpStatusCode.BadRequest, apiResponse.StatusCode);
+            }
+        }
+    }
+
+    #endregion
 }
