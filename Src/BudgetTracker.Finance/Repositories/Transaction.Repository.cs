@@ -1,7 +1,9 @@
+using System.Globalization;
 using BudgetTracker.Finance.Interfaces;
 using BudgetTracker.Finance.Entities;
 using BudgetTracker.Finance.Models;
 using BudgetTracker.Finance.Enums;
+using BudgetTracker.Shared.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using BudgetTracker.Shared.Models;
 
@@ -18,7 +20,19 @@ public class TransactionRepository : ITransactionRepository
 
     public async Task<TransactionByDateDto> GetAllTransactionsByDateAsync(string transactionDate)
     {
-        DateOnly date = DateOnly.Parse(transactionDate);
+        if (!DateOnly.TryParseExact(transactionDate, "yyyy-MM-dd", out DateOnly _))
+        {
+            throw new InvalidDateException();
+        }
+        
+        DateOnly date = DateOnly.Parse(transactionDate, CultureInfo.InvariantCulture);
+        DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+        if (date > today)
+        {
+            throw new InvalidDateException();
+        }
+        
         TransactionByDateDto? result = await _writeDbContext.Transactions
             .Where(t => t.Date == date)
             .GroupBy(t => t.Date)

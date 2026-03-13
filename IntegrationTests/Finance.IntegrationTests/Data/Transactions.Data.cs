@@ -406,3 +406,18 @@ public class TransactionsInsertSecurityEdgeCasesTestData : TheoryData<InsertTran
 }
 
 #endregion
+
+public class TransactionsByDateInvalidOfFutureTestData : TheoryData<string>
+{
+    public TransactionsByDateInvalidOfFutureTestData()
+    {
+        Add(DateOnly.FromDateTime(DateTime.UtcNow).AddDays(10).ToString("yyyy-MM-dd"));
+        Add(DateOnly.FromDateTime(DateTime.UtcNow).AddDays(10).ToString("dd-yyyy-MM"));
+        Add(DateOnly.FromDateTime(DateTime.UtcNow).AddDays(10).ToString("MM-dd-yyyy"));
+        Add(DateOnly.FromDateTime(DateTime.UtcNow).AddDays(10).ToString("yyyy-MM"));
+        Add(DateOnly.FromDateTime(DateTime.UtcNow).AddDays(10).ToString("dd-yyyy"));
+        Add(DateOnly.FromDateTime(DateTime.UtcNow).AddDays(10).ToString("dd-MM"));
+        Add(DateOnly.FromDateTime(DateTime.UtcNow).AddDays(10).ToString("MM-dd"));
+        Add("abcdefghijklmnop");
+    }
+}
