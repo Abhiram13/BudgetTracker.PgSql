@@ -51,3 +51,8 @@ app.MapControllers();
 app.UseMiddleware<ExceptionHandlerMiddleware>();
 app.UseHttpsRedirection();
 app.Run();
+
+namespace BudgetTracker.Warehouse
+{
+    public partial class Program { }
+}
