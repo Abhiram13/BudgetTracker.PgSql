@@ -29,7 +29,7 @@ public record InsertTransactionDto
     public int CategoryId { get; init; }
 
     [JsonPropertyName("date")]
-    [MaxDate(ErrorMessage = "Provided date is out of range or invalid.")] // BUG: Getting error for today's date 
+    [MaxDate(ErrorMessage = "Provided date is out of range or invalid.")]
     public DateOnly Date { get; init; }
 
     [JsonPropertyName("type")]
@@ -93,7 +93,7 @@ public record UpdateTransactionDto
     public int CategoryId { get; init; }
 
     [JsonPropertyName("date")]
-    [MaxDate(ErrorMessage = "Provided date is out of range or invalid.")] // BUG: Getting error for today's date 
+    [MaxDate(ErrorMessage = "Provided date is out of range or invalid.")]  
     public DateOnly Date { get; init; }
 
     [JsonPropertyName("type")]
