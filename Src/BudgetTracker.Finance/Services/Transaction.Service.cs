@@ -144,6 +144,7 @@ public class TransactionService
             string message = JsonSerializer.Serialize(result);
             
             // TODO: Get Trace ID here
+            // Restrict this in "Testing" environment
             await _publisher.PublishMessageAsync(requestMessage: message, eventType: PubSubFinanceEvents.DATEWISE_TRANSACTIONS_LIST, traceId: null);
         }   
     }

@@ -47,6 +47,6 @@ public class PublisherService
 
         // Publish the request message.
         await requestPublisher.PublishAsync(message);
-        _logger.LogInformation($"Message with Trace ID = '{0}' was successfully published to Topic = '{1}'", traceId, _topicName); // TODO: Get Trace Id here
+        _logger.LogInformation("Message with Trace ID = '{0}' was successfully published to Topic = '{1}'", traceId, _topicName); // TODO: Get Trace Id here
     }
 }
