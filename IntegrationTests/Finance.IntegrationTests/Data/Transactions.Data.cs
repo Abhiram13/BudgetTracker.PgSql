@@ -421,3 +421,63 @@ public class TransactionsByDateInvalidOfFutureTestData : TheoryData<string>
         Add("abcdefghijklmnop");
     }
 }
+
+public class TransactionsByMonthYearTestsData : TheoryData<TransactionsByMonthYearDataDef>
+{
+    public TransactionsByMonthYearTestsData()
+    {
+        // Check only with current month and the data should return by current month and current year
+        Add(new TransactionsByMonthYearDataDef
+        {
+            ExpectedApiStatusCode = HttpStatusCode.OK,
+            ExpectedHttpStatusCode = HttpStatusCode.OK,
+            Month = DateOnly.FromDateTime(DateTime.UtcNow).Month,
+            ShouldDataExists = true
+        });
+        
+        // Check only with current year and the data should return by current month and current year
+        Add(new TransactionsByMonthYearDataDef
+        {
+            ExpectedApiStatusCode = HttpStatusCode.OK,
+            ExpectedHttpStatusCode = HttpStatusCode.OK,
+            Year = DateOnly.FromDateTime(DateTime.UtcNow).Year,
+            ShouldDataExists = true
+        });
+        
+        // Check only with past month and the data should return by past month and current year
+        Add(new TransactionsByMonthYearDataDef
+        {
+            ExpectedApiStatusCode = HttpStatusCode.OK,
+            ExpectedHttpStatusCode = HttpStatusCode.OK,
+            Month = DateOnly.FromDateTime(DateTime.UtcNow).AddMonths(-1).Month,
+            ShouldDataExists = true
+        });
+        
+        // Check only with two months back and the data should not return
+        Add(new TransactionsByMonthYearDataDef
+        {
+            ExpectedApiStatusCode = HttpStatusCode.OK,
+            ExpectedHttpStatusCode = HttpStatusCode.OK,
+            Month = DateOnly.FromDateTime(DateTime.UtcNow).AddMonths(-2).Month,
+            ShouldDataExists = false
+        });
+        
+        // Check only with future month and current year and the data should not return by future month and current year
+        Add(new TransactionsByMonthYearDataDef
+        {
+            ExpectedApiStatusCode = HttpStatusCode.BadRequest,
+            ExpectedHttpStatusCode = HttpStatusCode.BadRequest,
+            Month = DateOnly.FromDateTime(DateTime.UtcNow).AddMonths(1).Month,
+            Year = DateOnly.FromDateTime(DateTime.UtcNow).Year,
+            ShouldDataExists = false
+        });
+        
+        // Check with no month and no year and data should return with current month and current year
+        Add(new TransactionsByMonthYearDataDef
+        {
+            ExpectedApiStatusCode = HttpStatusCode.OK,
+            ExpectedHttpStatusCode = HttpStatusCode.OK,
+            ShouldDataExists = true
+        });
+    }
+}

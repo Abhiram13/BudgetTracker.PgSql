@@ -12,7 +12,6 @@ using BudgetTracker.Shared.Security;
 using BudgetTracker.Shared.Models;
 using BudgetTracker.Shared.Interfaces;
 using BudgetTracker.Finance.Models;
-using BudgetTracker.Finance.Repositories;
 
 namespace BudgetTracker.Finance.Extensions;
 

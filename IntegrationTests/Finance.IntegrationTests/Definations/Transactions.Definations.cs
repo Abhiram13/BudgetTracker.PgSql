@@ -30,3 +30,12 @@ public record InsertTransactionSecurityEdgeCasesDataDef
     public required decimal ActualAmount { get; init; }
 }
 
+public record TransactionsByMonthYearDataDef
+{
+    public int? Month { get; init; }
+    public int? Year { get; init; }
+    public required bool ShouldDataExists { get; init; }
+    public required HttpStatusCode ExpectedHttpStatusCode { get; init; }
+    public required HttpStatusCode ExpectedApiStatusCode { get; init; }
+}
+

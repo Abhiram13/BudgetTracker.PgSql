@@ -3,7 +3,7 @@ using BudgetTracker.Finance.Interfaces;
 using BudgetTracker.Finance.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace BudgetTracker.Finance.Repositories;
+namespace BudgetTracker.Finance.Repository;
 
 public class TransactionsMetaRepository : ITransactionsMetaRepository
 {

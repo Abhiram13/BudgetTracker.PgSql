@@ -51,8 +51,6 @@ public class TransactionController : ControllerBase
     public async Task<IActionResult> CountOfTransactionsAsync([FromQuery] int? month, [FromQuery] int? year)
     {
         int count = await _transactionService.CountOfAllTransactionsAsync(month, year);
-        
-        Console.WriteLine(count);
 
         return Ok(new ApiResponse<int>
         {
