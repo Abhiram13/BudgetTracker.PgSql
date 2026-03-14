@@ -38,5 +38,8 @@ public class BigQueryTests : IClassFixture<WarehouseTestWebApplicationFactory>
         Assert.NotNull(apiResponse.Result);
         Assert.True(apiResponse.Result.Count > 0);
         Assert.Equal(100, apiResponse.Result[0].Credit);
+        Assert.Equal(1000, apiResponse.Result[0].Debit);
+        Assert.Equal(DateOnly.FromDateTime(DateTime.Now), apiResponse.Result[0].Date);
+        Assert.Equal(10, apiResponse.Result[0].Count);
     }
 }
