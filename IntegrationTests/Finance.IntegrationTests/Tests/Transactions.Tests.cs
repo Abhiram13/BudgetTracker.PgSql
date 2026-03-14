@@ -354,4 +354,81 @@ public class TransactionsTests : IClassFixture<IntegrationTestFixture>
     }
 
     #endregion
+    
+    #region Transactions Count by month and year
+    
+    [Theory]
+    [ClassData(typeof(TransactionsByMonthYearTestsData))]
+    public async Task TransactionsCount_ByMonthAndYear(TransactionsByMonthYearDataDef data)
+    {
+        using (IServiceScope scope = _fixture.Factory.CreateScope())
+        {
+            WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
+
+            await using (new FinanceDbDisposal(dbContext))
+            {
+                List<Transaction> transactions = new List<Transaction>
+                {
+                    new Transaction
+                    {
+                        ActualAmount = 100, 
+                        Amount = 100, 
+                        CategoryId = 1, 
+                        Description = "some description",
+                        Type = TransactionType.Debit,
+                        FromBank = _testBank.Id,
+                        ToBank = null,
+                        Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                        CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+                        UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+                    },
+                    new Transaction
+                    {
+                        ActualAmount = 100, 
+                        Amount = 100, 
+                        CategoryId = 1, 
+                        Description = "some description",
+                        Type = TransactionType.Debit,
+                        FromBank = _testBank.Id,
+                        ToBank = null,
+                        Date = DateOnly.FromDateTime(DateTime.UtcNow).AddMonths(-1),
+                        CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+                        UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+                    },
+                };
+
+                foreach (Transaction transaction in transactions)
+                {
+                    await dbContext.Transactions.AddAsync(transaction);
+                    await dbContext.SaveChangesAsync();
+                }
+                
+                string url = "/api/transactions/count?";
+
+                if (data.Month.HasValue && data.Year.HasValue)
+                {
+                    url += "month=" + data.Month + "&year=" + data.Year;
+                }
+                else if (data.Month.HasValue)
+                {
+                    url += "month=" + data.Month;
+                }
+                else if (data.Year.HasValue)
+                {
+                    url += "year=" + data.Year;
+                }
+                
+                HttpResponseMessage httpResponse = await _client.GetAsync(url);
+                ApiResponse<int>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<int>>();
+                
+                Assert.NotNull(apiResponse);
+                Assert.NotEmpty(apiResponse.TraceId);
+                Assert.Equal(data.ExpectedHttpStatusCode, httpResponse.StatusCode);
+                Assert.Equal(data.ExpectedApiStatusCode, apiResponse.StatusCode);
+                Assert.Equal(data.ShouldDataExists, apiResponse.Result > 0);
+            }
+        }
+    }
+    
+    #endregion
 }

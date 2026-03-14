@@ -81,6 +81,17 @@ public class TransactionRepository : ITransactionRepository
     {
         int m = month ?? DateTime.Now.Month;
         int y = year ?? DateTime.Now.Year;
+
+        if (m > DateTime.Now.Month)
+        {
+            throw new InvalidPayloadException("Month cannot be greater than current month.");
+        }
+
+        if (y > DateTime.Now.Year)
+        {
+            throw new InvalidPayloadException("Year cannot be greater than current year.");
+        }
+        
         DateOnly start = new DateOnly(y, m, 1);
         DateOnly end = start.AddMonths(1);
 
