@@ -114,6 +114,7 @@ public class TransactionRepository : ITransactionRepository
         tx.CategoryId = payload.CategoryId;
         tx.FromBank = payload.FromBank;
         tx.ToBank = payload.ToBank;
+        tx.Type = payload.Type;
         tx.UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
         
         await _writeDbContext.SaveChangesAsync();

@@ -431,4 +431,121 @@ public class TransactionsTests : IClassFixture<IntegrationTestFixture>
     }
     
     #endregion
+
+    [Fact]
+    public async Task UpdateTransaction_SuccessResponse_Async()
+    {
+        using (IServiceScope scope = _fixture.Factory.CreateScope())
+        {
+            WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
+
+            await using (new FinanceDbDisposal(dbContext))
+            {
+                Transaction transaction = new Transaction
+                {
+                    ActualAmount = 100,
+                    Amount = 100,
+                    CategoryId = 1,
+                    Description = "smome description",
+                    Type = TransactionType.Debit,
+                    FromBank = _testBank.Id,
+                    ToBank = null,
+                    Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                    CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-1),
+                    UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-1),
+                };
+                
+                await dbContext.Transactions.AddAsync(transaction);
+                await dbContext.SaveChangesAsync();
+                
+                UpdateTransactionDto updatePayload = new UpdateTransactionDto
+                {
+                    ActualAmount = 101,
+                    Amount = 101,
+                    CategoryId = 1,
+                    Description = "updated description",
+                    Type = TransactionType.Credit,
+                    FromBank = null,
+                    ToBank = _testBank.Id,
+                    Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                };
+                
+                HttpResponseMessage httpResponse = await _client.PutAsJsonAsync($"/api/transactions/{transaction.Id}", updatePayload);
+                ApiResponse<string>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<string>>();
+                Transaction? updatedTransaction = await dbContext.Transactions.AsNoTracking().FirstOrDefaultAsync(t => t.Id == transaction.Id);
+                
+                Assert.NotNull(apiResponse);
+                Assert.NotNull(updatedTransaction);
+                Assert.NotNull(apiResponse.Message);
+                Assert.NotNull(apiResponse.TraceId);
+                Assert.NotEmpty(apiResponse.Message);
+                Assert.NotEmpty(apiResponse.TraceId);
+                Assert.Null(apiResponse.Result);
+                Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
+                Assert.Equal(HttpStatusCode.OK, apiResponse.StatusCode);
+                Assert.Equal(updatePayload.ActualAmount, updatedTransaction.ActualAmount);
+                Assert.Equal(updatePayload.Amount, updatedTransaction.Amount);
+                Assert.Equal(updatePayload.CategoryId, updatedTransaction.CategoryId);
+                Assert.Equal(updatePayload.Description, updatedTransaction.Description);
+                Assert.Equal(updatePayload.Type, updatedTransaction.Type);
+                Assert.Equal(updatePayload.FromBank, updatedTransaction.FromBank);
+                Assert.Equal(updatePayload.ToBank, updatedTransaction.ToBank);
+                Assert.Equal(updatePayload.Date, updatedTransaction.Date);
+                Assert.NotEqual(updatedTransaction.CreatedAt, updatedTransaction.UpdatedAt);
+            }
+        }
+    }
+    
+    [Fact]
+    public async Task UpdateTransaction_BadRequestResponse_Async()
+    {
+        using (IServiceScope scope = _fixture.Factory.CreateScope())
+        {
+            WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
+
+            await using (new FinanceDbDisposal(dbContext))
+            {
+                Transaction transaction = new Transaction
+                {
+                    ActualAmount = 100,
+                    Amount = 100,
+                    CategoryId = 1,
+                    Description = "smome description",
+                    Type = TransactionType.Debit,
+                    FromBank = _testBank.Id,
+                    ToBank = null,
+                    Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                    CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-1),
+                    UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-1),
+                };
+                
+                await dbContext.Transactions.AddAsync(transaction);
+                await dbContext.SaveChangesAsync();
+                
+                UpdateTransactionDto updatePayload = new UpdateTransactionDto
+                {
+                    ActualAmount = 999999999,
+                    Amount = 999999999,
+                    CategoryId = 1,
+                    Description = "updated description$#@^",
+                    Type = TransactionType.Credit,
+                    FromBank = _testBank.Id,
+                    ToBank = null,
+                    Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                };
+                
+                HttpResponseMessage httpResponse = await _client.PutAsJsonAsync($"/api/transactions/{transaction.Id}", updatePayload);
+                ApiResponse<string>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<string>>();
+                
+                Assert.NotNull(apiResponse);
+                Assert.NotNull(apiResponse.Message);
+                Assert.NotNull(apiResponse.TraceId);
+                Assert.NotEmpty(apiResponse.Message);
+                Assert.NotEmpty(apiResponse.TraceId);
+                Assert.Null(apiResponse.Result);
+                Assert.Equal(HttpStatusCode.BadRequest, httpResponse.StatusCode);
+                Assert.Equal(HttpStatusCode.BadRequest, apiResponse.StatusCode);
+            }
+        }
+    }
 }

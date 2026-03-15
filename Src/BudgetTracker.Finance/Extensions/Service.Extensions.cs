@@ -34,9 +34,9 @@ public static class ServiceExtension
         IActionResult ModelValidation(ActionContext action)
         {
             HttpRequest request = action.HttpContext.Request;
-            KeyValuePair<string, ModelStateEntry?> modelState = action.ModelState.FirstOrDefault();
+            KeyValuePair<string, ModelStateEntry?> modelState = action.ModelState.First(m => m.Value?.Errors.Count > 0);
             string errorAt = modelState.Key;
-            string errorMessage = modelState.Value?.Errors?[0].ErrorMessage ?? $"Something went wrong at {errorAt}";
+            string errorMessage = modelState.Value?.Errors.FirstOrDefault()?.ErrorMessage ?? $"Something went wrong at {errorAt}";
             string traceId = request.Headers["X-Trace-Id"]!;
             ApiResponse<string> apiResponse = new ApiResponse<string> { Message = errorMessage, StatusCode = HttpStatusCode.BadRequest, TraceId = traceId };
             BadRequestObjectResult badRequest = new BadRequestObjectResult(apiResponse);

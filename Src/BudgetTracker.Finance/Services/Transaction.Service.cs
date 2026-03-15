@@ -23,7 +23,7 @@ public class TransactionService
         _transactionsMetaService = transactionsMetaService;
     }
 
-    private void InsertValidations(InsertTransactionDto payload)
+    private void InsertValidations(TransactionDto payload)
     {
         bool IsNotValidBanks() => payload.FromBank is 0 || payload.ToBank is 0 || (payload.FromBank is null && payload.ToBank is null);
         
@@ -110,6 +110,8 @@ public class TransactionService
 
     public async Task UpdateTransactionAsync(UpdateTransactionDto payload, int id)
     {
+        InsertValidations(payload);
+        
         await _repository.UpdateTransactionAsync(payload, id);
 
         if (payload.DueId is not null || payload.EmiId is not null || !string.IsNullOrEmpty(payload.Tags))
