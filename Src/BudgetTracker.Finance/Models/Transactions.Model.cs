@@ -4,13 +4,13 @@ using BudgetTracker.Finance.Enums;
 
 namespace BudgetTracker.Finance.Models;
 
-public record InsertTransactionDto
+public abstract record TransactionDto
 {
-    [Range(type: typeof(decimal), minimum: "0.01",  maximum: "1000000")]
+    [Range(type: typeof(decimal), minimum: "0.01",  maximum: "1000000", ErrorMessage = "Given amount is greater than limit")]
     [JsonPropertyName("amount")]
     public decimal Amount { get; init; }
     
-    [Range(type: typeof(decimal), minimum: "0",  maximum: "1000000")]
+    [Range(type: typeof(decimal), minimum: "0",  maximum: "1000000", ErrorMessage = "Given amount is greater than limit")]
     [JsonPropertyName("actual_amount")]
     public decimal? ActualAmount { get; init; }
     
@@ -45,6 +45,8 @@ public record InsertTransactionDto
     public string? Tags { get; init; }
 }
 
+public record InsertTransactionDto : TransactionDto { }
+
 public record TransactionByDateDto
 {
     [JsonPropertyName("debit")]
@@ -72,39 +74,4 @@ public record TransactionByDateDto
     }
 }
 
-public record UpdateTransactionDto
-{
-    [JsonPropertyName("amount")]
-    public decimal Amount { get; init; }
-
-    [JsonPropertyName("actual_amount")]
-    public decimal? ActualAmount { get; init; }
-
-    [JsonPropertyName("description")]
-    public string Description { get; init; }
-
-    [JsonPropertyName("from_bank")]
-    public int? FromBank { get; init; }
-
-    [JsonPropertyName("to_bank")]
-    public int? ToBank { get; init; }
-
-    [JsonPropertyName("category_id")]
-    public int CategoryId { get; init; }
-
-    [JsonPropertyName("date")]
-    [MaxDate(ErrorMessage = "Provided date is out of range or invalid.")]  
-    public DateOnly Date { get; init; }
-
-    [JsonPropertyName("type")]
-    public TransactionType Type { get; init; }
-    
-    [JsonPropertyName("due_id")]
-    public int? DueId { get; init; }
-    
-    [JsonPropertyName("emi_id")]
-    public int? EmiId { get; init; }
-    
-    [JsonPropertyName("tags")]
-    public string? Tags { get; init; }
-}
+public record UpdateTransactionDto : TransactionDto { }
