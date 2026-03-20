@@ -1,15 +1,16 @@
+using System.Diagnostics;
 using BudgetTracker.Shared.Interfaces;
 using BudgetTracker.Shared.Utilities;
 
 namespace BudgetTracker.Gateway.Middlewares;
 
-public class TraceProviderMiddleware : ICustomMiddleware
+public class ActivityLoggerMiddleware : ICustomMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly ILogger<TraceProviderMiddleware> _logger;
+    private readonly ILogger<ActivityLoggerMiddleware> _logger;
     private const string _traceHeader = "X-Trace-Id";
 
-    public TraceProviderMiddleware(RequestDelegate next, ILogger<TraceProviderMiddleware> logger)
+    public ActivityLoggerMiddleware(RequestDelegate next, ILogger<ActivityLoggerMiddleware> logger)
     {
         _next = next;
         _logger = logger;
@@ -17,17 +18,15 @@ public class TraceProviderMiddleware : ICustomMiddleware
 
     public async Task InvokeAsync(HttpContext httpContext)
     {
-        TraceIdProvider traceIdProvider = httpContext.RequestServices.GetRequiredService<TraceIdProvider>();
-        string traceId = traceIdProvider.TraceId;
-
-        _logger.LogInformation("Starting Request at Gateway = '{0}' with Trace-Id = '{1}'", $"{httpContext.Request.Host}{httpContext.Request.Path}", traceId);
-
-        httpContext.Request.Headers[_traceHeader] = traceId;
-        httpContext.Items[_traceHeader] = traceId;
-        httpContext.Response.Headers[_traceHeader] = traceId;
-
+        Activity activity = Activity.Current!;
+        string traceId = activity.TraceId.ToString();
+        string spanId = activity.SpanId.ToString();
+        string url = $"{httpContext.Request.Host}{httpContext.Request.Path}";
+        
+        _logger.LogInformation("Starting Request at Gateway = '{url}', Trace = {TraceId}, Span = {SpanId} ", url, traceId, spanId);
+        
         await _next(httpContext);
-
-        _logger.LogInformation("Ending Request at Gateway = '{0}' with Trace-Id = '{1}'", $"{httpContext.Request.Host}{httpContext.Request.Path}", traceId);
+        
+        _logger.LogInformation("Ending Request at Gateway = '{url}', Trace = {TraceId}, Span = {SpanId} ", url, traceId, spanId);
     }
 }

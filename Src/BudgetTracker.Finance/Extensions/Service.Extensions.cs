@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Net;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -73,7 +74,7 @@ public static class ServiceExtension
         collection.AddScoped<TransactionService>();
         collection.AddScoped<TransactionsMetaService>();
         collection.AddScoped<CategoryService>();
-        collection.AddScoped<TraceIdProvider>();
+        collection.AddScoped<TraceIdProvider>(_ => new TraceIdProvider { TraceId = Activity.Current!.TraceId.ToString() });
         collection.AddSingleton<AppSecrets>(sp => sp.GetRequiredService<IOptions<AppSecrets>>().Value);
         collection.AddSingleton<YarpApiKeySecret>(sp => sp.GetRequiredService<IOptions<AppSecrets>>().Value.Secrets);
         collection.AddSingleton<PublisherService>();

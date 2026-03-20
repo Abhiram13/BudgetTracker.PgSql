@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using BudgetTracker.Finance.Interfaces;
 using BudgetTracker.Finance.Entities;
 using BudgetTracker.Finance.Models;
@@ -14,6 +15,7 @@ public class TransactionService
     private readonly PublisherService _publisher;
     private readonly ILogger<TransactionService> _logger;
     private readonly TransactionsMetaService _transactionsMetaService;
+    private static readonly ActivitySource _activitySource = new ActivitySource(nameof(TransactionService));
 
     public TransactionService(ITransactionRepository repository, PublisherService publisherService, ILogger<TransactionService> logger, TransactionsMetaService transactionsMetaService)
     {
@@ -100,6 +102,17 @@ public class TransactionService
 
     public async Task<TransactionByDateDto> GetTransactionsByDateAsync(string transactionDate)
     {
+        using Activity? activity = _activitySource.StartActivity("GetTransactionsByDate");
+        
+        if (activity == null)
+        {
+            _logger.LogWarning("Activity not created!");
+        }
+        else
+        {
+            _logger.LogInformation("Activity started!");
+        }
+        
         return await _repository.GetAllTransactionsByDateAsync(transactionDate);
     }
 

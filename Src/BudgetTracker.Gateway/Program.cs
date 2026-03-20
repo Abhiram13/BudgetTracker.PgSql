@@ -10,12 +10,15 @@ using BudgetTracker.Gateway.Models;
 using BudgetTracker.Shared.Interfaces;
 using BudgetTracker.Shared.Models;
 using BudgetTracker.Warehouse.Services;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Trace;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 DotEnvironmentVariables.Load();
 
 builder.AddConsoleGoogleSeriLog(template: "[{Level:u3}] [Source: {SourceContext}] {Message:lj}{NewLine}{Exception}");
 builder.Logging.AddFilter("Yarp.ReverseProxy.Forwarder.HttpForwarder", LogLevel.Warning);
+builder.Environment.EnvironmentName = "Development";
 builder.Configuration.AddSecrets(environment: builder.Environment, optional: false);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -51,7 +54,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapReverseProxy().RequireAuthorization();
 app.UseHttpsRedirection();
+app.UseMiddleware<ActivityLoggerMiddleware>();
 app.UseMiddleware<ApiKeyMiddleware>();
 app.UseMiddleware<BadGatewayMiddleware>();
-app.UseMiddleware<TraceProviderMiddleware>();
 app.Run();
