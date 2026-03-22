@@ -21,7 +21,14 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Src\BudgetTracker.Warehouse\BudgetTracker.Warehouse.csproj" />
+        <None Update="appsettings.Development.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Src\BudgetTracker.Warehouse\BudgetTracker.Warehouse.csproj" />
+        <ProjectReference Include="..\Shared.IntegrationTests\Shared.IntegrationTests.csproj" />
     </ItemGroup>
 
 </Project>
