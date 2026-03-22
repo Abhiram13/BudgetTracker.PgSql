@@ -22,6 +22,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\Src\BudgetTracker.Finance\BudgetTracker.Finance.csproj" />
+        <ProjectReference Include="..\Shared.IntegrationTests\Shared.IntegrationTests.csproj" />
     </ItemGroup>
 
     <ItemGroup>

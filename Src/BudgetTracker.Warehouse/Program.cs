@@ -33,7 +33,7 @@ builder.Services.AddAuthentication(options =>
 }).AddScheme<YarpApiKeySchemaOptions, YarpApiKeyHandler>(YarpApiKeySchemaOptions.DefaultSchema, _ => {});
 
 builder.WebHost.ConfigureKestrel((_, server) => {
-    string portNumber = Environment.GetEnvironmentVariable("PORT") ?? "3003";
+    string portNumber = Environment.GetEnvironmentVariable("PORT") ?? "3004";
     int port = int.Parse(portNumber);
     server.Listen(IPAddress.Any, port);
 });

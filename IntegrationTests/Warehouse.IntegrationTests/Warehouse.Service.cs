@@ -1,17 +1,26 @@
 using BudgetTracker.Shared.Models;
 using Google.Cloud.BigQuery.V2;
+using Microsoft.Extensions.Options;
+using Warehouse.IntegrationTests.Model;
 using Warehouse.IntegrationTests.Setup;
 
 namespace Warehouse.IntegrationTests.Services;
 
 public class WareHouseService
 {
-    private readonly BigQueryClient _bigQueryClient = BigQueryClient.Create(Constants.PROJECT_ID);
+    private WareHouseConfiguration _wareHouseConfiguration { get; }
+    private BigQueryClient _bigQueryClient { get; }
+
+    public WareHouseService(IOptions<WareHouseConfiguration> wareHouseConfiguration)
+    {
+        _wareHouseConfiguration = wareHouseConfiguration.Value;
+        _bigQueryClient = BigQueryClient.Create(_wareHouseConfiguration.GoogleCloudProjectId);
+    }
 
     public async Task InsertTransactionsByMonthAsync(TransactionsListByMonthDto payload)
     {
         string sql = $@"
-            MERGE `{Constants.DATASET}.{Constants.TABLE}` T
+            MERGE `{_wareHouseConfiguration.DataSet}.{_wareHouseConfiguration.Table}` T
             USING (
                 SELECT
                     @date AS date,
