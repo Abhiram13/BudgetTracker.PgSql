@@ -1,11 +1,13 @@
 using BudgetTracker.Shared.Models;
 using BudgetTracker.Shared.Utilities;
 using BudgetTracker.Warehouse.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BudgetTracker.Warehouse.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/query")]
 public class BigQueryController : ControllerBase
 {

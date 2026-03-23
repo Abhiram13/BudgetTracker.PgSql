@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using BudgetTracker.Gateway.Models;
+using BudgetTracker.Shared.Constants;
 using BudgetTracker.Shared.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
@@ -10,7 +11,7 @@ namespace BudgetTracker.Gateway.Security;
 public class ApiKeySchemaOptions : AuthenticationSchemeOptions
 {
     public const string DefaultSchema = "ApiKeySchema";
-    public const string HeaderName = "API_KEY";
+    public const string HeaderName = HeaderNames.API_KEY;
 }
 
 public class ApiKeyHandler : AuthenticationHandler<ApiKeySchemaOptions>
@@ -56,7 +57,7 @@ public class ApiKeyHandler : AuthenticationHandler<ApiKeySchemaOptions>
         Response.StatusCode = StatusCodes.Status401Unauthorized;
         Response.ContentType = "application/json";
 
-        string traceId = Request.Headers["X-Trace-Id"]!; // FIX: Default Trace ID should be generated incase none from headers
+        string traceId = Request.Headers[HeaderNames.X_TRACE_ID]!; // FIX: Default Trace ID should be generated incase none from headers
 
         ApiResponse<string> response = new ApiResponse<string>
         {

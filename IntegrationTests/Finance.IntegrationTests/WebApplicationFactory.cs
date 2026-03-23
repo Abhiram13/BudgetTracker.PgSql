@@ -24,7 +24,7 @@ public class FinanceTestWebApplicationFactory : WebApplicationFactory<Program>
     {
         DotEnvironmentVariables.Load();
         
-        builder.UseEnvironment("Development");
+        builder.UseEnvironment("Development"); // TODO: Should use "Test" environment
 
         builder.ConfigureAppConfiguration((context, config) =>
         {

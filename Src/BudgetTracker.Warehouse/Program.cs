@@ -25,12 +25,12 @@ builder.Services.AddSingleton<YarpApiKeySecret>(sp => sp.GetRequiredService<IOpt
 builder.Services.AddSingleton<BigQueryService>();
 builder.Services.AddScoped<TraceIdProvider>();
 builder.Services.AddScoped<SubscriberService>();
-builder.Services.AddHostedService<SubscriberBackgroundService>(); // TODO: This step blocking application shutdown
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = YarpApiKeySchemaOptions.DefaultSchema;
     options.DefaultChallengeScheme = YarpApiKeySchemaOptions.DefaultSchema;
 }).AddScheme<YarpApiKeySchemaOptions, YarpApiKeyHandler>(YarpApiKeySchemaOptions.DefaultSchema, _ => {});
+builder.Services.AddHostedService<SubscriberBackgroundService>(); // TODO: This step blocking application shutdown
 
 builder.WebHost.ConfigureKestrel((_, server) => {
     string portNumber = Environment.GetEnvironmentVariable("PORT") ?? "3004";
@@ -47,9 +47,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
-app.UseMiddleware<ExceptionHandlerMiddleware>();
 app.UseHttpsRedirection();
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 app.Run();
 
 namespace BudgetTracker.Warehouse
