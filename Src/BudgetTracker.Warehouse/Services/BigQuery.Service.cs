@@ -13,7 +13,6 @@ public class BigQueryService
     private readonly BigQueryClient _client;
     private readonly WarehouseAppSecrets _appSecrets;
     private readonly string _projectId;
-    private const string TRANSACTIONS_BY_MONTH = "transactions_by_month";
 
     public BigQueryService(WarehouseAppSecrets appSecrets)
     {
@@ -25,7 +24,7 @@ public class BigQueryService
     public async Task InsertTransactionByDateAsync([FromBody] TransactionsListByMonthDto payload)
     {
         string sql = $@"
-            MERGE `{_appSecrets.BigQuery.DataSet}.{TRANSACTIONS_BY_MONTH}` T
+            MERGE `{_appSecrets.BigQuery.DataSet}.{_appSecrets.BigQuery.Table}` T
             USING (
                 SELECT
                     @date AS date,
@@ -61,7 +60,7 @@ public class BigQueryService
 
         string query = $@"
             SELECT *
-            FROM {_appSecrets.BigQuery.DataSet}.{TRANSACTIONS_BY_MONTH}
+            FROM {_appSecrets.BigQuery.DataSet}.{_appSecrets.BigQuery.Table}
             WHERE EXTRACT(MONTH FROM DATE) = @month
             AND EXTRACT (YEAR FROM DATE) = @year
         ";

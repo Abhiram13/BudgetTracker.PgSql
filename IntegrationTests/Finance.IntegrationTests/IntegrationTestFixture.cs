@@ -1,5 +1,6 @@
 using BudgetTracker.Finance;
 using BudgetTracker.Finance.Entities;
+using BudgetTracker.Shared.Constants;
 using IntegrationTests.Builders;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,7 +42,7 @@ public class IntegrationTestFixture : IAsyncLifetime
         string yarpApiKey = SetYarpConfig(configuration);
         
         Client!.DefaultRequestHeaders.Add("X-Trace-Id", traceId);
-        Client.DefaultRequestHeaders.Add("YARP_API_KEY", yarpApiKey);
+        Client.DefaultRequestHeaders.Add(HeaderNames.YARP_API_KEY, yarpApiKey);
     }
 
     private string SetYarpConfig(IConfiguration configuration)

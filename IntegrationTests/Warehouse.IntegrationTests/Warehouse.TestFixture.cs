@@ -1,3 +1,5 @@
+using BudgetTracker.Shared.Constants;
+using BudgetTracker.Warehouse.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -22,20 +24,20 @@ public class WarehouseIntegrationTestFixture : IAsyncLifetime
         using (IServiceScope scope = Factory.Services.CreateScope())
         {
             WarehouseService = scope.ServiceProvider.GetRequiredService<WareHouseService>();
-            IOptions<WareHouseConfiguration> wareHouseConfiguration = scope.ServiceProvider.GetRequiredService<IOptions<WareHouseConfiguration>>();
+            IOptions<WarehouseAppSecrets> wareHouseConfiguration = scope.ServiceProvider.GetRequiredService<IOptions<WarehouseAppSecrets>>();
             SetClientHeaders(wareHouseConfiguration.Value);
         }
 
         return Task.CompletedTask;
     }
     
-    private void SetClientHeaders(WareHouseConfiguration config)
+    private void SetClientHeaders(WarehouseAppSecrets config)
     {
         string traceId = Guid.NewGuid().ToString();
-        string yarpApiKey = config.YarpApiKey;
+        string yarpApiKey = config.Secrets.YarpApiKey;
         
         Client.DefaultRequestHeaders.Add("X-Trace-Id", traceId);
-        Client.DefaultRequestHeaders.Add("YARP_API_KEY", yarpApiKey);
+        Client.DefaultRequestHeaders.Add(HeaderNames.YARP_API_KEY, yarpApiKey);
     }
 
     public Task DisposeAsync()
