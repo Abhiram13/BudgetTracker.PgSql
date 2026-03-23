@@ -3,6 +3,7 @@ using BudgetTracker.Warehouse;
 using Microsoft.AspNetCore.Hosting;
 using Abhiram.Extensions.DotEnv;
 using Abhiram.Secrets.Configuration;
+using BudgetTracker.Warehouse.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Warehouse.IntegrationTests.Model;
@@ -28,12 +29,12 @@ public class WarehouseTestWebApplicationFactory : WebApplicationFactory<Program>
 
         builder.ConfigureServices((context, services) =>
         {
-            services.AddOptions<WareHouseConfiguration>()
+            services.AddOptions<WarehouseAppSecrets>()
                 .Bind(context.Configuration)
-                .Bind(context.Configuration.GetSection("WareHouse"))
+                .Bind(context.Configuration.GetSection("BigQuery"))
                 .Bind(context.Configuration.GetSection("Secrets"))
                 .ValidateOnStart();
-            
+            services.AddOptions<GoogleCloudProject>().Bind(context.Configuration).ValidateOnStart();
             services.AddSingleton<WareHouseService>();
         });
     }

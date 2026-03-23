@@ -36,7 +36,7 @@ public class BigQueryTests : IClassFixture<WarehouseIntegrationTestFixture>
     }
     
     [Fact]
-    public async Task TestAsync()
+    public async Task Fetch_CurrentMonth_transactions_SucessResponse_Async()
     {
         TransactionsListByMonthDto payload = new TransactionsListByMonthDto
         {

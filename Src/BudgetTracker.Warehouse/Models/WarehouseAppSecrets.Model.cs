@@ -16,4 +16,7 @@ public record BigQuerySecrets
     
     [ConfigurationKeyName("PUBSUB_DATEWISE_TRANSACTIONS_SUBSCRIBER")]
     public string DateWiseTransactionSubscriber { get; init; } = string.Empty;
+    
+    [ConfigurationKeyName("TABLE")]
+    public string Table { get; init; } = string.Empty;
 }

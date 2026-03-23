@@ -4,6 +4,7 @@ using BudgetTracker.Shared.Constants;
 using BudgetTracker.Shared.Interfaces;
 using BudgetTracker.Shared.Models;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -51,5 +52,22 @@ public class YarpApiKeyHandler : AuthenticationHandler<YarpApiKeySchemaOptions>
         AuthenticationTicket ticket = new AuthenticationTicket(principal, Scheme.Name);
 
         return Task.FromResult(AuthenticateResult.Success(ticket));
+    }
+    
+    protected override async Task HandleChallengeAsync(AuthenticationProperties properties)
+    {
+        Response.StatusCode = StatusCodes.Status401Unauthorized;
+        Response.ContentType = "application/json";
+
+        string traceId = Request.Headers[HeaderNames.X_TRACE_ID]!; // FIX: Default Trace ID should be generated incase none from headers
+
+        ApiResponse<string> response = new ApiResponse<string>
+        {
+            StatusCode = System.Net.HttpStatusCode.Unauthorized,
+            TraceId = traceId, // TODO: Trace Id is null here.
+            Message = "Unauthorised"
+        };
+
+        await Response.WriteAsJsonAsync(response);
     }
 }
