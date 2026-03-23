@@ -1,5 +1,6 @@
 using BudgetTracker.Shared.Interfaces;
 using BudgetTracker.Shared.Models;
+using BudgetTracker.Shared.Constants;
 
 namespace BudgetTracker.Gateway.Middlewares;
 
@@ -32,7 +33,7 @@ public class ApiKeyMiddleware : ICustomMiddleware
             return;
         }
 
-        httpContext.Request.Headers["YARP_API_KEY"] = apiKey;
+        httpContext.Request.Headers[HeaderNames.YARP_API_KEY] = apiKey;
 
         await _next(httpContext);
     }

@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Text.Encodings.Web;
+using BudgetTracker.Shared.Constants;
 using BudgetTracker.Shared.Interfaces;
 using BudgetTracker.Shared.Models;
 using Microsoft.AspNetCore.Authentication;
@@ -10,8 +11,8 @@ namespace BudgetTracker.Shared.Security;
 
 public class YarpApiKeySchemaOptions : AuthenticationSchemeOptions
 {
-    public const string DefaultSchema = "ApiKeySchema";
-    public const string HeaderName = "YARP_API_KEY";
+    public const string DefaultSchema = "YarpApiKeySchema";
+    public const string HeaderName = HeaderNames.YARP_API_KEY;
 }
 
 public class YarpApiKeyHandler : AuthenticationHandler<YarpApiKeySchemaOptions>
