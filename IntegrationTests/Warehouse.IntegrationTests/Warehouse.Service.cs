@@ -3,7 +3,6 @@ using BudgetTracker.Warehouse.Models;
 using Google.Cloud.BigQuery.V2;
 using Microsoft.Extensions.Options;
 using Warehouse.IntegrationTests.Model;
-using Warehouse.IntegrationTests.Setup;
 
 namespace Warehouse.IntegrationTests.Services;
 
