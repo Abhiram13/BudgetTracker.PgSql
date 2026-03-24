@@ -19,14 +19,30 @@ public class TransactionsTests : IClassFixture<IntegrationTestFixture>
     private readonly Category _testCategory;
     private readonly Bank _testBank;
     private readonly HttpClient _client;
+    private readonly HttpClient _unAuthorizedClient;
     private readonly IntegrationTestFixture _fixture;
 
     public TransactionsTests(IntegrationTestFixture fixture)
     {
         _client = fixture.Client;
+        _unAuthorizedClient = fixture.UnauthorizedClient;
         _testCategory = fixture.TestCategory;
         _testBank = fixture.TestBank;
         _fixture = fixture;
+    }
+
+    [Fact]
+    public async Task Unauthorised_401_Response_Async()
+    {
+        string date = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd");
+        HttpResponseMessage httpResponse = await _unAuthorizedClient.GetAsync($"/api/transactions/date/{date}");
+        ApiResponse<string>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<string>>();
+        
+        Assert.Equal(HttpStatusCode.Unauthorized, httpResponse.StatusCode);
+        Assert.NotNull(apiResponse);
+        Assert.Equal(HttpStatusCode.Unauthorized, apiResponse.StatusCode);
+        Assert.NotNull(apiResponse.Message);
+        Assert.NotEmpty(apiResponse.Message);
     }
 
     #region Insert Transactions

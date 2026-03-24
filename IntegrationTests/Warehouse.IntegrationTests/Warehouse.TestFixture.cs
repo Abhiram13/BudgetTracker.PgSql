@@ -1,10 +1,8 @@
 using BudgetTracker.Shared.Constants;
 using BudgetTracker.Warehouse.Models;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Warehouse.IntegrationTests.Services;
-using Warehouse.IntegrationTests.Model;
 
 namespace Warehouse.IntegrationTests.Setup;
 
@@ -36,7 +34,7 @@ public class WarehouseIntegrationTestFixture : IAsyncLifetime
         string traceId = Guid.NewGuid().ToString();
         string yarpApiKey = config.Secrets.YarpApiKey;
         
-        Client.DefaultRequestHeaders.Add("X-Trace-Id", traceId);
+        Client.DefaultRequestHeaders.Add(HeaderNames.X_TRACE_ID, traceId);
         Client.DefaultRequestHeaders.Add(HeaderNames.YARP_API_KEY, yarpApiKey);
     }
 

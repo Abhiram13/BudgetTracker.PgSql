@@ -1,11 +1,11 @@
 using BudgetTracker.Finance;
 using BudgetTracker.Finance.Entities;
 using BudgetTracker.Shared.Constants;
+using Finance.IntegrationTests.Models;
 using IntegrationTests.Builders;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using IntegrationTests.Exceptions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace IntegrationTests.Setup;
 
@@ -13,6 +13,7 @@ public class IntegrationTestFixture : IAsyncLifetime
 {
     public FinanceTestWebApplicationFactory Factory { get; set; } = default!;
     public HttpClient Client { get; private set; } = default!;
+    public HttpClient UnauthorizedClient { get; private set; } = default!;
     public Category TestCategory { get; private set; } = default!;
     public Bank TestBank { get; private set; } = default!;
     private CategoryBuilder _categoryBuilder = default!;
@@ -22,36 +23,28 @@ public class IntegrationTestFixture : IAsyncLifetime
     {
         Factory = new FinanceTestWebApplicationFactory();
         Client = Factory.CreateClient();
+        UnauthorizedClient = Factory.CreateClient();
         
         using (IServiceScope scope = Factory.CreateScope())
         {
             WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
-            IConfiguration config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+            FinanceConfig financeConfig = scope.ServiceProvider.GetRequiredService<IOptions<FinanceConfig>>().Value;
             await dbContext.Database.EnsureCreatedAsync();
             _categoryBuilder = scope.ServiceProvider.GetRequiredService<CategoryBuilder>();
             _bankBuilder = scope.ServiceProvider.GetRequiredService<BankBuilder>();
             TestCategory = await _categoryBuilder.CreateCategoryAsync();
             TestBank = await _bankBuilder.CreateBankAsync();
-            SetClientHeaders(config);
+            SetClientHeaders(financeConfig);
         }
     }
 
-    private void SetClientHeaders(IConfiguration configuration)
+    private void SetClientHeaders(FinanceConfig configuration)
     {
         string traceId = Guid.NewGuid().ToString();
-        string yarpApiKey = SetYarpConfig(configuration);
+        string yarpApiKey = configuration.Secrets.YarpApiKey;
         
-        Client!.DefaultRequestHeaders.Add("X-Trace-Id", traceId);
+        Client.DefaultRequestHeaders.Add(HeaderNames.X_TRACE_ID, traceId);
         Client.DefaultRequestHeaders.Add(HeaderNames.YARP_API_KEY, yarpApiKey);
-    }
-
-    private string SetYarpConfig(IConfiguration configuration)
-    {
-        string? yarpApiKey = configuration["SECRETS:YARP_API_KEY"];
-
-        if (string.IsNullOrEmpty(yarpApiKey)) throw new NotFoundException($"YARP_API_KEY ({yarpApiKey}) is missing");
-
-        return yarpApiKey;
     }
 
     public async Task DisposeAsync()
