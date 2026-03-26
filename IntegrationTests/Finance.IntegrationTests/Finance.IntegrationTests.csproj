@@ -26,7 +26,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="appsettings.Test.json">
+        <None Include="appsettings.Development.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>

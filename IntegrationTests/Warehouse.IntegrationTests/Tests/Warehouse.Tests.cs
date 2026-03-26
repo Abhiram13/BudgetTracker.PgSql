@@ -29,8 +29,8 @@ public class BigQueryTests : IClassFixture<WarehouseIntegrationTestFixture>
         Assert.Equal(HttpStatusCode.Unauthorized, httpResponse.StatusCode);
         Assert.NotNull(apiResponse);
         Assert.Equal(HttpStatusCode.Unauthorized, apiResponse.StatusCode);
-        // Assert.NotNull(apiResponse.TraceId);
-        // Assert.NotEmpty(apiResponse.TraceId);
+        Assert.NotNull(apiResponse.TraceId);
+        Assert.NotEmpty(apiResponse.TraceId); // TODO: Get Trace ID check
         Assert.NotNull(apiResponse.Message);
         Assert.NotEmpty(apiResponse.Message);
     }

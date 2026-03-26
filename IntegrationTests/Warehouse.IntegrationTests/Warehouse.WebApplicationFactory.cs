@@ -17,7 +17,7 @@ public class WarehouseTestWebApplicationFactory : WebApplicationFactory<Program>
     {
         DotEnvironmentVariables.Load();
         
-        builder.UseEnvironment("Test");
+        builder.UseEnvironment("Development");
 
         builder.ConfigureAppConfiguration((context, config) =>
         {
