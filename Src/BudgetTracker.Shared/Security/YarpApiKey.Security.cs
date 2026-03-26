@@ -16,6 +16,8 @@ public class YarpApiKeySchemaOptions : AuthenticationSchemeOptions
     public const string HeaderName = HeaderNames.YARP_API_KEY;
 }
 
+// Used to verify and authenticate client api calls if YARP_API_KEY exists in header
+// Used in downstream apis
 public class YarpApiKeyHandler : AuthenticationHandler<YarpApiKeySchemaOptions>
 {
     private readonly YarpApiKeySecret _appSecrets;

@@ -448,6 +448,8 @@ public class TransactionsTests : IClassFixture<IntegrationTestFixture>
     
     #endregion
 
+    #region Update transactions
+    
     [Fact]
     public async Task UpdateTransaction_SuccessResponse_Async()
     {
@@ -564,4 +566,6 @@ public class TransactionsTests : IClassFixture<IntegrationTestFixture>
             }
         }
     }
+    
+    #endregion
 }
