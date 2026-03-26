@@ -1,28 +1,29 @@
 using System.Net;
 using System.Net.Http.Json;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.DependencyInjection;
 using BudgetTracker.Finance;
 using BudgetTracker.Finance.Entities;
 using BudgetTracker.Finance.Enums;
 using BudgetTracker.Finance.Models;
 using BudgetTracker.Shared.Models;
-using IntegrationTests.Data.Transactions;
-using IntegrationTests.Definations.Transactions;
-using IntegrationTests.Setup;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.Extensions.DependencyInjection;
+using IntegrationTests.Finance.Data.Transactions;
+using IntegrationTests.Finance.Definations.Transactions;
+using IntegrationTests.Finance.Fixtures;
+using IntegrationTests.Finance.Disposals;
 
-namespace IntegrationTests.Tests;
+namespace IntegrationTests.Finance.Tests.Transactions;
 
-public class TransactionsTests : IClassFixture<IntegrationTestFixture>
+public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixture>
 {
     private readonly Category _testCategory;
     private readonly Bank _testBank;
     private readonly HttpClient _client;
     private readonly HttpClient _unAuthorizedClient;
-    private readonly IntegrationTestFixture _fixture;
+    private readonly TransactionsIntegrationTestFixture _fixture;
 
-    public TransactionsTests(IntegrationTestFixture fixture)
+    public TransactionsTests(TransactionsIntegrationTestFixture fixture)
     {
         _client = fixture.Client;
         _unAuthorizedClient = fixture.UnauthorizedClient;

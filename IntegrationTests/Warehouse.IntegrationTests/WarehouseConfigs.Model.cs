@@ -1,7 +1,7 @@
 using BudgetTracker.Shared.Constants;
 using Microsoft.Extensions.Configuration;
 
-namespace Warehouse.IntegrationTests.Model;
+namespace IntegrationTests.Warehouse.Models;
 
 public record GoogleCloudProject
 {

@@ -2,7 +2,7 @@ using BudgetTracker.Finance;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace IntegrationTests.Setup;
+namespace IntegrationTests.Finance.Disposals;
 
 public sealed class FinanceDbDisposal : IAsyncDisposable
 {

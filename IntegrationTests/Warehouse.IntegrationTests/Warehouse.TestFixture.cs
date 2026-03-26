@@ -2,9 +2,10 @@ using BudgetTracker.Shared.Constants;
 using BudgetTracker.Warehouse.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Warehouse.IntegrationTests.Services;
+using IntegrationTests.Warehouse.Services;
+using IntegrationTests.Warehouse.Factory;
 
-namespace Warehouse.IntegrationTests.Setup;
+namespace IntegrationTests.Warehouse.Fixtures;
 
 public class WarehouseIntegrationTestFixture : IAsyncLifetime
 {

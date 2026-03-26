@@ -1,15 +1,17 @@
-using BudgetTracker.Finance;
-using BudgetTracker.Finance.Entities;
-using BudgetTracker.Shared.Constants;
-using Finance.IntegrationTests.Models;
-using IntegrationTests.Builders;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using BudgetTracker.Finance;
+using BudgetTracker.Finance.Entities;
+using BudgetTracker.Shared.Constants;
+using IntegrationTests.Finance.Models;
+using IntegrationTests.Finance.Factory;
+using IntegrationTests.Finance.Builders;
 
-namespace IntegrationTests.Setup;
+namespace IntegrationTests.Finance.Fixtures;
 
 /// <summary>
+/// Fixture used in Transactions tests
 /// <list type="bullet">
 ///     <item><description>Sets up Auth, UnAuth Http clients</description></item>
 ///     <item><description>Sets up category, bank builders to manually insert in DB</description></item>
@@ -18,7 +20,7 @@ namespace IntegrationTests.Setup;
 /// </list>
 /// </summary>
 /// <remarks><see cref="IDisposable"/></remarks>
-public class IntegrationTestFixture : IAsyncLifetime
+public class TransactionsIntegrationTestFixture : IAsyncLifetime
 {
     public FinanceTestWebApplicationFactory Factory { get; set; } = default!;
     public HttpClient Client { get; private set; } = default!;

@@ -2,10 +2,10 @@ using System.Net;
 using System.Net.Http.Json;
 using BudgetTracker.Shared.Models;
 using Google.Cloud.BigQuery.V2;
-using Warehouse.IntegrationTests.Services;
-using Warehouse.IntegrationTests.Setup;
+using IntegrationTests.Warehouse.Services;
+using IntegrationTests.Warehouse.Fixtures;
 
-namespace Warehouse.IntegrationTests;
+namespace IntegrationTests.Warehouse.Tests;
 
 public class BigQueryTests : IClassFixture<WarehouseIntegrationTestFixture>
 {
