@@ -2,9 +2,9 @@ using BudgetTracker.Shared.Models;
 using BudgetTracker.Warehouse.Models;
 using Google.Cloud.BigQuery.V2;
 using Microsoft.Extensions.Options;
-using Warehouse.IntegrationTests.Model;
+using IntegrationTests.Warehouse.Models;
 
-namespace Warehouse.IntegrationTests.Services;
+namespace IntegrationTests.Warehouse.Services;
 
 public class WareHouseService
 {

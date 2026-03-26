@@ -1,7 +1,7 @@
 using BudgetTracker.Finance;
 using BudgetTracker.Finance.Entities;
 
-namespace IntegrationTests.Builders;
+namespace IntegrationTests.Finance.Builders;
 
 public sealed class CategoryBuilder
 {

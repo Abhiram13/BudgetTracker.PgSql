@@ -1,9 +1,9 @@
 using System.Net;
 using BudgetTracker.Finance.Enums;
 using BudgetTracker.Finance.Models;
-using IntegrationTests.Definations.Transactions;
+using IntegrationTests.Finance.Definations.Transactions;
 
-namespace IntegrationTests.Data.Transactions;
+namespace IntegrationTests.Finance.Data.Transactions;
 
 public abstract class TheoryTestData<Def> : TheoryData<Def> where Def : class
 {

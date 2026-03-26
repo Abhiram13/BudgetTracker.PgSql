@@ -3,14 +3,14 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using BudgetTracker.Finance;
 using Abhiram.Extensions.DotEnv;
 using Abhiram.Secrets.Configuration;
-using Finance.IntegrationTests.Models;
-using IntegrationTests.Builders;
-using Microsoft.Extensions.Options;
+using IntegrationTests.Finance.Models;
+using IntegrationTests.Finance.Builders;
 
-namespace IntegrationTests.Setup;
+namespace IntegrationTests.Finance.Factory;
 
 public class FinanceTestWebApplicationFactory : WebApplicationFactory<Program>
 {

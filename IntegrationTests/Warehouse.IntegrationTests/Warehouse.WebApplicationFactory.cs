@@ -6,10 +6,10 @@ using Abhiram.Secrets.Configuration;
 using BudgetTracker.Warehouse.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Warehouse.IntegrationTests.Model;
-using Warehouse.IntegrationTests.Services;
+using IntegrationTests.Warehouse.Models;
+using IntegrationTests.Warehouse.Services;
 
-namespace Warehouse.IntegrationTests.Setup;
+namespace IntegrationTests.Warehouse.Factory;
 
 public class WarehouseTestWebApplicationFactory : WebApplicationFactory<Program>
 {

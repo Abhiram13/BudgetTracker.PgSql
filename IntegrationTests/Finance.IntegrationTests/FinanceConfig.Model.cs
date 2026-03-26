@@ -1,7 +1,7 @@
 using BudgetTracker.Shared.Constants;
 using Microsoft.Extensions.Configuration;
 
-namespace Finance.IntegrationTests.Models;
+namespace IntegrationTests.Finance.Models;
 
 public record DatabaseConnection
 {

@@ -1,7 +1,7 @@
 using System.Net;
 using BudgetTracker.Finance.Enums;
 
-namespace IntegrationTests.Definations.Transactions;
+namespace IntegrationTests.Finance.Definations.Transactions;
 
 /// <summary>
 /// Test definations to test Date validations when inserting transactions

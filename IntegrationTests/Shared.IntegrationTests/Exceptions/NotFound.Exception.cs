@@ -1,4 +1,4 @@
-namespace IntegrationTests.Exceptions;
+namespace IntegrationTests.Shared.Exceptions;
 
 public class NotFoundException : Exception
 {
