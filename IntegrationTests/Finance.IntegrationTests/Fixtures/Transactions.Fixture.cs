@@ -20,10 +20,8 @@ namespace IntegrationTests.Finance.Fixtures;
 /// </list>
 /// </summary>
 /// <remarks><see cref="IDisposable"/></remarks>
-public class TransactionsIntegrationTestFixture : IAsyncLifetime
+public class TransactionsIntegrationTestFixture : FinanceTestFixture, IAsyncLifetime
 {
-    public FinanceTestWebApplicationFactory Factory { get; set; } = default!;
-    public HttpClient Client { get; private set; } = default!;
     public HttpClient UnauthorizedClient { get; private set; } = default!;
     public Category TestCategory { get; private set; } = default!;
     public Bank TestBank { get; private set; } = default!;
@@ -32,8 +30,6 @@ public class TransactionsIntegrationTestFixture : IAsyncLifetime
     
     public async Task InitializeAsync()
     {
-        Factory = new FinanceTestWebApplicationFactory();
-        Client = Factory.CreateClient();
         UnauthorizedClient = Factory.CreateClient();
         
         using (IServiceScope scope = Factory.CreateScope())
@@ -49,15 +45,6 @@ public class TransactionsIntegrationTestFixture : IAsyncLifetime
         }
     }
 
-    private void SetClientHeaders(FinanceConfig configuration)
-    {
-        string traceId = Guid.NewGuid().ToString();
-        string yarpApiKey = configuration.Secrets.YarpApiKey;
-        
-        Client.DefaultRequestHeaders.Add(HeaderNames.X_TRACE_ID, traceId);
-        Client.DefaultRequestHeaders.Add(HeaderNames.YARP_API_KEY, yarpApiKey);
-    }
-
     public async Task DisposeAsync()
     {
         using (IServiceScope scope = Factory.CreateScope())
@@ -66,11 +53,13 @@ public class TransactionsIntegrationTestFixture : IAsyncLifetime
 
             await dbContext.Categories.ExecuteDeleteAsync();
             await dbContext.Banks.ExecuteDeleteAsync();
+            
+            // since hard-coded banks & category ids "1" and "2" are used in transaction tests, resetting the banks & category table identity.
+            // If not every transactions tests access new dynamic bank or category id
             await dbContext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE categories RESTART IDENTITY CASCADE");
             await dbContext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE banks RESTART IDENTITY CASCADE");
         }
         
-        Client.Dispose();
-        Factory.Dispose();
+        DisposeFactoryAndClient();
     }
 }
