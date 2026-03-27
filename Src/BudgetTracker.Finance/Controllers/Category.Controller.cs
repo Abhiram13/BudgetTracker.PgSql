@@ -35,7 +35,7 @@ public class CategoryController : ControllerBase
         };
 
         await _categoryService.InsertCategoryAsync(category);
-        return Ok(new ApiResponse<string>
+        return StatusCode(201, new ApiResponse<string>
         {
             StatusCode = System.Net.HttpStatusCode.Created,
             TraceId = _traceIdProvider.TraceId,
