@@ -8,10 +8,12 @@ public abstract class FinanceTestFixture
 {
     public FinanceTestWebApplicationFactory Factory { get; } = new FinanceTestWebApplicationFactory();
     public HttpClient Client { get; }
+    public HttpClient UnAuthorizedClient { get; }
 
     protected FinanceTestFixture()
     {
         Client = Factory.CreateClient();
+        UnAuthorizedClient = Factory.CreateClient();
     }
 
     protected void SetClientHeaders(FinanceConfig config)
@@ -26,6 +28,7 @@ public abstract class FinanceTestFixture
     protected void DisposeFactoryAndClient()
     {
         Client.Dispose();
+        UnAuthorizedClient.Dispose();
         Factory.Dispose();
     }
 }
