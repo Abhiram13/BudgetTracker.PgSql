@@ -1,6 +1,7 @@
 using BudgetTracker.Finance.Interfaces;
 using BudgetTracker.Finance.Entities;
 using BudgetTracker.Finance.Models;
+using BudgetTracker.Shared.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace BudgetTracker.Finance.Repository;
@@ -32,7 +33,12 @@ public class CategoryRepository : ICategoryRepository
 
     public async Task UpdateOneCategoryAsync(Category payload)
     {
-        Category category = await SearchByIdAsync(payload.Id);
+        Category? category = await GetCategoryAsync(payload.Id);
+
+        if (category == null)
+        {
+            throw new InvalidPayloadException($"Category with ({payload.Id}) not found");
+        }
         
         category.Name = payload.Name;
         category.UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
@@ -40,12 +46,15 @@ public class CategoryRepository : ICategoryRepository
         await _writeDbContext.SaveChangesAsync();
     }
 
-    public async Task<Category> SearchByIdAsync(int id)
+    public async Task<Category?> GetCategoryAsync(int id)
     {
         Category? category = await _writeDbContext.Categories.FirstOrDefaultAsync(c => c.Id == id);
-        
-        if (category is null) throw new BadHttpRequestException("Category not found");
-        
+        return category;
+    }
+
+    public async Task<Category?> GetCategoryAsync(string categoryName)
+    {
+        Category? category = await _writeDbContext.Categories.FirstOrDefaultAsync(c => c.Name == categoryName);
         return category;
     }
 }

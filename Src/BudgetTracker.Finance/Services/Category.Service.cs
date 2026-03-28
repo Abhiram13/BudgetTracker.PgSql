@@ -1,6 +1,7 @@
 using BudgetTracker.Finance.Interfaces;
 using BudgetTracker.Finance.Entities;
 using BudgetTracker.Finance.Models;
+using BudgetTracker.Shared.Exceptions;
 
 namespace BudgetTracker.Finance.Services;
 
@@ -15,8 +16,14 @@ public class CategoryService
 
     public async Task<Category> InsertCategoryAsync(Category payload)
     {
-        Category bank = await _categoryRepository.InsertOneCategoryAsync(payload);
-        return bank;
+        Category? category = await _categoryRepository.GetCategoryAsync(payload.Name);
+        
+        if (category != null)
+        {
+            throw new InvalidPayloadException("Category with name already exists");
+        }
+        
+        return await _categoryRepository.InsertOneCategoryAsync(payload);
     }
 
     public async Task<List<CategoryListDto>> GetAllCategoriesAsync()
@@ -26,7 +33,14 @@ public class CategoryService
 
     public async Task<Category> GetCategoryByIdAsync(int id)
     {
-        return await _categoryRepository.SearchByIdAsync(id);
+        Category? category = await _categoryRepository.GetCategoryAsync(id);
+
+        if (category == null)
+        {
+            throw new InvalidPayloadException($"Category with ({id}) not found");
+        }
+        
+        return category;
     }
 
     public async Task UpdateCategoryAsync(Category payload)

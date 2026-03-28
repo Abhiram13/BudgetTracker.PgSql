@@ -1,8 +1,13 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace BudgetTracker.Finance.Models;
 
 public record InsertCategoryDto
 {
-    public string Name { get; set; } = string.Empty;
+    [JsonPropertyName("name")]
+    [StringLength(maximumLength: 50, MinimumLength = 1)]
+    [RegularExpression(@"^(?=.*[a-zA-Z])[a-zA-Z0-9#,\s]*$", ErrorMessage = "Only letters, numbers, spaces and # are allowed")]
+    public string Name { get; init; } = string.Empty;
 }
 
 public record CategoryListDto
