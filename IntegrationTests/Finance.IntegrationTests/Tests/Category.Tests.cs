@@ -1,11 +1,13 @@
 using System.Net;
 using System.Net.Http.Json;
 using BudgetTracker.Finance;
+using BudgetTracker.Finance.Entities;
 using BudgetTracker.Shared.Models;
 using IntegrationTests.Finance.Data.Categories;
 using IntegrationTests.Finance.Definations.Categories;
 using IntegrationTests.Finance.Disposals;
 using IntegrationTests.Finance.Fixtures;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace IntegrationTests.Finance.Tests.Categories;
@@ -48,8 +50,16 @@ public class CategoryTests
 
             await using (new CategoryDisposal(dbContext))
             {
+                if (testData.PreSeedData) // Duplicate test. Preseed data
+                {
+                    DateOnly dateOnly = DateOnly.FromDateTime(DateTime.Now);
+                    await dbContext.Categories.AddAsync(new Category { Name = testData.Payload.Name, CreatedAt = dateOnly, UpdatedAt = dateOnly });
+                    await dbContext.SaveChangesAsync();
+                }
+                
                 HttpResponseMessage httpResponse = await _client.PostAsJsonAsync(CATEGORY_ROUTE, testData.Payload);
                 ApiResponse<string>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<string>>();
+                bool isDataExists = await dbContext.Categories.AnyAsync(c => c.Name == testData.Payload.Name);
                 
                 Assert.Equal(testData.ExpectedHttpStatusCode, httpResponse.StatusCode);
                 Assert.NotNull(apiResponse);
@@ -59,6 +69,11 @@ public class CategoryTests
                 Assert.Null(apiResponse.Result);
                 Assert.NotNull(apiResponse.Message);
                 Assert.NotEmpty(apiResponse.Message);
+
+                if (!testData.PreSeedData) // during preseeding, obviously manual entry data exists in DB. So checking this case only when not preseeding.
+                {
+                    Assert.Equal(testData.ShouldDataExist, isDataExists);
+                }
             }
         }
     }

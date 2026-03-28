@@ -1,41 +1,41 @@
 <Project>
-  <PropertyGroup>
-    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-  </PropertyGroup>
-  <PropertyGroup>
-    <EfCoreVersion>8.0.19</EfCoreVersion>
-    <ExtVersion>8.0.0</ExtVersion>
-  </PropertyGroup>
-  <ItemGroup Label="Microsoft Packages">
-    <PackageVersion Include="EntityFramework6.Npgsql" Version="6.4.3" />
-    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="$(EfCoreVersion)" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="$(EfCoreVersion)" />
-    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="$(EfCoreVersion)">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageVersion>
-    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
-    <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.6.2" />
-    <PackageVersion Include="Yarp.ReverseProxy" Version="2.3.0" />
-  </ItemGroup>
-  <ItemGroup Label="My Packages">
-    <PackageVersion Include="Abhiram.Abstractions.Logging" Version="2.1.0" />
-    <PackageVersion Include="Abhiram.Extensions.DotEnv" Version="1.1.0" />
-    <PackageVersion Include="Abhiram.Secrets.Providers" Version="3.0.0" />
-  </ItemGroup>
-  <ItemGroup Label="Google Cloud Packages">
-    <PackageVersion Include="Google.Cloud.BigQuery.V2" Version="3.11.0" />
-    <PackageVersion Include="Google.Cloud.PubSub.V1" Version="3.30.0" />
-  </ItemGroup>
-  <ItemGroup Label="Test Packages">
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(EfCoreVersion)" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration" Version="$(ExtVersion)" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="$(ExtVersion)" />
-    <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
-    <PackageVersion Include="coverlet.collector" Version="6.0.0" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
-    <PackageVersion Include="xunit" Version="2.5.3" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.3" />
-    <PackageVersion Include="Moq" Version="4.20.72" />
-  </ItemGroup>
+    <PropertyGroup>
+        <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    </PropertyGroup>
+    <PropertyGroup>
+        <EfCoreVersion>8.0.19</EfCoreVersion>
+        <ExtVersion>8.0.0</ExtVersion>
+    </PropertyGroup>
+    <ItemGroup Label="Microsoft Packages">
+        <PackageVersion Include="EntityFramework6.Npgsql" Version="6.4.3" />
+        <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="$(EfCoreVersion)" />
+        <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="$(EfCoreVersion)" />
+        <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="$(EfCoreVersion)">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageVersion>
+        <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
+        <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+        <PackageVersion Include="Yarp.ReverseProxy" Version="2.3.0" />
+    </ItemGroup>
+    <ItemGroup Label="My Packages">
+        <PackageVersion Include="Abhiram.Abstractions.Logging" Version="2.1.0" />
+        <PackageVersion Include="Abhiram.Extensions.DotEnv" Version="1.1.0" />
+        <PackageVersion Include="Abhiram.Secrets.Providers" Version="3.0.0" />
+    </ItemGroup>
+    <ItemGroup Label="Google Cloud Packages">
+        <PackageVersion Include="Google.Cloud.BigQuery.V2" Version="3.11.0" />
+        <PackageVersion Include="Google.Cloud.PubSub.V1" Version="3.30.0" />
+    </ItemGroup>
+    <ItemGroup Label="Test Packages">
+        <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(EfCoreVersion)" />
+        <PackageVersion Include="Microsoft.Extensions.Configuration" Version="$(ExtVersion)" />
+        <PackageVersion Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="$(ExtVersion)" />
+        <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
+        <PackageVersion Include="coverlet.collector" Version="6.0.0" />
+        <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+        <PackageVersion Include="xunit" Version="2.5.3" />
+        <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.3" />
+        <PackageVersion Include="Moq" Version="4.20.72" />
+    </ItemGroup>
 </Project>

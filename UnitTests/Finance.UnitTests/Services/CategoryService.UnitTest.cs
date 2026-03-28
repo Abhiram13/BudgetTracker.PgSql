@@ -23,7 +23,7 @@ public class CategoryServiceUnitTests
     {
         // Arrange
         Category category = new Category { Id = 1, Name = "Food" };
-        _categoryRepository.Setup(r => r.SearchByIdAsync(1)).ReturnsAsync(category);
+        _categoryRepository.Setup(r => r.GetCategoryAsync(1)).ReturnsAsync(category);
 
         // Act
         Category result = await _categoryService.GetCategoryByIdAsync(1);
@@ -38,7 +38,7 @@ public class CategoryServiceUnitTests
     public async Task GetCategoryById_Throws_Error_Async()
     {
         _categoryRepository
-            .Setup(r => r.SearchByIdAsync(0))
+            .Setup(r => r.GetCategoryAsync(0))
             .ThrowsAsync(new BadHttpRequestException("Category not found"));
 
         // Act

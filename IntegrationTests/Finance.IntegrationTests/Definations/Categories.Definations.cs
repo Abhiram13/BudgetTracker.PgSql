@@ -9,5 +9,6 @@ public record InsertCategoryDef
     public required HttpStatusCode ExpectedHttpStatusCode { get; init; }
     public required HttpStatusCode ExpectedApiStatusCode { get; init; }
     public required bool ShouldDataExist { get; init; }
+    public required bool PreSeedData { get; init; }
     public string? ExpectedMessage { get; init; }
 }
