@@ -16,6 +16,7 @@ public class CategoryTests
     private readonly HttpClient _client;
     private readonly HttpClient _unAuthorisedClient;
     private readonly CategoriesTestsFixture _fixture;
+    private const string CATEGORY_ROUTE = "/api/categories";
 
     public CategoryTests(CategoriesTestsFixture fixture)
     {
@@ -27,7 +28,7 @@ public class CategoryTests
     [Fact]
     public async Task Unauthorised_401_Response_Async()
     {
-        HttpResponseMessage httpResponse = await _unAuthorisedClient.GetAsync($"/api/categories");
+        HttpResponseMessage httpResponse = await _unAuthorisedClient.GetAsync(CATEGORY_ROUTE);
         ApiResponse<string>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<string>>();
         
         Assert.Equal(HttpStatusCode.Unauthorized, httpResponse.StatusCode);
@@ -45,9 +46,9 @@ public class CategoryTests
         {
             WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
 
-            await using (new CategorysDisposal(dbContext))
+            await using (new CategoryDisposal(dbContext))
             {
-                HttpResponseMessage httpResponse = await _client.PostAsJsonAsync("/api/categories", testData.Payload);
+                HttpResponseMessage httpResponse = await _client.PostAsJsonAsync(CATEGORY_ROUTE, testData.Payload);
                 ApiResponse<string>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<string>>();
                 
                 Assert.Equal(testData.ExpectedHttpStatusCode, httpResponse.StatusCode);
