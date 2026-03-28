@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IntegrationTests.Finance.Disposals;
 
-public sealed class CategorysDisposal : IAsyncDisposable
+public sealed class CategoryDisposal : IAsyncDisposable
 {
     private readonly WriteDbContext _dbContext;
 
-    public CategorysDisposal(WriteDbContext dbContext)
+    public CategoryDisposal(WriteDbContext dbContext)
     {
         _dbContext = dbContext;
     }

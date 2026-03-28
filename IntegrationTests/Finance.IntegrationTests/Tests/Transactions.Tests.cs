@@ -23,6 +23,7 @@ public class TransactionsTests
     private readonly HttpClient _client;
     private readonly HttpClient _unAuthorizedClient;
     private readonly TransactionsIntegrationTestFixture _fixture;
+    private const string TRANSACTIONS_ROUTE = "/api/transactions";
 
     public TransactionsTests(TransactionsIntegrationTestFixture fixture)
     {
@@ -37,7 +38,7 @@ public class TransactionsTests
     public async Task Unauthorised_401_Response_Async()
     {
         string date = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd");
-        HttpResponseMessage httpResponse = await _unAuthorizedClient.GetAsync($"/api/transactions/date/{date}");
+        HttpResponseMessage httpResponse = await _unAuthorizedClient.GetAsync($"{TRANSACTIONS_ROUTE}/date/{date}");
         ApiResponse<string>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<string>>();
         
         Assert.Equal(HttpStatusCode.Unauthorized, httpResponse.StatusCode);
@@ -59,7 +60,7 @@ public class TransactionsTests
 
             await using (new FinanceDbDisposal(dbContext))
             {
-                HttpResponseMessage httpResponse = await _client.PostAsJsonAsync("/api/transactions", payload);
+                HttpResponseMessage httpResponse = await _client.PostAsJsonAsync(TRANSACTIONS_ROUTE, payload);
                 ApiResponse<string>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<string>>();
                 List<Transaction> transactions = await dbContext.Transactions.Where(t => t.Description == "First Transaction #1").ToListAsync();
             
@@ -81,7 +82,7 @@ public class TransactionsTests
 
             await using (new FinanceDbDisposal(dbContext))
             {
-                HttpResponseMessage httpResponse = await _client.PostAsJsonAsync("/api/transactions", payload);
+                HttpResponseMessage httpResponse = await _client.PostAsJsonAsync(TRANSACTIONS_ROUTE, payload);
                 ApiResponse<string>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<string>>();
                 List<Transaction> transactions = await dbContext.Transactions.ToListAsync();
             
@@ -120,7 +121,7 @@ public class TransactionsTests
                     Date = payload.Date,
                 };
         
-                HttpResponseMessage httpResponse = await _client.PostAsJsonAsync("/api/transactions", insertDto);
+                HttpResponseMessage httpResponse = await _client.PostAsJsonAsync(TRANSACTIONS_ROUTE, insertDto);
                 ApiResponse<string>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<string>>();
                 List<Transaction> transactions = await dbContext.Transactions.Where(t => t.Description == description).ToListAsync();
                 
@@ -156,7 +157,7 @@ public class TransactionsTests
                     Date = DateOnly.FromDateTime(DateTime.UtcNow),
                 };
         
-                HttpResponseMessage httpResponse = await _client.PostAsJsonAsync("/api/transactions", insertDto);
+                HttpResponseMessage httpResponse = await _client.PostAsJsonAsync(TRANSACTIONS_ROUTE, insertDto);
                 ApiResponse<string>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<string>>();
                 List<Transaction> transactions = await dbContext.Transactions.Where(t => t.Description == description).ToListAsync();
                 
@@ -190,7 +191,7 @@ public class TransactionsTests
                     Date = DateOnly.FromDateTime(DateTime.UtcNow),
                 };
         
-                HttpResponseMessage httpResponse = await _client.PostAsJsonAsync("/api/transactions", insertDto);
+                HttpResponseMessage httpResponse = await _client.PostAsJsonAsync(TRANSACTIONS_ROUTE, insertDto);
                 ApiResponse<string>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<string>>();
                 List<Transaction> transactions = await dbContext.Transactions.ToListAsync();
                 
@@ -255,7 +256,7 @@ public class TransactionsTests
                 }
                 
                 string date = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd");
-                HttpResponseMessage httpResponse = await _client.GetAsync($"/api/transactions/date/{date}");
+                HttpResponseMessage httpResponse = await _client.GetAsync($"{TRANSACTIONS_ROUTE}/date/{date}");
                 ApiResponse<TransactionByDateDto>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<TransactionByDateDto>>();
                 
                 Assert.NotNull(apiResponse);
@@ -324,7 +325,7 @@ public class TransactionsTests
                 }
                 
                 string date = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd");
-                HttpResponseMessage httpResponse = await _client.GetAsync($"/api/transactions/date/{date}");
+                HttpResponseMessage httpResponse = await _client.GetAsync($"{TRANSACTIONS_ROUTE}/date/{date}");
                 ApiResponse<TransactionByDateDto>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<TransactionByDateDto>>();
                 
                 Assert.NotNull(apiResponse);
@@ -357,7 +358,7 @@ public class TransactionsTests
 
             await using (new FinanceDbDisposal(dbContext))
             {
-                HttpResponseMessage httpResponse = await _client.GetAsync($"/api/transactions/date/{date}");
+                HttpResponseMessage httpResponse = await _client.GetAsync($"{TRANSACTIONS_ROUTE}/date/{date}");
                 ApiResponse<TransactionByDateDto>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<TransactionByDateDto>>();
                 
                 Assert.NotNull(apiResponse);
@@ -421,7 +422,7 @@ public class TransactionsTests
                     await dbContext.SaveChangesAsync();
                 }
                 
-                string url = "/api/transactions/count?";
+                string url = $"{TRANSACTIONS_ROUTE}/count?";
 
                 if (data.Month.HasValue && data.Year.HasValue)
                 {
@@ -490,7 +491,7 @@ public class TransactionsTests
                     Date = DateOnly.FromDateTime(DateTime.UtcNow),
                 };
                 
-                HttpResponseMessage httpResponse = await _client.PutAsJsonAsync($"/api/transactions/{transaction.Id}", updatePayload);
+                HttpResponseMessage httpResponse = await _client.PutAsJsonAsync($"{TRANSACTIONS_ROUTE}/{transaction.Id}", updatePayload);
                 ApiResponse<string>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<string>>();
                 Transaction? updatedTransaction = await dbContext.Transactions.AsNoTracking().FirstOrDefaultAsync(t => t.Id == transaction.Id);
                 
@@ -554,7 +555,7 @@ public class TransactionsTests
                     Date = DateOnly.FromDateTime(DateTime.UtcNow),
                 };
                 
-                HttpResponseMessage httpResponse = await _client.PutAsJsonAsync($"/api/transactions/{transaction.Id}", updatePayload);
+                HttpResponseMessage httpResponse = await _client.PutAsJsonAsync($"{TRANSACTIONS_ROUTE}/{transaction.Id}", updatePayload);
                 ApiResponse<string>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<string>>();
                 
                 Assert.NotNull(apiResponse);
