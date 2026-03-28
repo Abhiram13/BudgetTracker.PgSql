@@ -22,7 +22,6 @@ namespace IntegrationTests.Finance.Fixtures;
 /// <remarks><see cref="IDisposable"/></remarks>
 public class TransactionsIntegrationTestFixture : FinanceTestFixture, IAsyncLifetime
 {
-    public HttpClient UnauthorizedClient { get; private set; } = default!;
     public Category TestCategory { get; private set; } = default!;
     public Bank TestBank { get; private set; } = default!;
     private CategoryBuilder _categoryBuilder = default!;
@@ -30,8 +29,6 @@ public class TransactionsIntegrationTestFixture : FinanceTestFixture, IAsyncLife
     
     public async Task InitializeAsync()
     {
-        UnauthorizedClient = Factory.CreateClient();
-        
         using (IServiceScope scope = Factory.CreateScope())
         {
             WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();

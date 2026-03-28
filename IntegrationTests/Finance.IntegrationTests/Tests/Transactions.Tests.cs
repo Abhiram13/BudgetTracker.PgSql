@@ -15,7 +15,8 @@ using IntegrationTests.Finance.Disposals;
 
 namespace IntegrationTests.Finance.Tests.Transactions;
 
-public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixture>
+[Collection(nameof(DatabaseFixture))]
+public class TransactionsTests
 {
     private readonly Category _testCategory;
     private readonly Bank _testBank;
@@ -26,7 +27,7 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
     public TransactionsTests(TransactionsIntegrationTestFixture fixture)
     {
         _client = fixture.Client;
-        _unAuthorizedClient = fixture.UnauthorizedClient;
+        _unAuthorizedClient = fixture.UnAuthorizedClient;
         _testCategory = fixture.TestCategory;
         _testBank = fixture.TestBank;
         _fixture = fixture;
