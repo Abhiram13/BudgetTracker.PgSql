@@ -10,11 +10,13 @@ public abstract class BaseEntity
     [JsonPropertyName("id")]
     public int Id { get; init; }
 
+    [Required]
     [Column("created_at")]
     [JsonPropertyName("created_at")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public DateOnly CreatedAt { get; set; }
+    public DateOnly CreatedAt { get; init; }
 
+    [Required]
     [Column("updated_at")]
     [JsonPropertyName("updated_at")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

@@ -12,7 +12,7 @@ public class InsertCategoriesTestData : TheoryData<InsertCategoryDef>
         {
             ExpectedApiStatusCode = HttpStatusCode.Created,
             ExpectedHttpStatusCode = HttpStatusCode.Created,
-            Payload = new InsertCategoryDto { Name = "Integration test category" },
+            Payload = new InsertCategoryDto { Name = "Integration test" },
             ShouldDataExist = true,
             PreSeedData = false,
         });
@@ -21,7 +21,7 @@ public class InsertCategoriesTestData : TheoryData<InsertCategoryDef>
         {
             ExpectedApiStatusCode = HttpStatusCode.Created,
             ExpectedHttpStatusCode = HttpStatusCode.Created,
-            Payload = new InsertCategoryDto { Name = "Integration test category #1" },
+            Payload = new InsertCategoryDto { Name = "Integration test 1" },
             ShouldDataExist = true,
             PreSeedData = false,
         });
@@ -39,7 +39,11 @@ public class InsertCategoriesTestData : TheoryData<InsertCategoryDef>
         {
             ExpectedApiStatusCode = HttpStatusCode.BadRequest,
             ExpectedHttpStatusCode = HttpStatusCode.BadRequest,
+            #pragma warning disable CS8625 
+            
             Payload = new InsertCategoryDto { Name = null },
+            
+            #pragma warning restore CS8625 
             ShouldDataExist = false,
             PreSeedData = false,
         });
@@ -88,5 +92,40 @@ public class InsertCategoriesTestData : TheoryData<InsertCategoryDef>
             ShouldDataExist = false,
             PreSeedData = true,
         });
+    }
+}
+
+public class CategoryEntityValidTestData : TheoryData<string>
+{
+    public CategoryEntityValidTestData()
+    {
+        Add("Travel");
+        Add("Travel 1");
+        Add("TRAVEL 1");
+        Add("Travel ,");
+        Add("Integration Test 12");
+        Add("Tra");
+    }
+}
+
+public class CategoryEntityInValidTestData : TheoryData<string?>
+{
+    public CategoryEntityInValidTestData()
+    {
+        Add("Tr");
+        Add("T");
+        Add("");
+        Add(" ");
+        Add("     ");
+        Add(null);
+        Add("12345");
+        Add("1");
+        Add("t");
+        
+        const string SPECIAL_CHARS = "!@#$%^&*()-_+={}[]\\|;:'?/><.~`";
+        foreach (char c in SPECIAL_CHARS)
+        {
+            Add($"Travel {c}");
+        }
     }
 }

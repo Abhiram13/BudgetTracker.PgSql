@@ -33,7 +33,7 @@ public class TransactionsIntegrationTestFixture : FinanceTestFixture, IAsyncLife
         {
             WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
             FinanceConfig financeConfig = scope.ServiceProvider.GetRequiredService<IOptions<FinanceConfig>>().Value;
-            await dbContext.Database.EnsureCreatedAsync();
+            await dbContext.Database.MigrateAsync();
             _categoryBuilder = scope.ServiceProvider.GetRequiredService<CategoryBuilder>();
             _bankBuilder = scope.ServiceProvider.GetRequiredService<BankBuilder>();
             TestCategory = await _categoryBuilder.CreateCategoryAsync();

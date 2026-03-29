@@ -26,6 +26,53 @@ public class CategoryTests
         _unAuthorisedClient = fixture.UnAuthorizedClient;
         _fixture = fixture;
     }
+
+    [Theory]
+    [ClassData(typeof(CategoryEntityValidTestData))]
+    public async Task Insert_Category_Entity_Valid_Success_Async(string categoryName)
+    {
+        using (IServiceScope scope = _fixture.Factory.CreateScope())
+        {
+            WriteDbContext dbcontext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
+            
+            await using (new CategoryDisposal(dbcontext))
+            {
+                Category category = new Category { Name = categoryName };
+                await dbcontext.Categories.AddAsync(category);
+                await dbcontext.SaveChangesAsync();
+                
+                Category? data = await dbcontext.Categories.Where(c => c.Name == categoryName).FirstOrDefaultAsync();
+                
+                Assert.NotNull(data);
+                Assert.Equal(categoryName, data.Name);
+            }
+        }
+    }
+    
+    [Theory]
+    [ClassData(typeof(CategoryEntityInValidTestData))]
+    public async Task Insert_Category_Entity_InValid_Fail_Async(string categoryName)
+    {
+        using (IServiceScope scope = _fixture.Factory.CreateScope())
+        {
+            WriteDbContext dbcontext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
+            
+            await using (new CategoryDisposal(dbcontext))
+            {
+                Category category = new Category { Name = categoryName };
+
+                await Assert.ThrowsAsync<DbUpdateException>(async () =>
+                {
+                    await dbcontext.Categories.AddAsync(category);
+                    await dbcontext.SaveChangesAsync();
+                });
+                
+                Category? data = await dbcontext.Categories.Where(c => c.Name == categoryName).FirstOrDefaultAsync();
+                
+                Assert.Null(data);
+            }
+        }
+    }
     
     [Fact]
     public async Task Unauthorised_401_Response_Async()
@@ -77,4 +124,9 @@ public class CategoryTests
             }
         }
     }
+    
+    // public async Task Get_Categories_List_Async()
+    // {
+    //     HttpResponseMessage httpResponse = await _client.GetAsync(CATEGORY_ROUTE);
+    // }
 }

@@ -48,4 +48,12 @@ public class CategoryServiceUnitTests
         Exception error = await Assert.ThrowsAsync<InvalidPayloadException>(action);
         Assert.Equal("Category not found", error.Message);
     }
+
+    [Fact]
+    public void Invalid_Category_Name()
+    {
+        Category category = new Category { Name = null };
+        
+        Assert.Throws<BadHttpRequestException>(() => category);
+    }
 }
