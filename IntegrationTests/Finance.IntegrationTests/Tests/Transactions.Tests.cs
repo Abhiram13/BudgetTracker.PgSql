@@ -47,6 +47,53 @@ public class TransactionsTests
         Assert.NotNull(apiResponse.Message);
         Assert.NotEmpty(apiResponse.Message);
     }
+    
+    #region Transaction Entity
+
+    [Theory]
+    [ClassData(typeof(TransactionsEntityValidTestData))]
+    public async Task Transaction_Entity_Valid_Success_Async(Transaction transaction)
+    {
+        using (IServiceScope scope = _fixture.Factory.CreateScope())
+        {
+            WriteDbContext dbcontext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
+            
+            await using (new TransactionDisposal(dbcontext))
+            {
+                await dbcontext.Transactions.AddAsync(transaction);
+                await dbcontext.SaveChangesAsync();
+                
+                Transaction? data = await dbcontext.Transactions.Where(t => t.Description == transaction.Description).FirstOrDefaultAsync();
+                
+                Assert.NotNull(data);
+                Assert.Equal(transaction.Description, data.Description);
+            }
+        }
+    }
+
+    [Theory]
+    [ClassData(typeof(TransactionsEntityInValidTestData))]
+    public async Task Transaction_Entity_InValid_Success_Async(Transaction transaction)
+    {
+        using (IServiceScope scope = _fixture.Factory.CreateScope())
+        {
+            WriteDbContext dbcontext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
+
+            await using (new TransactionDisposal(dbcontext))
+            {
+                await Assert.ThrowsAsync<DbUpdateException>(async () =>
+                {
+                    await dbcontext.Transactions.AddAsync(transaction);
+                    await dbcontext.SaveChangesAsync();
+                });
+
+                Transaction? data = await dbcontext.Transactions.Where(t => t.Description == transaction.Description).FirstOrDefaultAsync();
+                Assert.Null(data);
+            }
+        }
+    }
+
+    #endregion
 
     #region Insert Transactions
 
@@ -58,7 +105,7 @@ public class TransactionsTests
         {
             WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
 
-            await using (new FinanceDbDisposal(dbContext))
+            await using (new TransactionDisposal(dbContext))
             {
                 HttpResponseMessage httpResponse = await _client.PostAsJsonAsync(TRANSACTIONS_ROUTE, payload);
                 ApiResponse<string>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<string>>();
@@ -80,7 +127,7 @@ public class TransactionsTests
         {
             WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
 
-            await using (new FinanceDbDisposal(dbContext))
+            await using (new TransactionDisposal(dbContext))
             {
                 HttpResponseMessage httpResponse = await _client.PostAsJsonAsync(TRANSACTIONS_ROUTE, payload);
                 ApiResponse<string>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<string>>();
@@ -106,7 +153,7 @@ public class TransactionsTests
         {
             WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
 
-            await using (new FinanceDbDisposal(dbContext))
+            await using (new TransactionDisposal(dbContext))
             {
                 string description = "Date validation Transaction #1";
                 InsertTransactionDto insertDto = new InsertTransactionDto
@@ -142,7 +189,7 @@ public class TransactionsTests
         {
             WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
 
-            await using (new FinanceDbDisposal(dbContext))
+            await using (new TransactionDisposal(dbContext))
             {
                 string description = "Date validation Transaction #1";
                 InsertTransactionDto insertDto = new InsertTransactionDto
@@ -177,7 +224,7 @@ public class TransactionsTests
         {
             WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
 
-            await using (new FinanceDbDisposal(dbContext))
+            await using (new TransactionDisposal(dbContext))
             {
                 InsertTransactionDto insertDto = new InsertTransactionDto
                 {
@@ -217,7 +264,7 @@ public class TransactionsTests
         {
             WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
 
-            await using (new FinanceDbDisposal(dbContext))
+            await using (new TransactionDisposal(dbContext))
             {
                 List<Transaction> transactions = new List<Transaction>
                 {
@@ -286,7 +333,7 @@ public class TransactionsTests
         {
             WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
 
-            await using (new FinanceDbDisposal(dbContext))
+            await using (new TransactionDisposal(dbContext))
             {
                 List<Transaction> transactions = new List<Transaction>
                 {
@@ -356,7 +403,7 @@ public class TransactionsTests
         {
             WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
 
-            await using (new FinanceDbDisposal(dbContext))
+            await using (new TransactionDisposal(dbContext))
             {
                 HttpResponseMessage httpResponse = await _client.GetAsync($"{TRANSACTIONS_ROUTE}/date/{date}");
                 ApiResponse<TransactionByDateDto>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<TransactionByDateDto>>();
@@ -384,7 +431,7 @@ public class TransactionsTests
         {
             WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
 
-            await using (new FinanceDbDisposal(dbContext))
+            await using (new TransactionDisposal(dbContext))
             {
                 List<Transaction> transactions = new List<Transaction>
                 {
@@ -460,7 +507,7 @@ public class TransactionsTests
         {
             WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
 
-            await using (new FinanceDbDisposal(dbContext))
+            await using (new TransactionDisposal(dbContext))
             {
                 Transaction transaction = new Transaction
                 {
@@ -524,7 +571,7 @@ public class TransactionsTests
         {
             WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
 
-            await using (new FinanceDbDisposal(dbContext))
+            await using (new TransactionDisposal(dbContext))
             {
                 Transaction transaction = new Transaction
                 {

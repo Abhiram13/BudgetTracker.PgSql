@@ -1,20 +1,19 @@
 using BudgetTracker.Finance;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace IntegrationTests.Finance.Disposals;
 
-public sealed class TransactionDisposal : IAsyncDisposable
+public sealed class BankDisposal : IAsyncDisposable
 {
     private readonly WriteDbContext _dbContext;
 
-    public TransactionDisposal(WriteDbContext dbContext)
+    public BankDisposal(WriteDbContext dbContext)
     {
         _dbContext = dbContext;
     }
     
     public async ValueTask DisposeAsync()
     {
-        await _dbContext.Transactions.ExecuteDeleteAsync();
+        await _dbContext.Banks.ExecuteDeleteAsync();
     }
 }

@@ -1,12 +1,16 @@
 using System.ComponentModel.DataAnnotations;
+using BudgetTracker.Shared.Utilities;
 
 namespace BudgetTracker.Finance.Models;
 
 public record InsertCategoryDto
 {
     [JsonPropertyName("name")]
-    [StringLength(maximumLength: 50, MinimumLength = 1)]
-    [RegularExpression(@"^(?=.*[a-zA-Z])[a-zA-Z0-9#,\s]*$", ErrorMessage = "Only letters, numbers, spaces and # are allowed")]
+    [Required(ErrorMessage = "Category name is required")]
+    [MaxLength(20, ErrorMessage = "Category name exceeds character limit")]
+    [MinLength(3, ErrorMessage = "Minimum 3 characters are required")]
+    [StringLength(maximumLength: 20, MinimumLength = 3, ErrorMessage = "Category name exceeds or does not reach required length")]
+    [RegularExpression(ValidationRegex.NAME_PATTERN, ErrorMessage = "Only letters, numbers, spaces and # are allowed")]
     public string Name { get; init; } = string.Empty;
 }
 

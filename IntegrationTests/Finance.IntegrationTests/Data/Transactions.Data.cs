@@ -1,4 +1,5 @@
 using System.Net;
+using BudgetTracker.Finance.Entities;
 using BudgetTracker.Finance.Enums;
 using BudgetTracker.Finance.Models;
 using IntegrationTests.Finance.Definations.Transactions;
@@ -106,7 +107,7 @@ public static class InsertTransactionsMemberTestData
         {
             new InsertTransactionDto
             {
-                ActualAmount = 0,
+                ActualAmount = null,
                 Amount = 200,
                 CategoryId = 1,
                 Description = "First Transaction #1",
@@ -478,6 +479,546 @@ public class TransactionsByMonthYearTestsData : TheoryData<TransactionsByMonthYe
             ExpectedApiStatusCode = HttpStatusCode.OK,
             ExpectedHttpStatusCode = HttpStatusCode.OK,
             ShouldDataExists = true
+        });
+    }
+}
+
+public class TransactionsEntityValidTestData : TheoryData<Transaction>
+{
+    public TransactionsEntityValidTestData()
+    {
+        // Complete happy path values
+        Add(new Transaction
+        {
+            ActualAmount = 100,
+            Amount = 100,
+            Description = "A Sample Description",
+            CategoryId = 1,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = 1,
+            ToBank = null,
+            Type = TransactionType.Debit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        });
+        
+        // Only Max amount
+        Add(new Transaction
+        {
+            ActualAmount = 1,
+            Amount = 1_000_000m,
+            Description = "A Sample Description",
+            CategoryId = 1,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = 1,
+            ToBank = null,
+            Type = TransactionType.Debit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        });
+        
+        // Only Min amount
+        Add(new Transaction
+        {
+            ActualAmount = 1,
+            Amount = 0.01m,
+            Description = "A Sample Description",
+            CategoryId = 1,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = 1,
+            ToBank = null,
+            Type = TransactionType.Debit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        });
+        
+        // Only Max actual amount
+        Add(new Transaction
+        {
+            ActualAmount = 1_000_000m,
+            Amount = 100,
+            Description = "A Sample Description",
+            CategoryId = 1,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = 1,
+            ToBank = null,
+            Type = TransactionType.Debit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        });
+        
+        // Only Min actual amount
+        Add(new Transaction
+        {
+            ActualAmount = 0.01m,
+            Amount = 100,
+            Description = "A Sample Description",
+            CategoryId = 1,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = 1,
+            ToBank = null,
+            Type = TransactionType.Debit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        });
+        
+        // Only Null actual amount
+        Add(new Transaction
+        {
+            ActualAmount = null,
+            Amount = 100,
+            Description = "A Sample Description",
+            CategoryId = 1,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = 1,
+            ToBank = null,
+            Type = TransactionType.Debit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        });
+        
+        // Only max description limit
+        Add(new Transaction
+        {
+            ActualAmount = 1_000_000m,
+            Amount = 100,
+            Description = new string('a', 50),
+            CategoryId = 1,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = 1,
+            ToBank = null,
+            Type = TransactionType.Debit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        });
+        
+        // Only min description limit
+        Add(new Transaction
+        {
+            ActualAmount = 1_000_000m,
+            Amount = 100,
+            Description = new string('a', 3),
+            CategoryId = 1,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = 1,
+            ToBank = null,
+            Type = TransactionType.Debit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        });
+        
+        // Only description with comma and numbers and #
+        Add(new Transaction
+        {
+            ActualAmount = 1_000_000m,
+            Amount = 100,
+            Description = "Sample description #1, #2",
+            CategoryId = 1,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = 1,
+            ToBank = null,
+            Type = TransactionType.Debit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        });
+        
+        // Only credit type with to bank
+        Add(new Transaction
+        {
+            ActualAmount = 1_000_000m,
+            Amount = 100,
+            Description = new string('a', 50),
+            CategoryId = 1,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = null,
+            ToBank = 1,
+            Type = TransactionType.Credit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        });
+    }
+}
+
+public class TransactionsEntityInValidTestData : TheoryData<Transaction>
+{
+    public TransactionsEntityInValidTestData()
+    {
+        // Actual amount is zero
+        Add(new Transaction
+        {
+            ActualAmount = 0,
+            Amount = 100,
+            Description = "A Sample Description",
+            CategoryId = 1,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = 1,
+            ToBank = null,
+            Type = TransactionType.Debit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        });
+        
+        // Actual amount is above limit
+        Add(new Transaction
+        {
+            ActualAmount = 1_000_001m,
+            Amount = 100,
+            Description = "A Sample Description",
+            CategoryId = 1,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = 1,
+            ToBank = null,
+            Type = TransactionType.Debit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        });
+        
+        // Amount is above limit
+        Add(new Transaction
+        {
+            ActualAmount = 100,
+            Amount = 1_000_001m,
+            Description = "A Sample Description",
+            CategoryId = 1,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = 1,
+            ToBank = null,
+            Type = TransactionType.Debit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        });
+        
+        // Amount is zero
+        Add(new Transaction
+        {
+            ActualAmount = 100,
+            Amount = 0,
+            Description = "A Sample Description",
+            CategoryId = 1,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = 1,
+            ToBank = null,
+            Type = TransactionType.Debit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        });
+        
+        // Amount is not given 
+        Add(new Transaction
+        {
+            ActualAmount = 100,
+            Description = "A Sample Description",
+            CategoryId = 1,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = 1,
+            ToBank = null,
+            Type = TransactionType.Debit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        });
+        
+        // Less than min length description
+        Add(new Transaction
+        {
+            ActualAmount = 0,
+            Amount = 100,
+            Description = "A",
+            CategoryId = 1,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = 1,
+            ToBank = null,
+            Type = TransactionType.Debit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        });
+        
+        // Less than min length description
+        Add(new Transaction
+        {
+            ActualAmount = 0,
+            Amount = 100,
+            Description = "Ab",
+            CategoryId = 1,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = 1,
+            ToBank = null,
+            Type = TransactionType.Debit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        });
+        
+        // Empty description
+        Add(new Transaction
+        {
+            ActualAmount = 0,
+            Amount = 100,
+            Description = "",
+            CategoryId = 1,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = 1,
+            ToBank = null,
+            Type = TransactionType.Debit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        });
+        
+        // Spaces description
+        Add(new Transaction
+        {
+            ActualAmount = 0,
+            Amount = 100,
+            Description = " ",
+            CategoryId = 1,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = 1,
+            ToBank = null,
+            Type = TransactionType.Debit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        });
+        
+        // Spaces description
+        Add(new Transaction
+        {
+            ActualAmount = 0,
+            Amount = 100,
+            Description = "   ",
+            CategoryId = 1,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = 1,
+            ToBank = null,
+            Type = TransactionType.Debit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        });
+        
+        // Null description
+        Add(new Transaction
+        {
+            ActualAmount = 0,
+            Amount = 100,
+            Description = null,
+            CategoryId = 1,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = 1,
+            ToBank = null,
+            Type = TransactionType.Debit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        });
+        
+        // numbers description
+        Add(new Transaction
+        {
+            ActualAmount = 0,
+            Amount = 100,
+            Description = "1234567",
+            CategoryId = 1,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = 1,
+            ToBank = null,
+            Type = TransactionType.Debit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        });
+        
+        const string SPECIAL_CHARS = "!@$%^&*()-_+={}[]\\|;:'?/><.~`";
+
+        foreach (char c in SPECIAL_CHARS)
+        {
+            Add(new Transaction
+            {
+                ActualAmount = 100,
+                Amount = 100,
+                Description = $"A Sample Description {c}",
+                CategoryId = 1,
+                CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+                UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+                FromBank = 1,
+                ToBank = null,
+                Type = TransactionType.Debit,
+                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+            });
+        }
+        
+        // Invalid category id
+        Add(new Transaction
+        {
+            ActualAmount = 10,
+            Amount = 100,
+            Description = "A Sample Description",
+            CategoryId = 0,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = 1,
+            ToBank = null,
+            Type = TransactionType.Debit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        });
+        
+        // Invalid category id
+        Add(new Transaction
+        {
+            ActualAmount = 10,
+            Amount = 100,
+            Description = "A Sample Description",
+            CategoryId = 100,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = 1,
+            ToBank = null,
+            Type = TransactionType.Debit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        });
+        
+        // Invalid from bank id
+        Add(new Transaction
+        {
+            ActualAmount = 10,
+            Amount = 100,
+            Description = "A Sample Description",
+            CategoryId = 1,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = 0,
+            ToBank = null,
+            Type = TransactionType.Debit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        });
+        
+        // Invalid from bank id
+        Add(new Transaction
+        {
+            ActualAmount = 10,
+            Amount = 100,
+            Description = "A Sample Description",
+            CategoryId = 1,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = 100,
+            ToBank = null,
+            Type = TransactionType.Debit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        });
+        
+        // Invalid to bank id
+        Add(new Transaction
+        {
+            ActualAmount = 10,
+            Amount = 100,
+            Description = "A Sample Description",
+            CategoryId = 1,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = null,
+            ToBank = 0,
+            Type = TransactionType.Credit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        });
+        
+        // Invalid to bank id
+        Add(new Transaction
+        {
+            ActualAmount = 10,
+            Amount = 100,
+            Description = "A Sample Description",
+            CategoryId = 1,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = null,
+            ToBank = 100,
+            Type = TransactionType.Credit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        });
+        
+        // Invalid to bank and from bank id with credit type
+        Add(new Transaction
+        {
+            ActualAmount = 10,
+            Amount = 100,
+            Description = "A Sample Description",
+            CategoryId = 1,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = 10,
+            ToBank = 100,
+            Type = TransactionType.Credit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        });
+        
+        // Invalid to bank and from bank id with debit type
+        Add(new Transaction
+        {
+            ActualAmount = 10,
+            Amount = 100,
+            Description = "A Sample Description",
+            CategoryId = 1,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = 10,
+            ToBank = 100,
+            Type = TransactionType.Debit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        });
+        
+        // Same to bank and from bank id with debit type
+        Add(new Transaction
+        {
+            ActualAmount = 10,
+            Amount = 100,
+            Description = "A Sample Description",
+            CategoryId = 1,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = 10,
+            ToBank = 10,
+            Type = TransactionType.Debit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        });
+        
+        // Same to bank and from bank id with credit type
+        Add(new Transaction
+        {
+            ActualAmount = 10,
+            Amount = 100,
+            Description = "A Sample Description",
+            CategoryId = 1,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = 10,
+            ToBank = 10,
+            Type = TransactionType.Credit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        });
+        
+        // To bank with debit type
+        Add(new Transaction
+        {
+            ActualAmount = 10,
+            Amount = 100,
+            Description = "A Sample Description",
+            CategoryId = 1,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = null,
+            ToBank = 1,
+            Type = TransactionType.Debit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        });
+        
+        // From bank with Credit type
+        Add(new Transaction
+        {
+            ActualAmount = 10,
+            Amount = 100,
+            Description = "A Sample Description",
+            CategoryId = 1,
+            CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
+            FromBank = 1,
+            ToBank = null,
+            Type = TransactionType.Credit,
+            Date = DateOnly.FromDateTime(DateTime.UtcNow),
         });
     }
 }

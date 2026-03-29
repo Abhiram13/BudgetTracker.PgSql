@@ -1,27 +1,35 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using BudgetTracker.Finance.Enums;
 using Microsoft.EntityFrameworkCore;
 using BudgetTracker.Shared.Entities;
+using BudgetTracker.Shared.Utilities;
 
 namespace BudgetTracker.Finance.Entities;
 
 [Table("transactions")]
-// TODO: Change Set to Init
 public class Transaction : BaseEntity
 {
+    [Required(ErrorMessage = "Transaction Amount is required")]
     [Column("amount")]
     [JsonPropertyName("amount")]
-    [Comment(comment: "Amount that was used in a transaction")]
+    [Comment(comment: "Amount that will be used in a transaction")]
+    [Range(type: typeof(decimal), minimum: "0.01",  maximum: "1000000", ErrorMessage = "Given amount is greater than limit")]
     public decimal Amount { get; set; }
 
     [Column("actual_amount")]
     [JsonPropertyName("actual_amount")]
-    [Comment(comment: "Amount that was used in a transaction and left the bank account. Credit card transaction amounts won't be added in actual amount")]
+    [Range(type: typeof(decimal), minimum: "0.01",  maximum: "1000000", ErrorMessage = "Given actual amount is greater than limit")]
+    [Comment(comment: "Amount that will be used in a transaction and left the bank account. Credit card transaction amounts won't be added in actual amount")]
     public decimal? ActualAmount { get; set; }
-
+    
     [Column("description")]
     [JsonPropertyName("description")]
-    // TODO: Setup character limit
+    [Required(ErrorMessage = "Description is required")]
+    [MaxLength(LengthConstants.MAX_TRANSACTION_DESCRIPTION_LENGTH, ErrorMessage = "Description exceeds character limit")]
+    [MinLength(LengthConstants.MIN_TRANSACTION_DESCRIPTION_LENGTH, ErrorMessage = "Minimum characters are required")]
+    [StringLength(maximumLength: LengthConstants.MAX_TRANSACTION_DESCRIPTION_LENGTH, MinimumLength = LengthConstants.MIN_TRANSACTION_DESCRIPTION_LENGTH, ErrorMessage = "Description exceeds or does not reach required length")]
+    [RegularExpression(ValidationRegex.DESCRIPTION_PATTERN, ErrorMessage = "Only letters, numbers, spaces and # are allowed")]
     public string Description { get; set; } = string.Empty;
 
     [Column("from_bank")]    
@@ -32,6 +40,7 @@ public class Transaction : BaseEntity
     [JsonPropertyName("to_bank")]
     public int? ToBank { get; set; }
 
+    [Required(ErrorMessage = "Category Id is required")]
     [Column("category_id")]
     [JsonPropertyName("category_id")]
     public int CategoryId { get; set; }
@@ -40,6 +49,7 @@ public class Transaction : BaseEntity
     [JsonPropertyName("date")]
     public DateOnly Date { get; set; }
 
+    [Required(ErrorMessage = "Transaction type is required")]
     [Column("type")]
     [JsonPropertyName("type")]
     public TransactionType Type { get; set; }

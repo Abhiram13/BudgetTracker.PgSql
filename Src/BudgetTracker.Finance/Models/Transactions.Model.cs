@@ -1,11 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 using BudgetTracker.Finance.Attributes;
 using BudgetTracker.Finance.Enums;
+using BudgetTracker.Shared.Utilities;
 
 namespace BudgetTracker.Finance.Models;
 
 public abstract record TransactionDto
 {
+    [Required(ErrorMessage = "Amount is required")]
     [Range(type: typeof(decimal), minimum: "0.01",  maximum: "1000000", ErrorMessage = "Given amount is greater than limit")]
     [JsonPropertyName("amount")]
     public decimal Amount { get; init; }
@@ -14,9 +16,12 @@ public abstract record TransactionDto
     [JsonPropertyName("actual_amount")]
     public decimal? ActualAmount { get; init; }
     
-    [StringLength(maximumLength: 50, MinimumLength = 1)]
     [JsonPropertyName("description")]
-    [RegularExpression(@"^[a-zA-Z0-9#,\s]*$", ErrorMessage = "Only letters, numbers and spaces allowed")]
+    [Required(ErrorMessage = "Description is required")]
+    [MaxLength(50, ErrorMessage = "Description exceeds character limit")]
+    [MinLength(3, ErrorMessage = "Minimum 3 characters are required")]
+    [StringLength(maximumLength: 50, MinimumLength = 3, ErrorMessage = "Description exceeds or does not reach required length")]
+    [RegularExpression(ValidationRegex.DESCRIPTION_PATTERN, ErrorMessage = "Only letters, numbers, spaces and # are allowed")]
     public string Description { get; init; } = string.Empty;
 
     [JsonPropertyName("from_bank")]
@@ -25,6 +30,7 @@ public abstract record TransactionDto
     [JsonPropertyName("to_bank")]
     public int? ToBank { get; init; }
 
+    [Required(ErrorMessage = "Category Id is required")]
     [JsonPropertyName("category_id")]
     public int CategoryId { get; init; }
 
@@ -32,6 +38,7 @@ public abstract record TransactionDto
     [MaxDate(ErrorMessage = "Provided date is out of range or invalid.")]
     public DateOnly Date { get; init; }
 
+    [Required(ErrorMessage = "Transaction type is required")]
     [JsonPropertyName("type")]
     public TransactionType Type { get; init; }
     

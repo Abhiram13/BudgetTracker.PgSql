@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace IntegrationTests.Finance.Fixtures;
 
-public class CategoriesTestsFixture : FinanceTestFixture, IAsyncLifetime
+public class BanksTestsFixture : FinanceTestFixture, IAsyncLifetime
 {
     public async Task InitializeAsync()
     {
@@ -26,7 +26,7 @@ public class CategoriesTestsFixture : FinanceTestFixture, IAsyncLifetime
         {
             WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
 
-            await dbContext.Categories.ExecuteDeleteAsync();
+            await dbContext.Banks.ExecuteDeleteAsync();
         }
         
         DisposeFactoryAndClient();
