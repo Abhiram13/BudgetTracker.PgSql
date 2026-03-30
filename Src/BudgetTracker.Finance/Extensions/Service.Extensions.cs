@@ -54,10 +54,23 @@ public static class ServiceExtension
             PostgresSecrets secrets = provider.GetRequiredService<AppSecrets>().Postgres;
 
             string? postgresHost = secrets.Host;
-            string? postgresPort = secrets.Port;
+            string? postgresPort = secrets.WritePort;
             string? postgresDatabase = secrets.Database;
-            string? postgresUsername = secrets.Username;
-            string? postgresPassword = secrets.Password;
+            string? postgresUsername = secrets.WriteUsername;
+            string? postgresPassword = secrets.WritePassword;
+            string connectionString = $"Host={postgresHost};Port={postgresPort};Database={postgresDatabase};Username={postgresUsername};Password={postgresPassword}";
+            options.UseNpgsql(connectionString);
+        });
+        
+        collection.AddDbContext<ReadDbContext>((provider, options) =>
+        {
+            PostgresSecrets secrets = provider.GetRequiredService<AppSecrets>().Postgres;
+
+            string? postgresHost = secrets.Host;
+            string? postgresPort = secrets.ReadPort;
+            string? postgresDatabase = secrets.Database;
+            string? postgresUsername = secrets.ReadUsername;
+            string? postgresPassword = secrets.ReadPassword;
             string connectionString = $"Host={postgresHost};Port={postgresPort};Database={postgresDatabase};Username={postgresUsername};Password={postgresPassword}";
             options.UseNpgsql(connectionString);
         });
