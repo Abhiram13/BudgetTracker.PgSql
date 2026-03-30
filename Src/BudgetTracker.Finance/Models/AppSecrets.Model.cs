@@ -17,9 +17,33 @@ public record PostgresSecrets
     [ConfigurationKeyName("FINANCE_DATABASE")]
     public string Database { get; set; } = string.Empty;
     public string Host { get; set; }= string.Empty;
-    public string Username { get; set; } = string.Empty;
-    public string Password { get; set; } = string.Empty;
-    public string Port { get; set; } = string.Empty;
+    
+    [ConfigurationKeyName("WRITE_USERNAME")]
+    public string WriteUsername { get; set; } = string.Empty;
+    
+    [ConfigurationKeyName("WRITE_PASSWORD")]
+    public string WritePassword { get; set; } = string.Empty;
+    
+    [ConfigurationKeyName("WRITE_PORT")]
+    public string WritePort { get; set; } = string.Empty;
+    
+    [ConfigurationKeyName("READ_USERNAME")]
+    public string ReadUsername { get; set; } = string.Empty;
+    
+    [ConfigurationKeyName("READ_PASSWORD")]
+    public string ReadPassword { get; set; } = string.Empty;
+    
+    [ConfigurationKeyName("READ_PORT")]
+    public string ReadPort { get; set; } = string.Empty;
+    
+    [ConfigurationKeyName("MIGRATE_USERNAME")]
+    public string MigrateUsername { get; set; } = string.Empty;
+    
+    [ConfigurationKeyName("MIGRATE_PASSWORD")]
+    public string MigratePassword { get; set; } = string.Empty;
+    
+    [ConfigurationKeyName("MIGRATE_PORT")]
+    public string MigratePort { get; set; } = string.Empty;
 }
 
 public record PubSubSecrets

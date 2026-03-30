@@ -29,11 +29,21 @@ WebApplication app = builder.Build();
 using (IServiceScope scope = app.Services.CreateScope())
 {
     ILogger<Program> logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    
     try
     {
         logger.LogInformation("DB Migration is starting...");
-        WriteDbContext context = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
-        context.Database.Migrate();
+        
+        PostgresSecrets secrets = scope.ServiceProvider.GetRequiredService<AppSecrets>().Postgres;
+        DbContextOptionsBuilder<WriteDbContext> contextOptionsBuilder = new DbContextOptionsBuilder<WriteDbContext>();
+        string connectionString = $"Host={secrets.Host};Port={secrets.MigratePort};Database={secrets.Database};Username={secrets.MigrateUsername};Password={secrets.MigratePassword}";
+        contextOptionsBuilder.UseNpgsql(connectionString);
+
+        using (WriteDbContext writeDbContext = new WriteDbContext(contextOptionsBuilder.Options))
+        {
+            writeDbContext.Database.Migrate();
+        }
+        
         logger.LogInformation("DB Migration completed");
     }
     catch (Exception e)

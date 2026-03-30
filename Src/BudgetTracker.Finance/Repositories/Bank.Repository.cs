@@ -8,15 +8,17 @@ namespace BudgetTracker.Finance.Repository;
 public class BankRepository : IBankRepository
 {
     private readonly WriteDbContext _writeDbContext;
+    private readonly ReadDbContext _readDbContext;
 
-    public BankRepository(WriteDbContext write)
+    public BankRepository(WriteDbContext write, ReadDbContext read)
     {
         _writeDbContext = write;
+        _readDbContext = read;
     }
 
     public async Task<List<BankListDto>> GetAllBanksAsync()
     {
-        List<BankListDto> list = await _writeDbContext.Banks
+        List<BankListDto> list = await _readDbContext.Banks
             .Select(b => new BankListDto { Id = b.Id, Name = b.Name })
             .ToListAsync();
 
@@ -25,7 +27,7 @@ public class BankRepository : IBankRepository
 
     public async Task<Bank> GetBankByIdAsync(int id)
     {
-        Bank? bank = await _writeDbContext.Banks.FirstOrDefaultAsync(b => b.Id == id);
+        Bank? bank = await _readDbContext.Banks.FirstOrDefaultAsync(b => b.Id == id);
         
         if (bank == null) throw new BadHttpRequestException($"Bank with id {id} not found");
         

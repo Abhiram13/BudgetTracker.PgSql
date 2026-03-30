@@ -12,10 +12,12 @@ namespace BudgetTracker.Finance.Repository;
 public class TransactionRepository : ITransactionRepository
 {
     private readonly WriteDbContext _writeDbContext;
+    private readonly ReadDbContext _readDbContext;
 
-    public TransactionRepository(WriteDbContext write)
+    public TransactionRepository(WriteDbContext write, ReadDbContext read)
     {
         _writeDbContext = write;
+        _readDbContext = read;
     }
 
     public async Task<TransactionByDateDto> GetAllTransactionsByDateAsync(string transactionDate)
@@ -33,7 +35,7 @@ public class TransactionRepository : ITransactionRepository
             throw new InvalidDateException();
         }
         
-        TransactionByDateDto? result = await _writeDbContext.Transactions
+        TransactionByDateDto? result = await _readDbContext.Transactions
             .Where(t => t.Date == date)
             .GroupBy(t => t.Date)
             .Select(t => new TransactionByDateDto
@@ -62,7 +64,7 @@ public class TransactionRepository : ITransactionRepository
     
     public async Task<TransactionsListByMonthDto?> GetDebitCreditByDateAsync(DateOnly transactionDate)
     {
-        TransactionsListByMonthDto? result = await _writeDbContext.Transactions
+        TransactionsListByMonthDto? result = await _readDbContext.Transactions
             .Where(t => t.Date == transactionDate)
             .GroupBy(t => t.Date)
             .Select(t => new TransactionsListByMonthDto
@@ -95,7 +97,7 @@ public class TransactionRepository : ITransactionRepository
         DateOnly start = new DateOnly(y, m, 1);
         DateOnly end = start.AddMonths(1);
 
-        int count = await _writeDbContext.Transactions
+        int count = await _readDbContext.Transactions
             .Where(t => t.Date >= start && t.Date < end)
             .CountAsync();
         
@@ -122,7 +124,7 @@ public class TransactionRepository : ITransactionRepository
 
     public async Task<List<DateOnly>> GetGroupOfDatesAsync()
     {
-        List<DateOnly> dates = await _writeDbContext.Transactions.GroupBy(t => t.Date).Select(t => t.Key).ToListAsync();
+        List<DateOnly> dates = await _readDbContext.Transactions.GroupBy(t => t.Date).Select(t => t.Key).ToListAsync();
 
         return dates;
     }

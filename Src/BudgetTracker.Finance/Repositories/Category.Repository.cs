@@ -9,10 +9,12 @@ namespace BudgetTracker.Finance.Repository;
 public class CategoryRepository : ICategoryRepository
 {
     private readonly WriteDbContext _writeDbContext;
+    private readonly ReadDbContext _readDbContext;
 
-    public CategoryRepository(WriteDbContext write)
+    public CategoryRepository(WriteDbContext write, ReadDbContext read)
     {
         _writeDbContext = write;
+        _readDbContext = read;
     }
 
     public async Task<Category> InsertOneCategoryAsync(Category payload)
@@ -24,7 +26,7 @@ public class CategoryRepository : ICategoryRepository
 
     public async Task<List<CategoryListDto>> ListOfCategoryAsync()
     {
-        List<CategoryListDto> list = await _writeDbContext.Categories
+        List<CategoryListDto> list = await _readDbContext.Categories
             .Select(c => new CategoryListDto { Id = c.Id, Name = c.Name })
             .ToListAsync();
 
@@ -48,13 +50,13 @@ public class CategoryRepository : ICategoryRepository
 
     public async Task<Category?> GetCategoryAsync(int id)
     {
-        Category? category = await _writeDbContext.Categories.FirstOrDefaultAsync(c => c.Id == id);
+        Category? category = await _readDbContext.Categories.FirstOrDefaultAsync(c => c.Id == id);
         return category;
     }
 
     public async Task<Category?> GetCategoryAsync(string categoryName)
     {
-        Category? category = await _writeDbContext.Categories.FirstOrDefaultAsync(c => c.Name == categoryName);
+        Category? category = await _readDbContext.Categories.FirstOrDefaultAsync(c => c.Name == categoryName);
         return category;
     }
 }
