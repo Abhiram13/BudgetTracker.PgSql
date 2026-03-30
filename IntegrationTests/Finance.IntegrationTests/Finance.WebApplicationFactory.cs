@@ -40,8 +40,20 @@ public class FinanceTestWebApplicationFactory : WebApplicationFactory<Program>
         {
             services.AddOptions<FinanceConfig>().Bind(context.Configuration).ValidateOnStart();
             ServiceDescriptor descriptor = services.Single(s => s.ServiceType == typeof(DbContextOptions<WriteDbContext>));
+            ServiceDescriptor readContextDescriptor = services.Single(s => s.ServiceType == typeof(DbContextOptions<ReadDbContext>));
+            
             services.Remove(descriptor);
+            services.Remove(readContextDescriptor);
+            
+            // Using Same one test DB credentials for Write and Read DBs
             services.AddDbContext<WriteDbContext>((provider, option) =>
+            {
+                FinanceConfig config = provider.GetRequiredService<IOptions<FinanceConfig>>().Value;
+                option.UseNpgsql(config.DatabaseConnection.FinanceDb);
+            });
+            
+            // Using Same one test DB credentials for Write and Read DBs
+            services.AddDbContext<ReadDbContext>((provider, option) =>
             {
                 FinanceConfig config = provider.GetRequiredService<IOptions<FinanceConfig>>().Value;
                 option.UseNpgsql(config.DatabaseConnection.FinanceDb);
