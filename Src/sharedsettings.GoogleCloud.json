@@ -1,0 +1,14 @@
+{
+    "Serilog": {
+        "Using": ["Serilog.Sinks.GoogleCloudLogging"],
+        "WriteTo": [
+            {
+                "Name": "GoogleCloudLogging",
+                "Args": {
+                    "outputTemplate": "[{SourceContext}] {Message:lj}{NewLine}{Exception}",
+                    "projectId": "%GOOGLE_CLOUD_PROJECT_ID%"
+                }
+            }
+        ]
+    }
+}

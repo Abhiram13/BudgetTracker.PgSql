@@ -30,10 +30,10 @@ public class ExceptionHandlerMiddleware : ICustomMiddleware
 
         (HttpStatusCode httpStatusCode, int apiStatusCode, string logMessage, string errorMessage) = exception switch
         {
-            InvalidDateException => (HttpStatusCode.BadRequest, StatusCodes.Status400BadRequest, "Invalid Date Exception at Request = {0} with Trace-Id = {1}. Exception message = {2}", "Invalid Date provided. Please check logs for more details"),
-            InvalidPayloadException => (HttpStatusCode.BadRequest, StatusCodes.Status400BadRequest, "Invalid Payload Exception at Request = {0} with Trace-Id = {1}. Exception message = {2}", "Invalid Payload provided. Please check logs for more details"),
-            DbUpdateException => (HttpStatusCode.BadRequest, StatusCodes.Status400BadRequest, "DB Exception at Request = {0} with Trace-Id = {1}, Exception message = {2}", "Something went wrong. Please check logs for more details"),
-            _ => (HttpStatusCode.InternalServerError, StatusCodes.Status500InternalServerError, "Unhandled Exception at Request = {0} with Trace-Id = {1}. Exception message = {2}", "Unhandled exception occured. Please check logs for more details"),
+            InvalidDateException => (HttpStatusCode.BadRequest, StatusCodes.Status400BadRequest, "Invalid Date Exception at Request = {Request} with Trace-Id = {TraceId}. Exception message = {ExceptionMessage}", "Invalid Date provided. Please check logs for more details"),
+            InvalidPayloadException => (HttpStatusCode.BadRequest, StatusCodes.Status400BadRequest, "Invalid Payload Exception at Request = {Request} with Trace-Id = {TraceId}. Exception message = {ExceptionMessage}", "Invalid Payload provided. Please check logs for more details"),
+            DbUpdateException => (HttpStatusCode.BadRequest, StatusCodes.Status400BadRequest, "DB Exception at Request = {Request} with Trace-Id = {TraceId}, Exception message = {ExceptionMessage}", "Something went wrong. Please check logs for more details"),
+            _ => (HttpStatusCode.InternalServerError, StatusCodes.Status500InternalServerError, "Unhandled Exception at Request = {Request} with Trace-Id = {TraceId}. Exception message = {ExceptionMessage}", "Unhandled exception occured. Please check logs for more details"),
         };
         
         _logger.LogError(exception: exception, message: logMessage, requestUrl, traceId, exception.InnerException?.Message ?? exception.Message);

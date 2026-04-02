@@ -14,12 +14,30 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\BudgetTracker.Shared\BudgetTracker.Shared.csproj" />
-      <ProjectReference Include="..\BudgetTracker.Warehouse\BudgetTracker.Warehouse.csproj" />
+        <ProjectReference Include="..\BudgetTracker.Shared\BudgetTracker.Shared.csproj" />
+        <ProjectReference Include="..\BudgetTracker.Warehouse\BudgetTracker.Warehouse.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Services\" />
+        <Folder Include="Services\" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="..\sharedsettings.json">
+            <Link>sharedsettings.json</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <DependentUpon>Program.cs</DependentUpon>
+        </None>
+        <None Include="..\sharedsettings.Development.json">
+            <Link>sharedsettings.Development.json</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <DependentUpon>Program.cs</DependentUpon>
+        </None>
+        <None Include="..\sharedsettings.GoogleCloud.json">
+            <Link>sharedsettings.GoogleCloud.json</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <DependentUpon>Program.cs</DependentUpon>
+        </None>
     </ItemGroup>
 
 </Project>

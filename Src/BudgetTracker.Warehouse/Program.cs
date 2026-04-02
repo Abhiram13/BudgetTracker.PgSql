@@ -14,7 +14,14 @@ using BudgetTracker.Warehouse.Services;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 DotEnvironmentVariables.Load();
 
-builder.AddConsoleGoogleSeriLog(template: "[{Level:u3}] [Source: {SourceContext}] {Message:lj}{NewLine}{Exception}");
+string baseDir = AppContext.BaseDirectory;
+string environment = builder.Environment.EnvironmentName;
+
+builder.Configuration
+    .AddJsonFile(Path.Combine(baseDir, "sharedsettings.json"), optional: false, reloadOnChange: true)
+    .AddJsonFile(Path.Combine(baseDir, $"sharedsettings.{environment}.json"), optional: false, reloadOnChange: true);
+
+builder.AddConsoleGoogleSeriLog();
 builder.Configuration.AddSecrets(environment: builder.Environment, optional: false);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
