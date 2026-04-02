@@ -23,7 +23,7 @@ public class CategoryController : ControllerBase
         _traceIdProvider = traceIdProvider;
     }
 
-    [HttpPost]
+    [HttpPost(Name = "INSERT_CATEGORY")]
     public async Task<ActionResult<ApiResponse<string>>> InsertAsync([FromBody] InsertCategoryDto payload)
     {
         DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
@@ -43,7 +43,7 @@ public class CategoryController : ControllerBase
         });
     }
 
-    [HttpGet]
+    [HttpGet(Name = "GET_ALL_CATEGORIES")]
     public async Task<ActionResult<ApiResponse<List<CategoryListDto>>>> GetCategoriesAsync()
     {
         List<CategoryListDto> list = await _categoryService.GetAllCategoriesAsync();
@@ -55,7 +55,7 @@ public class CategoryController : ControllerBase
         });
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id}", Name = "GET_CATEGORY_BY_ID")]
     public async Task<IActionResult> GetById([FromRoute] int id)
     {
         Category category = await _categoryService.GetCategoryByIdAsync(id);
@@ -71,7 +71,7 @@ public class CategoryController : ControllerBase
         });
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("{id}", Name = "UPDATE_CATEGORY_BY_ID")]
     public async Task<IActionResult> UpdateOnAsync([FromRoute] int id, [FromBody] InsertCategoryDto payload)
     {
         await _categoryService.UpdateCategoryAsync(new Category { Id = id, Name = payload.Name });

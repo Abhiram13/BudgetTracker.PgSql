@@ -1,3 +1,4 @@
+using BudgetTracker.Shared.Constants;
 using BudgetTracker.Shared.Interfaces;
 using BudgetTracker.Shared.Utilities;
 
@@ -7,7 +8,6 @@ public class TraceProviderMiddleware : ICustomMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<TraceProviderMiddleware> _logger;
-    private const string _traceHeader = "X-Trace-Id";
 
     public TraceProviderMiddleware(RequestDelegate next, ILogger<TraceProviderMiddleware> logger)
     {
@@ -18,16 +18,17 @@ public class TraceProviderMiddleware : ICustomMiddleware
     public async Task InvokeAsync(HttpContext httpContext)
     {
         TraceIdProvider traceIdProvider = httpContext.RequestServices.GetRequiredService<TraceIdProvider>();
-        string traceId = traceIdProvider.TraceId;
+        string traceId = traceIdProvider.TraceId; // FIXME: TraceIds here and at downstream apis are not matching.
+        string requestPath = $"{httpContext.Request.Host}{httpContext.Request.Path}";
 
-        _logger.LogInformation("Starting Request at Gateway = '{0}' with Trace-Id = '{1}'", $"{httpContext.Request.Host}{httpContext.Request.Path}", traceId);
+        _logger.LogInformation("Starting Request = {Path} at Gateway with Trace-Id = {TraceId}", requestPath, traceId);
 
-        httpContext.Request.Headers[_traceHeader] = traceId;
-        httpContext.Items[_traceHeader] = traceId;
-        httpContext.Response.Headers[_traceHeader] = traceId;
+        httpContext.Request.Headers[HeaderNames.X_TRACE_ID] = traceId;
+        httpContext.Items[HeaderNames.X_TRACE_ID] = traceId;
+        httpContext.Response.Headers[HeaderNames.X_TRACE_ID] = traceId;
 
         await _next(httpContext);
 
-        _logger.LogInformation("Ending Request at Gateway = '{0}' with Trace-Id = '{1}'", $"{httpContext.Request.Host}{httpContext.Request.Path}", traceId);
+        _logger.LogInformation("Ending Request = {Path} at Gateway with Trace-Id = {TraceId}", requestPath, traceId);
     }
 }

@@ -17,7 +17,7 @@ using BudgetTracker.Dues.Models;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 DotEnvironmentVariables.Load();
 
-builder.AddConsoleGoogleSeriLog(template: "[{Level:u3}] [Source: {SourceContext}] {Message:lj}{NewLine}{Exception}");
+builder.AddConsoleGoogleSeriLog();
 builder.Configuration.AddSecrets(environment: builder.Environment, optional: false);
 builder.Services.AddOptions<DueAppSecrets>().Bind(builder.Configuration).ValidateDataAnnotations().ValidateOnStart();
 builder.Services.AddRouting();

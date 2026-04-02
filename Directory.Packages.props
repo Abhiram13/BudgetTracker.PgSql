@@ -19,9 +19,9 @@
         <PackageVersion Include="Yarp.ReverseProxy" Version="2.3.0" />
     </ItemGroup>
     <ItemGroup Label="My Packages">
-        <PackageVersion Include="Abhiram.Abstractions.Logging" Version="2.1.0" />
+        <PackageVersion Include="Abhiram.Abstractions.Logging" Version="3.0.0" />
         <PackageVersion Include="Abhiram.Extensions.DotEnv" Version="1.1.0" />
-        <PackageVersion Include="Abhiram.Secrets.Providers" Version="3.0.0" />
+        <PackageVersion Include="Abhiram.Secrets.Providers" Version="4.0.0" />
     </ItemGroup>
     <ItemGroup Label="Google Cloud Packages">
         <PackageVersion Include="Google.Cloud.BigQuery.V2" Version="3.11.0" />
