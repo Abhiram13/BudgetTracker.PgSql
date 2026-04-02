@@ -1,7 +1,10 @@
+using System.Net;
+using BudgetTracker.Shared.Constants;
 using BudgetTracker.Shared.Exceptions;
 using BudgetTracker.Shared.Interfaces;
 using BudgetTracker.Shared.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace BudgetTracker.Shared.Middlwares;
@@ -17,63 +20,44 @@ public class ExceptionHandlerMiddleware : ICustomMiddleware
         _logger = logger;
     }
 
-    // TODO: Update code structure
+    private async Task HandleExceptionAsync(HttpContext httpContext, Exception exception)
+    {
+        const string CONTENT_TYPE = "application/json";
+        HttpRequest request = httpContext.Request;
+        HttpResponse response = httpContext.Response;
+        string traceId = request.Headers[HeaderNames.X_TRACE_ID]!;
+        string requestUrl = $"{request.Scheme}://{request.Host}{request.Path}{request.QueryString}";
+
+        (HttpStatusCode httpStatusCode, int apiStatusCode, string logMessage, string errorMessage) = exception switch
+        {
+            InvalidDateException => (HttpStatusCode.BadRequest, StatusCodes.Status400BadRequest, "Invalid Date Exception at Request = {0} with Trace-Id = {1}. Exception message = {2}", "Invalid Date provided. Please check logs for more details"),
+            InvalidPayloadException => (HttpStatusCode.BadRequest, StatusCodes.Status400BadRequest, "Invalid Payload Exception at Request = {0} with Trace-Id = {1}. Exception message = {2}", "Invalid Payload provided. Please check logs for more details"),
+            DbUpdateException => (HttpStatusCode.BadRequest, StatusCodes.Status400BadRequest, "DB Exception at Request = {0} with Trace-Id = {1}, Exception message = {2}", "Something went wrong. Please check logs for more details"),
+            _ => (HttpStatusCode.InternalServerError, StatusCodes.Status500InternalServerError, "Unhandled Exception at Request = {0} with Trace-Id = {1}. Exception message = {2}", "Unhandled exception occured. Please check logs for more details"),
+        };
+        
+        _logger.LogError(exception: exception, message: logMessage, requestUrl, traceId, exception.InnerException?.Message ?? exception.Message);
+
+        response.StatusCode = apiStatusCode;
+        response.ContentType = CONTENT_TYPE;
+        
+        await response.WriteAsJsonAsync(new ApiResponse<string>
+        {
+            StatusCode = httpStatusCode,
+            Message = errorMessage,
+            TraceId = traceId
+        });
+    }
+    
     public async Task InvokeAsync(HttpContext httpContext)
     {
         try
         {
             await _requestDelegate(httpContext);
         }
-        catch (InvalidPayloadException exception)
+        catch (Exception ex)
         {
-            string traceId = httpContext.Request.Headers["X-Trace-Id"]!;
-            HttpRequest request = httpContext.Request;
-            string requestUrl = $"{request.Scheme}://{request.Host}{request.Path}{request.QueryString}";
-
-            _logger.LogError(exception, message: "Invalid Payload Exception at Request = {0} with Trace-Id = {1}. Exception message = {2}", requestUrl, traceId, exception.Message);
-            
-            httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
-            httpContext.Response.ContentType = "application/json";
-            await httpContext.Response.WriteAsJsonAsync(new ApiResponse<string>
-            {
-                StatusCode = System.Net.HttpStatusCode.BadRequest,
-                TraceId = traceId,
-                Message = "Invalid Payload exception occured. Please check logs for more details"
-            });
-        }
-        catch (InvalidDateException exception)
-        {
-            string traceId = httpContext.Request.Headers["X-Trace-Id"]!;
-            HttpRequest request = httpContext.Request;
-            string requestUrl = $"{request.Scheme}://{request.Host}{request.Path}{request.QueryString}";
-
-            _logger.LogError(exception, message: "Invalid Date Exception at Request = {0} with Trace-Id = {1}. Exception message = {2}", requestUrl, traceId, exception.Message);
-            
-            httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
-            httpContext.Response.ContentType = "application/json";
-            await httpContext.Response.WriteAsJsonAsync(new ApiResponse<string>
-            {
-                StatusCode = System.Net.HttpStatusCode.BadRequest,
-                TraceId = traceId,
-                Message = $"{exception.Message}. Please check logs for more details"
-            });
-        }
-        catch (Exception exception)
-        {
-            string traceId = httpContext.Request.Headers["X-Trace-Id"]!;
-            HttpRequest request = httpContext.Request;
-            string requestUrl = $"{request.Scheme}://{request.Host}{request.Path}{request.QueryString}";
-
-            _logger.LogError(exception, message: "Unhandled Exception at Request = {0} with Trace-Id = {1}. Exception message = {2}", requestUrl, traceId, exception.Message);
-            
-            httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
-            httpContext.Response.ContentType = "application/json";
-            await httpContext.Response.WriteAsJsonAsync(new ApiResponse<string>
-            {
-                StatusCode = System.Net.HttpStatusCode.InternalServerError,
-                TraceId = traceId,
-                Message = "Unhandled exception occured. Please check logs for more details"
-            });
+            await HandleExceptionAsync(httpContext, ex);
         }
     }
 }

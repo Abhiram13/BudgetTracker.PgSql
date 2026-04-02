@@ -5,7 +5,7 @@ namespace BudgetTracker.Shared.Models;
 public record ApiResponse<T>
 {
     [JsonPropertyName("status_code")]
-    public required HttpStatusCode StatusCode { get; init; }
+    public required HttpStatusCode StatusCode { get; init; } // TODO: Can be changed from System.Net.HttpStatusCode to Microsoft.AspNetCore.Http.StatusCode ?
 
     [JsonPropertyName("trace_id")]
     public string TraceId { get; init; } = string.Empty;
