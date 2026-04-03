@@ -62,12 +62,12 @@ public class TransactionRepository : ITransactionRepository
         return payload;
     }
     
-    public async Task<TransactionsListByMonthDto?> GetDebitCreditByDateAsync(DateOnly transactionDate)
+    public async Task<TransactionCreditDebitByDateDto?> GetDebitCreditByDateAsync(DateOnly transactionDate)
     {
-        TransactionsListByMonthDto? result = await _readDbContext.Transactions
+        TransactionCreditDebitByDateDto? result = await _readDbContext.Transactions
             .Where(t => t.Date == transactionDate)
             .GroupBy(t => t.Date)
-            .Select(t => new TransactionsListByMonthDto
+            .Select(t => new TransactionCreditDebitByDateDto
             {
                 Credit = t.Where(d => d.Type == TransactionType.Credit).Sum(c => c.Amount),
                 Debit = t.Where(d => d.Type == TransactionType.Debit).Sum(c => c.Amount),
@@ -79,7 +79,7 @@ public class TransactionRepository : ITransactionRepository
         return result;
     }
 
-    public async Task<int> CountOfAllTransactionsAsync(int? month, int? year)
+    public async Task<int> CountOfAllTransactionsAsync(int? month, int? year) // TODO: Move validations to Transactions Service class
     {
         int m = month ?? DateTime.Now.Month;
         int y = year ?? DateTime.Now.Year;

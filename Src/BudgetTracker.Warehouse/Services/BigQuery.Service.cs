@@ -21,7 +21,7 @@ public class BigQueryService
         _appSecrets = appSecrets;
     }
 
-    public async Task InsertTransactionByDateAsync([FromBody] TransactionsListByMonthDto payload)
+    public async Task InsertTransactionByDateAsync([FromBody] TransactionCreditDebitByDateDto payload)
     {
         string sql = $@"
             MERGE `{_appSecrets.BigQuery.DataSet}.{_appSecrets.BigQuery.Table}` T
@@ -53,7 +53,7 @@ public class BigQueryService
         await _client.ExecuteQueryAsync(sql, parameters);
     }
 
-    public async Task<List<TransactionsListByMonthDto>> GetAllTransactionsAsync(int? month, int? year)
+    public async Task<List<TransactionCreditDebitByDateDto>> GetAllTransactionsAsync(int? month, int? year)
     {
         int valueMonth = month ?? DateTime.UtcNow.Month;
         int valueYear = year ?? DateTime.UtcNow.Year;
@@ -72,7 +72,7 @@ public class BigQueryService
         };
 
         BigQueryResults result = await _client.ExecuteQueryAsync(sql: query, parameters: parameters);
-        List<TransactionsListByMonthDto> list = result.Select(r => new TransactionsListByMonthDto
+        List<TransactionCreditDebitByDateDto> list = result.Select(r => new TransactionCreditDebitByDateDto
         {
             Count = int.Parse(r["count"].ToString()!),
             Credit = decimal.Parse(r["credit"].ToString()!),

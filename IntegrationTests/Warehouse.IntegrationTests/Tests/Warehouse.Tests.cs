@@ -38,7 +38,7 @@ public class BigQueryTests : IClassFixture<WarehouseIntegrationTestFixture>
     [Fact]
     public async Task Fetch_CurrentMonth_transactions_SucessResponse_Async()
     {
-        TransactionsListByMonthDto payload = new TransactionsListByMonthDto
+        TransactionCreditDebitByDateDto payload = new TransactionCreditDebitByDateDto
         {
             Count = 10,
             Credit = 100,
@@ -49,7 +49,7 @@ public class BigQueryTests : IClassFixture<WarehouseIntegrationTestFixture>
         await _service.InsertTransactionsByMonthAsync(payload);
         
         HttpResponseMessage response = await _client.GetAsync("/api/query/transactionsByMonth");
-        ApiResponse<List<TransactionsListByMonthDto>>? apiResponse = await response.Content.ReadFromJsonAsync<ApiResponse<List<TransactionsListByMonthDto>>>();
+        ApiResponse<List<TransactionCreditDebitByDateDto>>? apiResponse = await response.Content.ReadFromJsonAsync<ApiResponse<List<TransactionCreditDebitByDateDto>>>();
         response.EnsureSuccessStatusCode();
         
         Assert.NotNull(apiResponse);

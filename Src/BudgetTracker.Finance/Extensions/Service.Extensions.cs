@@ -82,10 +82,12 @@ public static class ServiceExtension
         collection.AddScoped<ITransactionRepository, TransactionRepository>();
         collection.AddScoped<ICategoryRepository, CategoryRepository>();
         collection.AddScoped<ITransactionsMetaRepository, TransactionsMetaRepository>();
+        collection.AddScoped<IOutboxRepository, OutboxRepository>();
         collection.AddScoped<BankService>();
         collection.AddScoped<TransactionService>();
         collection.AddScoped<TransactionsMetaService>();
         collection.AddScoped<CategoryService>();
+        collection.AddScoped<OutboxService>();
         collection.AddScoped<TraceIdProvider>();
         collection.AddSingleton<AppSecrets>(sp => sp.GetRequiredService<IOptions<AppSecrets>>().Value);
         collection.AddSingleton<YarpApiKeySecret>(sp => sp.GetRequiredService<IOptions<AppSecrets>>().Value.Secrets);

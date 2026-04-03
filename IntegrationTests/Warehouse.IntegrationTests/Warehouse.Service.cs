@@ -19,7 +19,7 @@ public class WareHouseService
         _bigQueryClient = BigQueryClient.Create(_googleCloudProject.Id);
     }
 
-    public async Task InsertTransactionsByMonthAsync(TransactionsListByMonthDto payload)
+    public async Task InsertTransactionsByMonthAsync(TransactionCreditDebitByDateDto payload)
     {
         string sql = $@"
             MERGE `{_warehouseAppSecrets.BigQuery.DataSet}.{_warehouseAppSecrets.BigQuery.Table}` T

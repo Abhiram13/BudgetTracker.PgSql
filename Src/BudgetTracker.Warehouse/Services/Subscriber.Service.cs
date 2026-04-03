@@ -21,7 +21,7 @@ public class SubscriberService
         _logger = logger;
     }
 
-    public async Task SubscribeAsync()
+    public async Task SubscribeAsync() // TODO: Reduce if/else nesting below
     {
         SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(_projectId, _subscriberId);
         SubscriberClient subscriber = await SubscriberClient.CreateAsync(subscriptionName);
@@ -33,7 +33,7 @@ public class SubscriberService
 
             if (message.Attributes["event"] == PubSubFinanceEvents.DATEWISE_TRANSACTIONS_LIST)
             {
-                TransactionsListByMonthDto? resultObject = JsonSerializer.Deserialize<TransactionsListByMonthDto>(text);
+                TransactionCreditDebitByDateDto? resultObject = JsonSerializer.Deserialize<TransactionCreditDebitByDateDto>(text);
 
                 if (resultObject is not null)
                 {
