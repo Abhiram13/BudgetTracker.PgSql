@@ -20,7 +20,7 @@ public class CategoryService
         
         if (category != null)
         {
-            throw new InvalidPayloadException("Category with name already exists");
+            throw new InvalidPayloadException($"Category with name ({payload.Name}) already exists");
         }
         
         return await _categoryRepository.InsertOneCategoryAsync(payload);
