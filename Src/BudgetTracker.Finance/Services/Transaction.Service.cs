@@ -5,6 +5,7 @@ using BudgetTracker.Shared.Models;
 using System.Text.Json;
 using BudgetTracker.Finance.Enums;
 using BudgetTracker.Shared.Exceptions;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace BudgetTracker.Finance.Services;
 
@@ -14,13 +15,23 @@ public class TransactionService
     private readonly PublisherService _publisher;
     private readonly ILogger<TransactionService> _logger;
     private readonly TransactionsMetaService _transactionsMetaService;
+    private readonly OutboxService _outboxService;
+    private readonly WriteDbContext _writeDbContext;
 
-    public TransactionService(ITransactionRepository repository, PublisherService publisherService, ILogger<TransactionService> logger, TransactionsMetaService transactionsMetaService)
-    {
+    public TransactionService(
+        ITransactionRepository repository, 
+        PublisherService publisherService, 
+        ILogger<TransactionService> logger, 
+        TransactionsMetaService transactionsMetaService,
+        WriteDbContext writeDbContext,
+        OutboxService outboxService
+    ) {
         _repository = repository;
         _publisher = publisherService;
         _logger = logger;
         _transactionsMetaService = transactionsMetaService;
+        _writeDbContext = writeDbContext;
+        _outboxService = outboxService;
     }
 
     private void InsertValidations(TransactionDto payload)
@@ -76,26 +87,43 @@ public class TransactionService
 
     public async Task InsertTransactionAsync(InsertTransactionDto payload)
     {
-        InsertValidations(payload);
-        
-        DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
-        Transaction transaction = new Transaction
+        await using (IDbContextTransaction dbTransaction = await _writeDbContext.Database.BeginTransactionAsync())
         {
-            CreatedAt = today,
-            UpdatedAt = today,
-            ActualAmount = payload.ActualAmount,
-            Amount = payload.Amount,
-            Description = payload.Description,
-            CategoryId = payload.CategoryId,
-            Date = payload.Date,
-            FromBank = payload.FromBank,
-            ToBank = payload.ToBank,
-            Type = payload.Type,
-        };
+            try
+            {
+                InsertValidations(payload);
+        
+                DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
+                Transaction transaction = new Transaction
+                {
+                    CreatedAt = today,
+                    UpdatedAt = today,
+                    ActualAmount = payload.ActualAmount,
+                    Amount = payload.Amount,
+                    Description = payload.Description,
+                    CategoryId = payload.CategoryId,
+                    Date = payload.Date,
+                    FromBank = payload.FromBank,
+                    ToBank = payload.ToBank,
+                    Type = payload.Type,
+                };
 
-        await _repository.InsertOneTransactionAsync(transaction);
-        await InsertTransactionsMetaAsync(payload, currentDate: today, transactionId: transaction.Id);
-        await UpdateTransactionsByMonthAsync(payload.Date);
+                await _repository.InsertOneTransactionAsync(transaction);
+                _logger.LogInformation("Transaction with Id = {TransactionId} has been inserted successfully", transaction.Id);
+                
+                await InsertTransactionsMetaAsync(payload, currentDate: today, transactionId: transaction.Id);
+                _logger.LogInformation("Transaction meta data with Transaction-Id = {TransactionId} has been inserted successfully", transaction.Id);
+                
+                await OutboxTransanctionMessageUpdateAsync(payload.Date, transaction.Id);
+                await dbTransaction.CommitAsync();
+            }
+            catch (Exception e)
+            {
+                await dbTransaction.RollbackAsync();
+                _logger.LogError(e, "Exception at inserting transaction. Rolling back transaction");
+                throw;
+            }
+        }
     }
 
     public async Task<TransactionByDateDto> GetTransactionsByDateAsync(string transactionDate)
@@ -113,6 +141,7 @@ public class TransactionService
         InsertValidations(payload);
         
         await _repository.UpdateTransactionAsync(payload, id);
+        _logger.LogInformation("Transaction with Id = {TransactionId} has been updated successfully", id);
 
         if (payload.DueId is not null || payload.EmiId is not null || !string.IsNullOrEmpty(payload.Tags))
         {
@@ -123,14 +152,38 @@ public class TransactionService
                 Tags = payload.Tags,
             };
             await _transactionsMetaService.UpdateTransactionMetaAsync(metaDto, transactionId: id);
+            _logger.LogInformation("Transaction meta with Transaction-Id = {TransactionId} has been updated successfully", id);
         }
+        
+        await OutboxTransanctionMessageUpdateAsync(payload.Date, id);
+    }
 
-        await UpdateTransactionsByMonthAsync(payload.Date);
+    private async Task OutboxTransanctionMessageUpdateAsync(DateOnly transactionDate, int transactionId)
+    {
+        TransactionCreditDebitByDateDto? creditDebitByDate = await _repository.GetDebitCreditByDateAsync(transactionDate);
+
+        if (creditDebitByDate is not null)
+        {
+            await _outboxService.InsertOneAsync(new OutboxInsertDto
+            {
+                EntityId = transactionId,
+                EventType = OutboxEvents.TRANSACTION_CREATED,
+                Status = OutboxStatus.PENDING,
+                EntityType = "Transactions",
+                Payload = JsonSerializer.SerializeToDocument(creditDebitByDate),
+            });
+            _logger.LogInformation("Outbox message has been inserted successfully for Event = {EventType} for Transaction-Id = {TransactionId} ", OutboxEvents.TRANSACTION_CREATED, transactionId);
+        }
+        else
+        {
+            throw new InvalidPayloadException($"No Debit or Credit is available at Transaction-Id = {transactionId} with Date = {transactionDate}. Credit Debit by date = {creditDebitByDate}");
+        }
     }
     
+    [Obsolete]
     private async Task UpdateTransactionsByMonthAsync(DateOnly date)
     {
-        TransactionsListByMonthDto? result = null;
+        TransactionCreditDebitByDateDto? result = null;
         
         try
         {
@@ -147,7 +200,7 @@ public class TransactionService
             
             // TODO: Get Trace ID here
             // Restrict this in "Testing" environment
-            await _publisher.PublishMessageAsync(requestMessage: message, eventType: PubSubFinanceEvents.DATEWISE_TRANSACTIONS_LIST, traceId: null);
+            // await _publisher.PublishMessageAsync(requestMessage: message, eventType: PubSubFinanceEvents.DATEWISE_TRANSACTIONS_LIST, traceId: null);
         }   
     }
 

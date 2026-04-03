@@ -54,6 +54,8 @@ public abstract record TransactionDto
 
 public record InsertTransactionDto : TransactionDto { }
 
+public record UpdateTransactionDto : TransactionDto { }
+
 public record TransactionByDateDto
 {
     [JsonPropertyName("debit")]
@@ -80,5 +82,3 @@ public record TransactionByDateDto
         public string Description { get; init; } = string.Empty;
     }
 }
-
-public record UpdateTransactionDto : TransactionDto { }

@@ -23,8 +23,8 @@ public class BigQueryController : ControllerBase
     [HttpGet("transactionsByMonth")]
     public async Task<IActionResult> GetAllTransactionsByMonthAsync([FromQuery] int? month, [FromQuery] int? year)
     {
-        List<TransactionsListByMonthDto> result = await _bigQueryService.GetAllTransactionsAsync(month, year);
-        return Ok(new ApiResponse<List<TransactionsListByMonthDto>>
+        List<TransactionCreditDebitByDateDto> result = await _bigQueryService.GetAllTransactionsAsync(month, year);
+        return Ok(new ApiResponse<List<TransactionCreditDebitByDateDto>>
         {
             StatusCode = System.Net.HttpStatusCode.OK,
             Result = result,
