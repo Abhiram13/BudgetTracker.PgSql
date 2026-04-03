@@ -6,7 +6,7 @@ namespace BudgetTracker.Finance.Services;
 public class OutboxService
 {
     private readonly IOutboxRepository _outboxRepository;
-    private readonly ILogger<OutboxService> _logger; // TODO: Remove, no need for logger in repository
+    private readonly ILogger<OutboxService> _logger;
 
     public OutboxService(IOutboxRepository outboxRepository, ILogger<OutboxService> logger)
     {
@@ -26,5 +26,20 @@ public class OutboxService
         };
         
         await _outboxRepository.InsertOneAsync(financeOutboxEvents);
+    }
+
+    public async Task<List<OutboxUnProcessedDto>> GetProcessingMessagesAsync(int maxLimit)
+    {
+        return await _outboxRepository.GetUnProcessedMessagesAsync(maxLimit);
+    }
+
+    public async Task UpdateCountAndErrorAsync(Guid id, string errorMessage)
+    {
+        await _outboxRepository.UpdateCountAndErrorAsync(id, errorMessage);
+    }
+
+    public async Task UpdateSuccessAsync(Guid id)
+    {
+        await _outboxRepository.UpdateSuccessStatusAsync(id);
     }
 }

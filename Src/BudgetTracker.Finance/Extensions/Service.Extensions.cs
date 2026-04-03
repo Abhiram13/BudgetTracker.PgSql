@@ -12,6 +12,7 @@ using BudgetTracker.Shared.Security;
 using BudgetTracker.Shared.Models;
 using BudgetTracker.Shared.Interfaces;
 using BudgetTracker.Finance.Models;
+using BudgetTracker.Finance.Workers;
 
 namespace BudgetTracker.Finance.Extensions;
 
@@ -25,6 +26,7 @@ public static class ServiceExtension
         serviceCollection.AddAuthorization();
         serviceCollection.AddEndpointsApiExplorer();
         serviceCollection.AddSwaggerGen();
+        serviceCollection.AddHostedService<OutboxProcessordWorker>();
         serviceCollection.AddControllers().ConfigureApiBehaviorOptions(options =>
         {
             options.SuppressModelStateInvalidFilter = false;
