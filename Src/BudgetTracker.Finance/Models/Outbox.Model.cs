@@ -28,3 +28,9 @@ public record OutboxInsertDto
     public int? RetryCount { get; init; }
     public string? Error { get; init; }
 }
+
+public record OutboxUnProcessedDto
+{
+    public required JsonDocument Payload { get; init; }
+    public Guid Id { get; init; }
+}
