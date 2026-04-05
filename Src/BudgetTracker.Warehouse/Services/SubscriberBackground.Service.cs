@@ -24,7 +24,7 @@ public class SubscriberBackgroundService : BackgroundService
                 using (IServiceScope scope = _scopeFactory.CreateScope())
                 {
                     SubscriberService subscriberService = scope.ServiceProvider.GetRequiredService<SubscriberService>();
-                    await subscriberService.SubscribeAsync(); // Keep listening
+                    await subscriberService.SubscribeAsync(stoppingToken); // Keep listening
                 }                
             }
             catch (Exception ex)

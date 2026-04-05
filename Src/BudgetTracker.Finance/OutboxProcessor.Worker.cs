@@ -42,7 +42,11 @@ public class OutboxProcessordWorker : BackgroundService
             {
                 try
                 {
-                    await _publisherService.PublishMessageAsync(requestMessage: outbox.Payload.RootElement.ToString(), eventType: PubSubFinanceEvents.DATEWISE_TRANSACTIONS_LIST, traceId: null); // TODO: Use publish Id?
+                    await _publisherService.PublishMessageAsync(
+                        requestMessage: outbox.Payload.RootElement.ToString(), 
+                        eventType: PubSubFinanceEvents.DATEWISE_TRANSACTIONS_LIST, 
+                        traceId: null
+                    ); // TODO: Use publish Id?
                     await outboxService.UpdateSuccessAsync(outbox.Id);
                     _logger.LogInformation("Successfully processed outbox message with Id = {OutboxId}.", outbox.Id);
                 }

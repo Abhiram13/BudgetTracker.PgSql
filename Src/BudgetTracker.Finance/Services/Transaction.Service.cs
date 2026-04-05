@@ -12,7 +12,6 @@ namespace BudgetTracker.Finance.Services;
 public class TransactionService
 {
     private readonly ITransactionRepository _repository;
-    private readonly PublisherService _publisher;
     private readonly ILogger<TransactionService> _logger;
     private readonly TransactionsMetaService _transactionsMetaService;
     private readonly OutboxService _outboxService;
@@ -20,14 +19,12 @@ public class TransactionService
 
     public TransactionService(
         ITransactionRepository repository, 
-        PublisherService publisherService, 
         ILogger<TransactionService> logger, 
         TransactionsMetaService transactionsMetaService,
         WriteDbContext writeDbContext,
         OutboxService outboxService
     ) {
         _repository = repository;
-        _publisher = publisherService;
         _logger = logger;
         _transactionsMetaService = transactionsMetaService;
         _writeDbContext = writeDbContext;
