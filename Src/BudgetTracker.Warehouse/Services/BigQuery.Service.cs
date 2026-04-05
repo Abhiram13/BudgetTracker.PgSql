@@ -16,7 +16,7 @@ public class BigQueryService
 
     public BigQueryService(WarehouseAppSecrets appSecrets)
     {
-        _projectId = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_ID") ?? throw new ProjectNotFoundException();
+        _projectId = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_ID") ?? throw new ProjectNotFoundException(); // TODO: Get Google project Id from AppSecrets
         _client = BigQueryClient.Create(_projectId);
         _appSecrets = appSecrets;
     }
@@ -24,23 +24,30 @@ public class BigQueryService
     public async Task InsertTransactionByDateAsync([FromBody] TransactionCreditDebitByDateDto payload)
     {
         string sql = $@"
+            IF NOT EXISTS (SELECT 1 FROM `{_appSecrets.BigQuery.DataSet}.{_appSecrets.BigQuery.MetadataTable}` WHERE message_id = @messageId) THEN
+
             MERGE `{_appSecrets.BigQuery.DataSet}.{_appSecrets.BigQuery.Table}` T
             USING (
-                SELECT
-                    @date AS date,
-                    @debit AS debit,
-                    @credit AS credit,
+                SELECT 
+                    @date AS date, 
+                    @debit AS debit, 
+                    @credit AS credit, 
                     @count AS count
                 ) S
             ON T.date = S.date
-            
+    
             WHEN MATCHED THEN
                 UPDATE SET debit = S.debit, credit = S.credit, count = S.count
 
             WHEN NOT MATCHED THEN
                 INSERT (date, debit, credit, count)
-                VALUES (S.date, S.debit, S.credit, S.count)
-            ";
+                VALUES (S.date, S.debit, S.credit, S.count);
+    
+            INSERT INTO `{_appSecrets.BigQuery.DataSet}.{_appSecrets.BigQuery.MetadataTable}` (message_id, status)
+            VALUES (@messageId, 'PROCESSED');
+
+            END IF;
+        ";
 
         BigQueryParameter[] parameters = new BigQueryParameter[]
         {
@@ -48,6 +55,7 @@ public class BigQueryService
             new BigQueryParameter("debit", BigQueryDbType.Numeric, payload.Debit.ToString()),
             new BigQueryParameter("credit", BigQueryDbType.Numeric, payload.Credit.ToString()),
             new BigQueryParameter("count", BigQueryDbType.Int64, payload.Count.ToString()),
+            new BigQueryParameter("messageId", BigQueryDbType.String, payload.MessageId),
         };
 
         await _client.ExecuteQueryAsync(sql, parameters);

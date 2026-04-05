@@ -19,4 +19,7 @@ public record BigQuerySecrets
     
     [ConfigurationKeyName("TABLE")]
     public string Table { get; init; } = string.Empty;
+    
+    [ConfigurationKeyName("METADATA_TABLE")]
+    public string MetadataTable { get; init; } = string.Empty;
 }

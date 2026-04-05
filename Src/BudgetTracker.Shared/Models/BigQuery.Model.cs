@@ -13,4 +13,7 @@ public record TransactionCreditDebitByDateDto
     
     [JsonPropertyName("count")]
     public long Count { get; init; }
+    
+    [JsonPropertyName("message_id")]
+    public string MessageId { get; init; } = string.Empty;
 }
