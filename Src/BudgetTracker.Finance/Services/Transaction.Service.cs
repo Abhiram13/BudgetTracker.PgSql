@@ -82,7 +82,7 @@ public class TransactionService
         }
     }
 
-    public async Task InsertTransactionAsync(InsertTransactionDto payload)
+    public async Task<InsertTransactionResponseDto> InsertTransactionAsync(InsertTransactionDto payload)
     {
         await using (IDbContextTransaction dbTransaction = await _writeDbContext.Database.BeginTransactionAsync())
         {
@@ -113,6 +113,8 @@ public class TransactionService
                 
                 await OutboxTransanctionMessageUpdateAsync(payload.Date, transaction.Id);
                 await dbTransaction.CommitAsync();
+
+                return new InsertTransactionResponseDto { TransactionId = transaction.Id };
             }
             catch (Exception e)
             {

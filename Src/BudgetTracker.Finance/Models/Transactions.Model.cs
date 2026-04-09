@@ -82,3 +82,9 @@ public record TransactionByDateDto
         public string Description { get; init; } = string.Empty;
     }
 }
+
+public record InsertTransactionResponseDto
+{
+    [JsonPropertyName("transaction_id")]
+    public int TransactionId { get; set; }
+}
