@@ -16,6 +16,7 @@ public class WriteDbContext : DbContext
     public DbSet<Category> Categories { get; set; }
     public DbSet<Bank> Banks { get; set; }
     public DbSet<FinanceOutboxEvents> FinanceOutboxEvents { get; set; }
+    public DbSet<Receipt> Receipts { get; set; }
 }
 
 public class ReadDbContext : DbContext
@@ -27,13 +28,15 @@ public class ReadDbContext : DbContext
     public DbSet<Bank> Banks { get; set; }
     public DbSet<TransactionsMeta> TransactionsMeta { get; set; }
     public DbSet<FinanceOutboxEvents> FinanceOutboxEvents { get; set; }
+    public DbSet<Receipt> Receipts { get; set; }
 }
 
 // public class WriteDbContextFactory : IDesignTimeDbContextFactory<WriteDbContext>
 // {
 //     public WriteDbContext CreateDbContext(string[] args)
 //     {
-//         // 1. Build configuration to read your settings (appsettings.json / Environment Variables)
+//         // BUG: Hardcoding of the strings is working in the connection string. But loading from configuration is not.
+//         // seems the directory is not right
 //         IConfigurationRoot configuration = new ConfigurationBuilder()
 //             .SetBasePath(Directory.GetCurrentDirectory())
 //             .AddJsonFile("appsettings.json", optional: true)
