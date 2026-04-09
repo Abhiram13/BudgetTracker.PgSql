@@ -28,6 +28,7 @@ public static class ServiceExtension
         serviceCollection.AddEndpointsApiExplorer();
         serviceCollection.AddSwaggerGen();
         serviceCollection.AddHostedService<OutboxProcessordWorker>();
+        serviceCollection.AddHostedService<FinanceHostBackgroundService>();
         serviceCollection.AddControllers().ConfigureApiBehaviorOptions(options =>
         {
             options.SuppressModelStateInvalidFilter = false;
@@ -96,6 +97,7 @@ public static class ServiceExtension
         collection.AddScoped<CategoryService>();
         collection.AddScoped<OutboxService>();
         collection.AddScoped<TraceIdProvider>();
+        collection.AddScoped<SubscriberService>();
         collection.AddSingleton<AppSecrets>(sp => sp.GetRequiredService<IOptions<AppSecrets>>().Value);
         collection.AddSingleton<YarpApiKeySecret>(sp => sp.GetRequiredService<IOptions<AppSecrets>>().Value.Secrets);
         collection.AddSingleton<PublisherService>();

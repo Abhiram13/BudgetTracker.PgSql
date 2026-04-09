@@ -24,7 +24,7 @@ public class CloudStorageController : ControllerBase
     {
         string extension = _fileService.GetExtension(mimeType: payload.ContentType);
         string fileName = $"{payload.FileName}_tId_{payload.TransactionId}{extension}";
-        string url = _googleCloudStorageService.GenerateUploadSignedUrl(fileName: fileName);
+        string url = _googleCloudStorageService.GenerateUploadSignedUrl(fileName: fileName, file: payload);
         
         return Ok(url);
     }

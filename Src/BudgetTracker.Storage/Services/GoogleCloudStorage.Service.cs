@@ -1,3 +1,4 @@
+using BudgetTracker.Storage.Models;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.Control.V2;
 using Google.Cloud.Storage.V1;
@@ -40,17 +41,28 @@ public class GoogleCloudStorageService
 
     // gcloud storage buckets notifications create gs://[YOUR_BUCKET_NAME] --topic=[YOUR_TOPIC_NAME] --event-types=OBJECT_FINALIZE
     // to setup notification link between pub/sub and gcp cloud storage
-    public string GenerateUploadSignedUrl(string fileName)
+    public string GenerateUploadSignedUrl(string fileName, UploadFileDto file)
     {
+        TimeSpan expireIn = TimeSpan.FromMinutes(10);
         UrlSigner signer = UrlSigner.FromCredential(GoogleCredential.GetApplicationDefault());
+        UrlSigner.RequestTemplate template = UrlSigner.RequestTemplate
+            .FromBucket("receipt_dummy_storage")
+            .WithHttpMethod(HttpMethod.Put)
+            .WithContentHeaders(new Dictionary<string, IEnumerable<string>>
+            {
+                { "Content-Type", new string[] { file.ContentType } }
+            })
+            .WithQueryParameters(new Dictionary<string, IEnumerable<string>>
+            {
+                { "x-transaction-id", new string[] { file.TransactionId.ToString() } },
+            })
+            .WithRequestHeaders(new Dictionary<string, IEnumerable<string>>
+            {
+                { "x-goog-meta-transaction-id", new string[] { file.TransactionId.ToString() } }
+            })
+            .WithObjectName(fileName);
         
-        string url = signer.Sign(
-            bucket: "receipt_dummy_storage",
-            objectName: fileName,
-            duration: TimeSpan.FromMinutes(10),
-            httpMethod: HttpMethod.Put,
-            signingVersion: SigningVersion.V4
-        );
+        string url = signer.Sign(requestTemplate: template, options: UrlSigner.Options.FromDuration(expireIn));
 
         return url;
     }
