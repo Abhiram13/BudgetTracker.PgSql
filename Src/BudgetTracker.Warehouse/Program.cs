@@ -37,7 +37,7 @@ builder.Services.AddAuthentication(options =>
     options.DefaultAuthenticateScheme = YarpApiKeySchemaOptions.DefaultSchema;
     options.DefaultChallengeScheme = YarpApiKeySchemaOptions.DefaultSchema;
 }).AddScheme<YarpApiKeySchemaOptions, YarpApiKeyHandler>(YarpApiKeySchemaOptions.DefaultSchema, _ => {});
-builder.Services.AddHostedService<SubscriberBackgroundService>(); // TODO: This step blocking application shutdown
+builder.Services.AddHostedService<SubscriberBackgroundService>();
 
 builder.WebHost.ConfigureKestrel((_, server) => {
     string portNumber = Environment.GetEnvironmentVariable("PORT") ?? "3004";
