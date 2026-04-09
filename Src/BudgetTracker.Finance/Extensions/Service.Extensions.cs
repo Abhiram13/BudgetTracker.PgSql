@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Abhiram.Secrets.Configuration;
+using BudgetTracker.Finance.HttpClients;
 using BudgetTracker.Finance.Interfaces;
 using BudgetTracker.Finance.Repository;
 using BudgetTracker.Finance.Services;
@@ -31,6 +32,10 @@ public static class ServiceExtension
         {
             options.SuppressModelStateInvalidFilter = false;
             options.InvalidModelStateResponseFactory = ModelValidation;
+        });
+        serviceCollection.AddHttpClient<CloudStorageHttpClient>(client =>
+        {
+            client.BaseAddress = new Uri("http://localhost:3007/"); // TODO: Get url from appsettings or env vars. Set Auth as well
         });
 
         IActionResult ModelValidation(ActionContext action)

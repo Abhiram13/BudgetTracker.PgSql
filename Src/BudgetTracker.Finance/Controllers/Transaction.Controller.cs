@@ -24,14 +24,15 @@ public class TransactionController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<ApiResponse<string>>> InsertAsync([FromBody] InsertTransactionDto payload)
+    public async Task<ActionResult<ApiResponse<InsertTransactionResponseDto>>> InsertAsync([FromBody] InsertTransactionDto payload)
     {
-        await _transactionService.InsertTransactionAsync(payload);
-        return StatusCode(201, new ApiResponse<string>
+        InsertTransactionResponseDto response = await _transactionService.InsertTransactionAsync(payload);
+        return StatusCode(201, new ApiResponse<InsertTransactionResponseDto>
         {
             StatusCode = System.Net.HttpStatusCode.Created,
             TraceId = _traceProvider.TraceId,
-            Message = "Transaction created successfully"
+            Message = "Transaction created successfully",
+            Result = response
         });
     }
 

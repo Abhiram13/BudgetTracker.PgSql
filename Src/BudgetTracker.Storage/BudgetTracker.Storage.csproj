@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Google.Cloud.Storage.Control.V2" />
+        <PackageReference Include="Google.Cloud.Storage.V1" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+        <PackageReference Include="Swashbuckle.AspNetCore" />
+        <PackageReference Include="Abhiram.Secrets.Providers" />
+        <PackageReference Include="Abhiram.Extensions.DotEnv" />
+        <PackageReference Include="Abhiram.Abstractions.Logging" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="..\sharedsettings.json">
+            <Link>sharedsettings.json</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <DependentUpon>Program.cs</DependentUpon>
+        </None>
+        <None Include="..\sharedsettings.Development.json">
+            <Link>sharedsettings.Development.json</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <DependentUpon>Program.cs</DependentUpon>
+        </None>
+        <None Include="..\sharedsettings.GoogleCloud.json">
+            <Link>sharedsettings.GoogleCloud.json</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <DependentUpon>Program.cs</DependentUpon>
+        </None>
+    </ItemGroup>
+
+</Project>
