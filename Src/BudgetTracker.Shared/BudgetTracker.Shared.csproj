@@ -9,5 +9,16 @@
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
         <PackageReference Include="Abhiram.Abstractions.Logging" />
     </ItemGroup>
+
+    <PropertyGroup>
+        <RootNameSpace>BudgetTracker.Shared</RootNameSpace>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);IncludeXmlInOutput</TargetsForTfmSpecificContentInPackage>
+    </PropertyGroup>
+
+<!--    <ItemGroup>-->
+<!--        <Content Include="$(OutputPath)$(AssemblyName).xml" CopyToOutputDirectory="PreserveNewest" />-->
+<!--    </ItemGroup>-->
     
 </Project>

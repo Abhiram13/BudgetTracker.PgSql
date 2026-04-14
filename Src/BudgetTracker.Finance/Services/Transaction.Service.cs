@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using BudgetTracker.Finance.Interfaces;
 using BudgetTracker.Finance.Entities;
 using BudgetTracker.Finance.Models;
@@ -5,10 +6,18 @@ using BudgetTracker.Shared.Models;
 using System.Text.Json;
 using BudgetTracker.Finance.Enums;
 using BudgetTracker.Shared.Exceptions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace BudgetTracker.Finance.Services;
 
+/// <summary>
+/// Performs business logic for transactions, including validation, transaction metadata, and Outbox event updates.
+/// </summary>
+/// <remarks>
+/// This service ensures atomicity by wrapping multiple operations within a single database transaction. <br /> <br />
+/// It is designed to work with the <see cref="ITransactionRepository"/> and uses <see cref="OutboxService"/> to update write events.
+/// </remarks>
 public class TransactionService
 {
     private readonly ITransactionRepository _repository;
@@ -17,6 +26,14 @@ public class TransactionService
     private readonly OutboxService _outboxService;
     private readonly WriteDbContext _writeDbContext;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TransactionService"/> class.
+    /// </summary>
+    /// <param name="repository">The <see cref="ITransactionRepository"/> for <see cref="Transaction"/> DB operations.</param>
+    /// <param name="logger">The <see cref="ILogger"/> instance for structured logging.</param>
+    /// <param name="transactionsMetaService">The <see cref="TransactionsMetaService"/> responsible for managing <see cref="TransactionsMeta"/> DB operations.</param>
+    /// <param name="writeDbContext">The primary <see cref="WriteDbContext"/> used for write operations.</param>
+    /// <param name="outboxService">The <see cref="OutboxService"/> used to insert events in <see cref="OutboxEvents"/>.</param>
     public TransactionService(
         ITransactionRepository repository, 
         ILogger<TransactionService> logger, 
@@ -82,6 +99,19 @@ public class TransactionService
         }
     }
 
+    /// <summary>
+    /// Validates the payload, inserts the <see cref="Transaction"/> and then inserts the <see cref="TransactionsMeta"/>
+    /// and then inserts an event in <see cref="OutboxEvents"/> for later processing
+    /// </summary>
+    /// <remarks>Rollsback all insertions if an exception is thrown</remarks>
+    /// <param name="payload"><see cref="InsertTransactionDto"/></param>
+    /// <returns><see cref="InsertTransactionResponseDto"/> - An Object containing inserted Transaction ID</returns>
+    /// <exception cref="InvalidPayloadException">
+    /// Thrown when <paramref name="payload"/> fails validation (e.g., negative amounts, missing required fields, future dates).
+    /// </exception>
+    /// <exception cref="DbUpdateException">
+    /// Thrown if the transaction cannot be inserted in the database, due to any constraint violations
+    /// </exception>
     public async Task<InsertTransactionResponseDto> InsertTransactionAsync(InsertTransactionDto payload)
     {
         await using (IDbContextTransaction dbTransaction = await _writeDbContext.Database.BeginTransactionAsync())
@@ -124,17 +154,20 @@ public class TransactionService
             }
         }
     }
-
+    
+    /// <inheritdoc cref="ITransactionRepository.GetAllTransactionsByDateAsync"/>
     public async Task<TransactionByDateDto> GetTransactionsByDateAsync(string transactionDate)
     {
         return await _repository.GetAllTransactionsByDateAsync(transactionDate);
     }
 
+    /// <inheritdoc cref="ITransactionRepository.CountOfAllTransactionsAsync"/>
     public async Task<int> CountOfAllTransactionsAsync(int? month, int? year)
     {
         return await _repository.CountOfAllTransactionsAsync(month, year);
     }
 
+    /// <inheritdoc cref="ITransactionRepository.UpdateTransactionAsync"/>
     public async Task UpdateTransactionAsync(UpdateTransactionDto payload, int id)
     {
         InsertValidations(payload);
@@ -179,7 +212,7 @@ public class TransactionService
         }
     }
     
-    [Obsolete]
+    [Obsolete(message: "Publishing transactions is moved to Outbox pattern. So this method is Obselete", error: true)]
     private async Task UpdateTransactionsByMonthAsync(DateOnly date)
     {
         TransactionCreditDebitByDateDto? result = null;
@@ -203,6 +236,12 @@ public class TransactionService
         }   
     }
 
+    /// <summary>
+    /// Updates transactions by bulk in big query
+    /// </summary>
+    /// <remarks><b>OBSOLETE</b> - Should not use unless manually update big query</remarks>
+    [Obsolete(message: "Publishing transactions is moved to Outbox pattern. So this method is Obselete", error: true)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public async Task BigQueryUpdatesAsync()
     {
         List<DateOnly> dates = await _repository.GetGroupOfDatesAsync();

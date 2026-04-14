@@ -9,17 +9,26 @@ using BudgetTracker.Shared.Models;
 
 namespace BudgetTracker.Finance.Repository;
 
+/// <summary>
+/// Performs the DB operations on Write and Read replicas on <see cref="Transaction"/> table
+/// </summary>
 public class TransactionRepository : ITransactionRepository
 {
     private readonly WriteDbContext _writeDbContext;
     private readonly ReadDbContext _readDbContext;
 
+    /// <summary>
+    /// Peforms the DB operations on Write and Read replicas on <see cref="Transaction"/> table
+    /// </summary>
+    /// <param name="write"><see cref="WriteDbContext"/> injection used to perform write DB operations</param>
+    /// <param name="read"><see cref="ReadDbContext"/> injection used to perform read DB operations</param>
     public TransactionRepository(WriteDbContext write, ReadDbContext read)
     {
         _writeDbContext = write;
         _readDbContext = read;
     }
 
+    /// <inheritdoc />
     public async Task<TransactionByDateDto> GetAllTransactionsByDateAsync(string transactionDate)
     {
         if (!DateOnly.TryParseExact(transactionDate, "yyyy-MM-dd", out DateOnly _))
@@ -55,6 +64,7 @@ public class TransactionRepository : ITransactionRepository
         return result ?? new TransactionByDateDto();
     }
 
+    /// <inheritdoc />
     public async Task<Transaction> InsertOneTransactionAsync(Transaction payload)
     {
         await _writeDbContext.Transactions.AddAsync(payload);
@@ -62,6 +72,7 @@ public class TransactionRepository : ITransactionRepository
         return payload;
     }
     
+    /// <inheritdoc />
     public async Task<TransactionCreditDebitByDateDto?> GetDebitCreditByDateAsync(DateOnly transactionDate)
     {
         TransactionCreditDebitByDateDto? result = await _readDbContext.Transactions
@@ -79,6 +90,7 @@ public class TransactionRepository : ITransactionRepository
         return result;
     }
 
+    /// <inheritdoc />
     public async Task<int> CountOfAllTransactionsAsync(int? month, int? year) // TODO: Move validations to Transactions Service class
     {
         int m = month ?? DateTime.Now.Month;
@@ -104,10 +116,11 @@ public class TransactionRepository : ITransactionRepository
         return count;
     }
 
+    /// <inheritdoc />
     public async Task UpdateTransactionAsync(UpdateTransactionDto payload, int id)
     {
         Transaction? tx = await _writeDbContext.Transactions.FirstOrDefaultAsync(t => t.Id == id);
-        if (tx == null) throw new BadHttpRequestException("Transaction not found");
+        if (tx == null) throw new BadHttpRequestException("Transaction not found"); // TODO: Should use 'InvalidPayloadException'?
         
         tx.ActualAmount = payload.ActualAmount;
         tx.Description = payload.Description;
@@ -122,6 +135,7 @@ public class TransactionRepository : ITransactionRepository
         await _writeDbContext.SaveChangesAsync();
     }
 
+    /// <inheritdoc />
     public async Task<List<DateOnly>> GetGroupOfDatesAsync()
     {
         List<DateOnly> dates = await _readDbContext.Transactions.GroupBy(t => t.Date).Select(t => t.Key).ToListAsync();
