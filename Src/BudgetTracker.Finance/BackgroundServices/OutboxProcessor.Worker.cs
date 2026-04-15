@@ -3,16 +3,16 @@ using BudgetTracker.Finance.Models;
 using BudgetTracker.Finance.Services;
 using BudgetTracker.Shared.Models;
 
-namespace BudgetTracker.Finance.Workers;
+namespace BudgetTracker.Finance.BackgroundWorkers;
 
-public class OutboxProcessordWorker : BackgroundService
+internal class OutboxProcessordWorker : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<OutboxProcessordWorker> _logger;
     private readonly PublisherService _publisherService;
     private readonly TimeSpan _period = TimeSpan.FromSeconds(100); // TODO: Pull timer from AppSettings
 
-    public OutboxProcessordWorker(IServiceProvider serviceProvider, ILogger<OutboxProcessordWorker> logger, PublisherService publisherService)
+    internal OutboxProcessordWorker(IServiceProvider serviceProvider, ILogger<OutboxProcessordWorker> logger, PublisherService publisherService)
     {
         _serviceProvider = serviceProvider;
         _logger = logger;
