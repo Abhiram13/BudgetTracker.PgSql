@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Data.Entity.Infrastructure;
 using BudgetTracker.Finance.Services;
 using BudgetTracker.Finance.Entities;
@@ -73,7 +74,6 @@ public class TransactionController : ControllerBase
         });
     }
     
-
     /// <summary>
     /// Retrieves all transactions recorded on a specific date. Can return empty <see cref="TransactionByDateDto"/> if none found.
     /// </summary>
@@ -86,7 +86,7 @@ public class TransactionController : ControllerBase
     [ProducesResponseType(typeof(ApiResponse<TransactionByDateDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<ApiResponse<TransactionByDateDto>>> GetTransactionsByDateAsync([FromRoute] string date)
+    public async Task<ActionResult<ApiResponse<TransactionByDateDto>>> GetTransactionsByDateAsync([FromRoute, Required] string date)
     {
         TransactionByDateDto result = await _transactionService.GetTransactionsByDateAsync(date);
         return Ok(new ApiResponse<TransactionByDateDto>
@@ -132,7 +132,7 @@ public class TransactionController : ControllerBase
     /// <response code="200">Returns when a transaction is successfully updated</response>
     /// <response code="400">Returns any of the payload values are invalid like date is in wrong format or category, bank ids are invalid.</response>
     /// <response code="500">Returns when any internal exception or DB updates failed due to constraints violations.</response>
-    [HttpPut("{id}")]
+    [HttpPut("{id:int}")]
     [ProducesResponseType(typeof(ApiResponse<TransactionByDateDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]

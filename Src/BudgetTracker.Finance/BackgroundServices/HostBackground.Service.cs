@@ -1,11 +1,13 @@
-namespace BudgetTracker.Finance.Services;
+using BudgetTracker.Finance.Services;
 
-public class FinanceHostBackgroundService : BackgroundService
+namespace BudgetTracker.Finance.BackgroundWorkers;
+
+internal class FinanceHostBackgroundService : BackgroundService
 {
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<FinanceHostBackgroundService> _logger;
 
-    public FinanceHostBackgroundService(IServiceScopeFactory scopeFactory, ILogger<FinanceHostBackgroundService> logger)
+    internal FinanceHostBackgroundService(IServiceScopeFactory scopeFactory, ILogger<FinanceHostBackgroundService> logger)
     {
         _scopeFactory = scopeFactory;
         _logger = logger;

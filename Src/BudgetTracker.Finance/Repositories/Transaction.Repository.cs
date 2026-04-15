@@ -12,7 +12,7 @@ namespace BudgetTracker.Finance.Repository;
 /// <summary>
 /// Performs the DB operations on Write and Read replicas on <see cref="Transaction"/> table
 /// </summary>
-public class TransactionRepository : ITransactionRepository
+internal class TransactionRepository : ITransactionRepository
 {
     private readonly WriteDbContext _writeDbContext;
     private readonly ReadDbContext _readDbContext;
@@ -22,7 +22,7 @@ public class TransactionRepository : ITransactionRepository
     /// </summary>
     /// <param name="write"><see cref="WriteDbContext"/> injection used to perform write DB operations</param>
     /// <param name="read"><see cref="ReadDbContext"/> injection used to perform read DB operations</param>
-    public TransactionRepository(WriteDbContext write, ReadDbContext read)
+    internal TransactionRepository(WriteDbContext write, ReadDbContext read)
     {
         _writeDbContext = write;
         _readDbContext = read;
