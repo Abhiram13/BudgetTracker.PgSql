@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using BudgetTracker.Shared.Utilities;
+using BudgetTracker.Shared.Constants;
 
 namespace BudgetTracker.Finance.Models;
 

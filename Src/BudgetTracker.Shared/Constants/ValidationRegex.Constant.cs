@@ -1,5 +1,8 @@
-namespace BudgetTracker.Shared.Utilities;
+namespace BudgetTracker.Shared.Constants;
 
+/// <summary>
+/// Provides a centralized collection of regular expressions for data validation.
+/// </summary>
 public static class ValidationRegex
 {
     /// <summary>
@@ -27,14 +30,4 @@ public static class ValidationRegex
     /// - Does not allow special symbols like hashes (#).
     /// </remarks>
     public const string NAME_PATTERN = @"^(?=.*[a-zA-Z])[a-zA-Z0-9,\s]*$";
-}
-
-public static class LengthConstants
-{
-    public const int MAX_CATEGORY_LENGTH = 20;
-    public const int MIN_CATEGORY_LENGTH = 3;
-    public const int MAX_BANK_LENGTH = 25;
-    public const int MIN_BANK_LENGTH = 3;
-    public const int MAX_TRANSACTION_DESCRIPTION_LENGTH = 50;
-    public const int MIN_TRANSACTION_DESCRIPTION_LENGTH = 3;
 }

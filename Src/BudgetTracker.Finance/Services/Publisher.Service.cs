@@ -7,22 +7,16 @@ using BudgetTracker.Finance.Models;
 namespace BudgetTracker.Finance.Services;
 
 /// <summary>
-/// <exception cref="EnvironmentVariableNotFoundException">
-/// Thrown when <c>GOOGLE_CLOUD_PROJECT_ID</c> is not found
-/// </exception>
 /// </summary>
 public class PublisherService
 {
-    private readonly string _topicName;
     private readonly ILogger<PublisherService> _logger;
-    private readonly string _projectId;
+    private readonly PublisherClient _publisherClient;
 
-    public PublisherService(ILogger<PublisherService> logger, AppSecrets appSecrets)
+    public PublisherService(ILogger<PublisherService> logger, PublisherClient publisherClient)
     {
-        _topicName = appSecrets.PubSub.Topic;
-        _projectId = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_ID")  // TODO: Get project id through AppSecrets
-                     ?? throw new EnvironmentVariableNotFoundException("Google cloud project ID EnvironmentVariable not found");
         _logger = logger;
+        _publisherClient = publisherClient;
     }
 
     /// <summary>
@@ -34,12 +28,6 @@ public class PublisherService
     /// <returns>A task that represents the asynchronous publish operation. The task's result is the unique ID of the published message.</returns>
     public async Task<string> PublishMessageAsync(string requestMessage, string? traceId, string eventType)
     {
-        // Create a TopicName object for the request topic.
-        TopicName requestTopicName = TopicName.FromProjectTopic(_projectId, _topicName);
-
-        // Create a PublisherClient to publish messages to the request topic.
-        PublisherClient requestPublisher = await PublisherClient.CreateAsync(requestTopicName);
-
         // Create a PubsubMessage object with the request message data.
         PubsubMessage message = new PubsubMessage
         {
@@ -51,8 +39,13 @@ public class PublisherService
         };
 
         // Publish the request message.
-        string publishId = await requestPublisher.PublishAsync(message);
-        _logger.LogInformation("Message successfully published with ID = {PublishId} to Topic = {TopicName} with Trace-Id = {TraceId}", publishId, _topicName, traceId); // TODO: Get Trace Id here
+        string publishId = await _publisherClient.PublishAsync(message);
+        _logger.LogInformation(
+            "Message successfully published with ID = {PublishId} in Topic = {Topic} with Trace-Id = {TraceId}", 
+            publishId, 
+            _publisherClient.TopicName, 
+            traceId
+)       ; // TODO: Get Trace Id here
         
         return publishId;
     }

@@ -4,19 +4,23 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
+using Google.Cloud.PubSub.V1;
 using Abhiram.Secrets.Configuration;
+using Abhiram.Secrets.Providers.Exceptions;
 using BudgetTracker.Finance.HttpClients;
 using BudgetTracker.Finance.Interfaces;
 using BudgetTracker.Finance.Repository;
 using BudgetTracker.Finance.Services;
+using BudgetTracker.Finance.Configurations;
+using BudgetTracker.Finance.Models;
+using BudgetTracker.Finance.BackgroundWorkers;
 using BudgetTracker.Shared.Utilities;
 using BudgetTracker.Shared.Security;
 using BudgetTracker.Shared.Models;
 using BudgetTracker.Shared.Interfaces;
-using BudgetTracker.Finance.Models;
-using BudgetTracker.Finance.BackgroundWorkers;
 using BudgetTracker.Shared.Constants;
-using Microsoft.OpenApi.Models;
+
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace BudgetTracker.Finance.Extensions;
@@ -62,7 +66,7 @@ internal static class ServiceExtension
         private IServiceCollection AddBackgroundServices()
         {
             serviceCollection.AddHostedService<OutboxProcessordWorker>();
-            serviceCollection.AddHostedService<FinanceHostBackgroundService>();
+            serviceCollection.AddHostedService<SubscriberBackgroundWorker>();
         
             return serviceCollection;
         }
@@ -111,9 +115,26 @@ internal static class ServiceExtension
             serviceCollection.AddScoped<CategoryService>();
             serviceCollection.AddScoped<OutboxService>();
             serviceCollection.AddScoped<TraceIdProvider>();
-            serviceCollection.AddScoped<SubscriberService>();
             serviceCollection.AddSingleton<AppSecrets>(sp => sp.GetRequiredService<IOptions<AppSecrets>>().Value);
             serviceCollection.AddSingleton<YarpApiKeySecret>(sp => sp.GetRequiredService<IOptions<AppSecrets>>().Value.Secrets);
+            serviceCollection.AddSingleton<PublisherClient>(provider =>
+            {
+                AppSecrets secret = provider.GetRequiredService<AppSecrets>();
+                string projectId = secret.GoogleCloudProjectId;
+                TopicName topicName = TopicName.FromProjectTopic(projectId, secret.PubSub.Topic);
+
+                return PublisherClient.Create(topicName);
+            });
+            serviceCollection.AddSingleton<SubscriberClient>(provider =>
+            {
+                AppSecrets secret = provider.GetRequiredService<AppSecrets>();
+                string projectId = secret.GoogleCloudProjectId;
+                string subscriberName = secret.PubSub.Subscriber;
+                SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId, subscriberName);
+                SubscriberClient subscriberClient = SubscriberClient.Create(subscriptionName);
+                
+                return subscriberClient;
+            });
             serviceCollection.AddSingleton<PublisherService>();
         
             return serviceCollection;
@@ -215,7 +236,6 @@ internal static class ServiceExtension
         private IServiceCollection AddOptionsConfigurations(IConfiguration configuration)
         {
             serviceCollection.AddOptions<AppSecrets>().Bind(configuration).ValidateDataAnnotations().ValidateOnStart();
-            
             return serviceCollection;
         }
     }

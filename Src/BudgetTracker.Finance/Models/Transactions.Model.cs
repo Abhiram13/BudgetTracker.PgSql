@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using BudgetTracker.Finance.Attributes;
 using BudgetTracker.Finance.Enums;
-using BudgetTracker.Shared.Utilities;
+using BudgetTracker.Shared.Constants;
 
 namespace BudgetTracker.Finance.Models;
 
@@ -18,9 +18,7 @@ public abstract record TransactionDto
     
     [JsonPropertyName("description")]
     [Required(ErrorMessage = "Description is required")]
-    [MaxLength(50, ErrorMessage = "Description exceeds character limit")]
-    [MinLength(3, ErrorMessage = "Minimum 3 characters are required")]
-    [StringLength(maximumLength: 50, MinimumLength = 3, ErrorMessage = "Description exceeds or does not reach required length")]
+    [StringLength(maximumLength: LengthConstants.MAX_TRANSACTION_DESCRIPTION_LENGTH, MinimumLength = LengthConstants.MIN_TRANSACTION_DESCRIPTION_LENGTH, ErrorMessage = "Description exceeds or does not reach required length")]
     [RegularExpression(ValidationRegex.DESCRIPTION_PATTERN, ErrorMessage = "Only letters, numbers, spaces and # are allowed")]
     public string Description { get; init; } = string.Empty;
 

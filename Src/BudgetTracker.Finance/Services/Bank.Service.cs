@@ -19,7 +19,7 @@ public class BankService
         return bank;
     }
 
-    public async Task<List<BankListDto>> GetBankListsAsync()
+    public async Task<List<BankDto>> GetBankListsAsync()
     {
         return await _bankRepository.GetAllBanksAsync();
     }

@@ -44,10 +44,10 @@ public class BankController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<ApiResponse<List<BankListDto>>>> GetAllBanksAsync()
+    public async Task<ActionResult<ApiResponse<List<BankDto>>>> GetAllBanksAsync()
     {
-        List<BankListDto> list = await _bankService.GetBankListsAsync();
-        return Ok(new ApiResponse<List<BankListDto>>
+        List<BankDto> list = await _bankService.GetBankListsAsync();
+        return Ok(new ApiResponse<List<BankDto>>
         {
             StatusCode = System.Net.HttpStatusCode.OK,
             TraceId = _traceProvider.TraceId,
@@ -60,11 +60,11 @@ public class BankController : ControllerBase
     {
         Bank bank = await _bankService.GetBankByIdAsync(id);
 
-        return Ok(new ApiResponse<BankByIdResponseDto>
+        return Ok(new ApiResponse<BankDto>
         {
             StatusCode = System.Net.HttpStatusCode.OK,
             TraceId = _traceProvider.TraceId,
-            Result = new BankByIdResponseDto
+            Result = new BankDto
             {
                 Id = bank.Id,
                 Name = bank.Name
