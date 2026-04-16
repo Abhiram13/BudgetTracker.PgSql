@@ -1,6 +1,6 @@
 namespace BudgetTracker.Shared.Models;
 
-public class PubSubFinanceEvents
+public static class PubSubFinanceEvents
 {
     public const string DATEWISE_TRANSACTIONS_LIST = "DateWiseTransactionsList";
 }

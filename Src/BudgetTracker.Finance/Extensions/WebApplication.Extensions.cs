@@ -1,6 +1,6 @@
-using BudgetTracker.Finance.Models;
-using BudgetTracker.Shared.Middlwares;
 using Microsoft.EntityFrameworkCore;
+using BudgetTracker.Finance.Configurations;
+using BudgetTracker.Shared.Middlwares;
 
 namespace BudgetTracker.Finance.Extensions;
 

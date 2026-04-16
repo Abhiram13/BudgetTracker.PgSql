@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using BudgetTracker.Finance.Enums;
 using Microsoft.EntityFrameworkCore;
 using BudgetTracker.Shared.Entities;
-using BudgetTracker.Shared.Utilities;
+using BudgetTracker.Shared.Constants;
 
 namespace BudgetTracker.Finance.Entities;
 

@@ -16,10 +16,10 @@ public class BankRepository : IBankRepository
         _readDbContext = read;
     }
 
-    public async Task<List<BankListDto>> GetAllBanksAsync()
+    public async Task<List<BankDto>> GetAllBanksAsync()
     {
-        List<BankListDto> list = await _readDbContext.Banks
-            .Select(b => new BankListDto { Id = b.Id, Name = b.Name })
+        List<BankDto> list = await _readDbContext.Banks
+            .Select(b => new BankDto { Id = b.Id, Name = b.Name })
             .ToListAsync();
 
         return list;
