@@ -24,10 +24,10 @@ public class CategoryRepository : ICategoryRepository
         return payload;
     }
 
-    public async Task<List<CategoryListDto>> ListOfCategoryAsync()
+    public async Task<List<CategoryDto>> ListOfCategoryAsync()
     {
-        List<CategoryListDto> list = await _readDbContext.Categories
-            .Select(c => new CategoryListDto { Id = c.Id, Name = c.Name })
+        List<CategoryDto> list = await _readDbContext.Categories
+            .Select(c => new CategoryDto { Id = c.Id, Name = c.Name })
             .ToListAsync();
 
         return list;
