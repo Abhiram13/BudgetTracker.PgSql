@@ -6,7 +6,7 @@ namespace BudgetTracker.Finance.Interfaces;
 public interface ICategoryRepository
 {
     Task<Category> InsertOneCategoryAsync(Category payload);
-    Task<List<CategoryListDto>> ListOfCategoryAsync();
+    Task<List<CategoryDto>> ListOfCategoryAsync();
     Task UpdateOneCategoryAsync(Category payload);
     Task<Category?> GetCategoryAsync(int id);
     Task<Category?> GetCategoryAsync(string categoryName);

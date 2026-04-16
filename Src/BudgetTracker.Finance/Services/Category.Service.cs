@@ -26,7 +26,7 @@ public class CategoryService
         return await _categoryRepository.InsertOneCategoryAsync(payload);
     }
 
-    public async Task<List<CategoryListDto>> GetAllCategoriesAsync()
+    public async Task<List<CategoryDto>> GetAllCategoriesAsync()
     {
         return await _categoryRepository.ListOfCategoryAsync();
     }

@@ -44,10 +44,10 @@ public class CategoryController : ControllerBase
     }
 
     [HttpGet(Name = "GET_ALL_CATEGORIES")]
-    public async Task<ActionResult<ApiResponse<List<CategoryListDto>>>> GetCategoriesAsync()
+    public async Task<ActionResult<ApiResponse<List<CategoryDto>>>> GetCategoriesAsync()
     {
-        List<CategoryListDto> list = await _categoryService.GetAllCategoriesAsync();
-        return Ok(new ApiResponse<List<CategoryListDto>>
+        List<CategoryDto> list = await _categoryService.GetAllCategoriesAsync();
+        return Ok(new ApiResponse<List<CategoryDto>>
         {
             StatusCode = System.Net.HttpStatusCode.OK,
             TraceId = _traceIdProvider.TraceId,
@@ -59,11 +59,11 @@ public class CategoryController : ControllerBase
     public async Task<IActionResult> GetById([FromRoute] int id)
     {
         Category category = await _categoryService.GetCategoryByIdAsync(id);
-        return Ok(new ApiResponse<CategoryByIdResponseDto>
+        return Ok(new ApiResponse<CategoryDto>
         {
             StatusCode = System.Net.HttpStatusCode.OK,
             TraceId = _traceIdProvider.TraceId,
-            Result = new CategoryByIdResponseDto
+            Result = new CategoryDto
             {
                 Id = category.Id,
                 Name = category.Name
