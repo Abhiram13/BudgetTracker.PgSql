@@ -47,7 +47,7 @@ builder.Services.AddReverseProxy()
             }
             
             GatewayAppSecrets secrets = context.HttpContext.RequestServices.GetRequiredService<GatewayAppSecrets>();
-            string token = JwtTokenGenerator.CreateToken(secretKey: secrets.JwtSecret.Key, scope: JwtConstants.Scopes.DOWNSTREAM, audience: clusterId);
+            string token = JwtTokenGenerator.CreateToken(secretKey: secrets.JwtSecret.Key, scope: SharedConstants.Jwt.Scopes.DOWNSTREAM, audience: clusterId);
             context.ProxyRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             return ValueTask.CompletedTask;
         });

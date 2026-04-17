@@ -30,7 +30,7 @@ public class ConfigureJwtOptions<T> : IConfigureNamedOptions<JwtBearerOptions> w
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidAudience = _secret.Audience,
-                ValidIssuer = JwtConstants.Issuer,
+                ValidIssuer = SharedConstants.Jwt.Issuer,
                 ValidateLifetime = true,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secret.Key)),
             };

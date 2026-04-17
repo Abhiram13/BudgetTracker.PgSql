@@ -10,7 +10,7 @@ public record DatabaseConnection
 
 public record Secrets
 {
-    [ConfigurationKeyName(HeaderNames.YARP_API_KEY)]
+    [ConfigurationKeyName(SharedConstants.Headers.YARP_API_KEY)]
     public required string YarpApiKey { get; init; }
 }
 

@@ -6,7 +6,7 @@ namespace BudgetTracker.Shared.Models;
 public record SharedSecrets
 {
     [Obsolete("Use JWT")]
-    [ConfigurationKeyName(HeaderNames.YARP_API_KEY)]
+    [ConfigurationKeyName(SharedConstants.Headers.YARP_API_KEY)]
     public string YarpApiKey { get; init; } = string.Empty;
     
     [ConfigurationKeyName("JWT")]

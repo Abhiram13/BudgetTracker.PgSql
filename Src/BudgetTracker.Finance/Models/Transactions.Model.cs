@@ -18,8 +18,8 @@ public abstract record TransactionDto
     
     [JsonPropertyName("description")]
     [Required(ErrorMessage = "Description is required")]
-    [StringLength(maximumLength: LengthConstants.MAX_TRANSACTION_DESCRIPTION_LENGTH, MinimumLength = LengthConstants.MIN_TRANSACTION_DESCRIPTION_LENGTH, ErrorMessage = "Description exceeds or does not reach required length")]
-    [RegularExpression(ValidationRegex.DESCRIPTION_PATTERN, ErrorMessage = "Only letters, numbers, spaces and # are allowed")]
+    [StringLength(maximumLength: SharedConstants.LengthConstants.MAX_TRANSACTION_DESCRIPTION_LENGTH, MinimumLength = SharedConstants.LengthConstants.MIN_TRANSACTION_DESCRIPTION_LENGTH, ErrorMessage = "Description exceeds or does not reach required length")]
+    [RegularExpression(SharedConstants.ValidationRegex.DESCRIPTION_PATTERN, ErrorMessage = "Only letters, numbers, spaces and # are allowed")]
     public string Description { get; init; } = string.Empty;
 
     [JsonPropertyName("from_bank")]

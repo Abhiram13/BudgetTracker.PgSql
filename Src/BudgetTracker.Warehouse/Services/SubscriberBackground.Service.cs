@@ -2,6 +2,7 @@ using BudgetTracker.Warehouse.Services;
 
 namespace BudgetTracker.Warehouse.Services;
 
+[Obsolete(message: $"Directly use {nameof(SubscriberService)}")]
 public class SubscriberBackgroundService : BackgroundService
 {
     private readonly IServiceScopeFactory _scopeFactory;

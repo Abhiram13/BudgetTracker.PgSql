@@ -18,8 +18,8 @@ public record InsertBankDto
     /// <item>Maximum <c>25</c> characters are required</item>
     /// </list>
     [Required(ErrorMessage = "Bank name is required")]
-    [StringLength(maximumLength: LengthConstants.MAX_BANK_LENGTH, MinimumLength = LengthConstants.MIN_BANK_LENGTH, ErrorMessage = "Bank name exceeds or does not reach required length")]
-    [RegularExpression(ValidationRegex.NAME_PATTERN, ErrorMessage = "Only letters, numbers, spaces and # are allowed")]
+    [StringLength(maximumLength: SharedConstants.LengthConstants.MAX_BANK_LENGTH, MinimumLength = SharedConstants.LengthConstants.MIN_BANK_LENGTH, ErrorMessage = "Bank name exceeds or does not reach required length")]
+    [RegularExpression(SharedConstants.ValidationRegex.NAME_PATTERN, ErrorMessage = "Only letters, numbers, spaces and # are allowed")]
     public string Name { get; init; } = string.Empty;
 }
 

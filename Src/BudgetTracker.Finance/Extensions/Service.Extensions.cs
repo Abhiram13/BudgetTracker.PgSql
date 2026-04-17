@@ -198,7 +198,7 @@ internal static class ServiceExtension
                 KeyValuePair<string, ModelStateEntry?> modelState = action.ModelState.First(m => m.Value?.Errors.Count > 0);
                 string errorAt = modelState.Key;
                 string errorMessage = modelState.Value?.Errors.FirstOrDefault()?.ErrorMessage ?? $"Something went wrong at {errorAt}";
-                string traceId = request.Headers[HeaderNames.YARP_API_KEY]!;
+                string traceId = request.Headers[SharedConstants.Headers.YARP_API_KEY]!;
                 ApiResponse<string> apiResponse = new ApiResponse<string> { Message = errorMessage, StatusCode = HttpStatusCode.BadRequest, TraceId = traceId };
                 BadRequestObjectResult badRequest = new BadRequestObjectResult(apiResponse);
             
@@ -219,7 +219,7 @@ internal static class ServiceExtension
             serviceCollection.AddJwtConfiguration<AppSecrets>();
             serviceCollection.AddAuthorization(options =>
             {
-                options.AddPolicy(JwtConstants.Policies.DOWNSTREAM_POLICY, policy => policy.RequireClaim("scope", JwtConstants.Scopes.DOWNSTREAM));
+                options.AddPolicy(SharedConstants.Jwt.Policies.DOWNSTREAM_POLICY, policy => policy.RequireClaim("scope", SharedConstants.Jwt.Scopes.DOWNSTREAM));
             });
         
             return serviceCollection;
