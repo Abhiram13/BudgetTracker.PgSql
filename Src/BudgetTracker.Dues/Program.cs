@@ -28,11 +28,6 @@ builder.Services.AddSingleton<DueAppSecrets>(sp => sp.GetRequiredService<IOption
 builder.Services.AddScoped<IDueRepository, DueRepository>();
 builder.Services.AddScoped<DueService>();
 builder.Services.AddScoped<TraceIdProvider>();
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = YarpApiKeySchemaOptions.DefaultSchema;
-    options.DefaultChallengeScheme = YarpApiKeySchemaOptions.DefaultSchema;
-}).AddScheme<YarpApiKeySchemaOptions, YarpApiKeyHandler>(YarpApiKeySchemaOptions.DefaultSchema, _ => {});
 builder.Services.AddDbContext<WriteDBContext>((provider, options) =>
 {
     PostgresSecrets appSecrets = provider.GetRequiredService<DueAppSecrets>().Postgres;

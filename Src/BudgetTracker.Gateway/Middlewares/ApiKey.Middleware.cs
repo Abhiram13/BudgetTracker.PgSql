@@ -1,3 +1,4 @@
+using BudgetTracker.Gateway.Models;
 using BudgetTracker.Shared.Interfaces;
 using BudgetTracker.Shared.Models;
 using BudgetTracker.Shared.Constants;
@@ -7,18 +8,18 @@ namespace BudgetTracker.Gateway.Middlewares;
 public class ApiKeyMiddleware : ICustomMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly YarpApiKeySecret _yarpAppSecret;
+    private readonly GatewayAppSecrets _secrets;
 
-    public ApiKeyMiddleware(RequestDelegate next, YarpApiKeySecret yarpAppSecret)
+    public ApiKeyMiddleware(RequestDelegate next, GatewayAppSecrets secrets)
     {
         _next = next;
-        _yarpAppSecret = yarpAppSecret;
+        _secrets = secrets;
     }
 
     // TODO: Add loggers
     public async Task InvokeAsync(HttpContext httpContext)
     {
-        string? apiKey = _yarpAppSecret.YarpApiKey;
+        string? apiKey = _secrets.YarpApiKey;
 
         if (string.IsNullOrEmpty(apiKey))
         {

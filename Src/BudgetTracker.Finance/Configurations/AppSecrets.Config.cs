@@ -11,7 +11,7 @@ namespace BudgetTracker.Finance.Configurations;
 /// <remarks>
 /// This record is bound from multiple configuration sources including appsettings.json, environment variables, and secret managers.
 /// </remarks>
-public sealed record AppSecrets
+public sealed record AppSecrets : SharedSecrets
 {
     /// <summary>
     /// Gets the configuration settings for Google Cloud Pub/Sub.
@@ -31,11 +31,11 @@ public sealed record AppSecrets
     [ConfigurationKeyName("POSTGRES")]
     public PostgresSecrets Postgres { get; init; } = default!;
     
-    /// <summary>
-    /// Gets the security keys and API secrets used for YARP authentication.
-    /// </summary>
-    [ConfigurationKeyName("SECRETS")]
-    public YarpApiKeySecret Secrets { get; init; } = default!;
+    // [ConfigurationKeyName("SECRETS")]
+    // public YarpApiKeySecret Secrets { get; init; } = default!;
+
+    // [ConfigurationKeyName("JWT")]
+    // public JwtSecret JwtSecret { get; init; } = default!;
     
     /// <summary>
     /// Gets the ID of Google Cloud project.

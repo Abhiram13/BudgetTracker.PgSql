@@ -7,7 +7,6 @@ namespace BudgetTracker.Dues.Models;
 public sealed record DueAppSecrets
 {
     public PostgresSecrets Postgres { get; set; } = default!;
-    public YarpApiKeySecret Secrets { get; set; } = default!;
 }
 
 public record PostgresSecrets

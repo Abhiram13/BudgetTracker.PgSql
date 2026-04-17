@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Http.Headers;
 using System.Reflection;
 using Microsoft.Extensions.Options;
 using Abhiram.Extensions.DotEnv;
@@ -8,9 +9,12 @@ using BudgetTracker.Gateway.Middlewares;
 using BudgetTracker.Gateway.Security;
 using BudgetTracker.Shared.Utilities;
 using BudgetTracker.Gateway.Models;
+using BudgetTracker.Shared.Constants;
 using BudgetTracker.Shared.Interfaces;
 using BudgetTracker.Shared.Models;
 using BudgetTracker.Warehouse.Services;
+using Yarp.ReverseProxy.Model;
+using Yarp.ReverseProxy.Transforms;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 DotEnvironmentVariables.Load();
@@ -26,10 +30,28 @@ builder.AddConsoleGoogleSeriLog();
 builder.Configuration.AddSecrets(environment: builder.Environment, optional: false);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddReverseProxy().LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 builder.Services.AddOptions<GatewayAppSecrets>().Bind(builder.Configuration).ValidateDataAnnotations().ValidateOnStart();
 builder.Services.AddSingleton<GatewayAppSecrets>(option => option.GetRequiredService<IOptions<GatewayAppSecrets>>().Value);
-builder.Services.AddSingleton<YarpApiKeySecret>(opt => opt.GetRequiredService<IOptions<GatewayAppSecrets>>().Value.Secrets);
+builder.Services.AddReverseProxy()
+    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"))
+    .AddTransforms(transform =>
+    {
+        transform.AddRequestTransform(context =>
+        {
+            RouteModel cluster = context.HttpContext.GetRouteModel();
+            string? clusterId = cluster.Config.ClusterId;
+
+            if (string.IsNullOrEmpty(clusterId))
+            {
+                return ValueTask.CompletedTask; // TODO: Check how to verify cluster id is valid 
+            }
+            
+            GatewayAppSecrets secrets = context.HttpContext.RequestServices.GetRequiredService<GatewayAppSecrets>();
+            string token = JwtTokenGenerator.CreateToken(secretKey: secrets.JwtSecret.Key, scope: JwtConstants.Scopes.DOWNSTREAM, audience: clusterId);
+            context.ProxyRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            return ValueTask.CompletedTask;
+        });
+    });
 builder.Services.AddAuthentication().AddScheme<ApiKeySchemaOptions, ApiKeyHandler>(ApiKeySchemaOptions.DefaultSchema, _ => {});
 builder.Services.AddScoped<TraceIdProvider>();
 builder.Services.AddCors(options =>

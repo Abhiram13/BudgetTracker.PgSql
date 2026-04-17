@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Abhiram.Abstractions.Logging;
 using Abhiram.Extensions.DotEnv;
 using Abhiram.Secrets.Configuration;
+using BudgetTracker.Shared.Extensions;
 using BudgetTracker.Shared.Interfaces;
 using BudgetTracker.Shared.Middlwares;
 using BudgetTracker.Shared.Models;
@@ -28,15 +29,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 builder.Services.AddOptions<WarehouseAppSecrets>().Bind(builder.Configuration).ValidateDataAnnotations().ValidateOnStart();
 builder.Services.AddSingleton<WarehouseAppSecrets>(sp => sp.GetRequiredService<IOptions<WarehouseAppSecrets>>().Value);
-builder.Services.AddSingleton<YarpApiKeySecret>(sp => sp.GetRequiredService<IOptions<WarehouseAppSecrets>>().Value.Secrets);
 builder.Services.AddSingleton<BigQueryService>();
 builder.Services.AddScoped<TraceIdProvider>();
 builder.Services.AddScoped<SubscriberService>();
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = YarpApiKeySchemaOptions.DefaultSchema;
-    options.DefaultChallengeScheme = YarpApiKeySchemaOptions.DefaultSchema;
-}).AddScheme<YarpApiKeySchemaOptions, YarpApiKeyHandler>(YarpApiKeySchemaOptions.DefaultSchema, _ => {});
+builder.Services.AddJwtConfiguration<WarehouseAppSecrets>();
 builder.Services.AddHostedService<SubscriberBackgroundService>();
 
 builder.WebHost.ConfigureKestrel((_, server) => {
