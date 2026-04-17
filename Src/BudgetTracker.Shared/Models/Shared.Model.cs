@@ -1,10 +1,14 @@
-using Microsoft.Extensions.Configuration;
 using BudgetTracker.Shared.Constants;
+using Microsoft.Extensions.Configuration;
 
 namespace BudgetTracker.Shared.Models;
 
-public record YarpApiKeySecret
+public record SharedSecrets
 {
+    [Obsolete("Use JWT")]
     [ConfigurationKeyName(HeaderNames.YARP_API_KEY)]
     public string YarpApiKey { get; init; } = string.Empty;
+    
+    [ConfigurationKeyName("JWT")]
+    public JwtSecret JwtSecret { get; init; } = default!;
 }

@@ -20,8 +20,11 @@ using BudgetTracker.Shared.Security;
 using BudgetTracker.Shared.Models;
 using BudgetTracker.Shared.Interfaces;
 using BudgetTracker.Shared.Constants;
-
+using BudgetTracker.Shared.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Encoding = System.Text.Encoding;
 
 namespace BudgetTracker.Finance.Extensions;
 
@@ -116,7 +119,6 @@ internal static class ServiceExtension
             serviceCollection.AddScoped<OutboxService>();
             serviceCollection.AddScoped<TraceIdProvider>();
             serviceCollection.AddSingleton<AppSecrets>(sp => sp.GetRequiredService<IOptions<AppSecrets>>().Value);
-            serviceCollection.AddSingleton<YarpApiKeySecret>(sp => sp.GetRequiredService<IOptions<AppSecrets>>().Value.Secrets);
             serviceCollection.AddSingleton<PublisherClient>(provider =>
             {
                 AppSecrets secret = provider.GetRequiredService<AppSecrets>();
@@ -142,49 +144,49 @@ internal static class ServiceExtension
 
         private IServiceCollection AddSwaggerConfiguration()
         {
-            Action<SwaggerGenOptions> configure = options =>
-            {
-                string baseDir = AppContext.BaseDirectory;
-                string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                string xmlPath = Path.Combine(baseDir, xmlFile);
-                options.IncludeXmlComments(xmlPath);
-    
-                string sharedXml = "BudgetTracker.Shared.xml"; 
-                string sharedPath = Path.Combine(baseDir, sharedXml);
-    
-                if (File.Exists(sharedPath))
-                {
-                    options.IncludeXmlComments(sharedPath);
-                }
-            
-                options.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Title = "Budget Tracker Finance API",
-                    Version = "v1",
-                    Description = "Comprehensive APIs for managing bank transactions and categories."
-                });
-    
-                const string SWAGGER_API_SCHEMA = "Yarp-Api-Key";
-                options.AddSecurityDefinition(SWAGGER_API_SCHEMA, new OpenApiSecurityScheme
-                {
-                    Description = "Yarp api key that gets passed and authenticated to downstream apis",
-                    Name = HeaderNames.YARP_API_KEY,
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = YarpApiKeySchemaOptions.DefaultSchema,
-                });
-    
-                options.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    { 
-                        new OpenApiSecurityScheme { Reference = new OpenApiReference { Id = SWAGGER_API_SCHEMA, Type = ReferenceType.SecurityScheme }},
-                        Array.Empty<string>()
-                    }
-                });
-            };
+            // Action<SwaggerGenOptions> configure = options =>
+            // {
+            //     string baseDir = AppContext.BaseDirectory;
+            //     string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            //     string xmlPath = Path.Combine(baseDir, xmlFile);
+            //     options.IncludeXmlComments(xmlPath);
+            //
+            //     string sharedXml = "BudgetTracker.Shared.xml"; 
+            //     string sharedPath = Path.Combine(baseDir, sharedXml);
+            //
+            //     if (File.Exists(sharedPath))
+            //     {
+            //         options.IncludeXmlComments(sharedPath);
+            //     }
+            //
+            //     options.SwaggerDoc("v1", new OpenApiInfo
+            //     {
+            //         Title = "Budget Tracker Finance API",
+            //         Version = "v1",
+            //         Description = "Comprehensive APIs for managing bank transactions and categories."
+            //     });
+            //
+            //     const string SWAGGER_API_SCHEMA = "Yarp-Api-Key";
+            //     options.AddSecurityDefinition(SWAGGER_API_SCHEMA, new OpenApiSecurityScheme
+            //     {
+            //         Description = "Yarp api key that gets passed and authenticated to downstream apis",
+            //         Name = HeaderNames.YARP_API_KEY,
+            //         In = ParameterLocation.Header,
+            //         Type = SecuritySchemeType.ApiKey,
+            //         Scheme = YarpApiKeySchemaOptions.DefaultSchema,
+            //     });
+            //
+            //     options.AddSecurityRequirement(new OpenApiSecurityRequirement
+            //     {
+            //         { 
+            //             new OpenApiSecurityScheme { Reference = new OpenApiReference { Id = SWAGGER_API_SCHEMA, Type = ReferenceType.SecurityScheme }},
+            //             Array.Empty<string>()
+            //         }
+            //     });
+            // };
         
-            serviceCollection.AddSwaggerGen(configure);
-        
+            // serviceCollection.AddSwaggerGen(configure);
+            serviceCollection.AddSwaggerGen();
             return serviceCollection;
         }
 
@@ -214,11 +216,11 @@ internal static class ServiceExtension
 
         private IServiceCollection AddSecurityConfiguration()
         {
-            serviceCollection
-                .AddAuthentication()
-                .AddScheme<YarpApiKeySchemaOptions, YarpApiKeyHandler>(YarpApiKeySchemaOptions.DefaultSchema, _ => {});
-        
-            serviceCollection.AddAuthorization();
+            serviceCollection.AddJwtConfiguration<AppSecrets>();
+            serviceCollection.AddAuthorization(options =>
+            {
+                options.AddPolicy(JwtConstants.Policies.DOWNSTREAM_POLICY, policy => policy.RequireClaim("scope", JwtConstants.Scopes.DOWNSTREAM));
+            });
         
             return serviceCollection;
         }

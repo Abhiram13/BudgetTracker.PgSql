@@ -18,14 +18,12 @@ public class YarpApiKeySchemaOptions : AuthenticationSchemeOptions
 
 // Used to verify and authenticate client api calls if YARP_API_KEY exists in header
 // Used in downstream apis
+[Obsolete(message: "Use JWT for auth", error: true)]
 public class YarpApiKeyHandler : AuthenticationHandler<YarpApiKeySchemaOptions>
 {
-    private readonly YarpApiKeySecret _appSecrets;
-
-    public YarpApiKeyHandler(IOptionsMonitor<YarpApiKeySchemaOptions> options, ILoggerFactory logger, UrlEncoder encoder, YarpApiKeySecret appSecrets) : base(options, logger, encoder)
-    {
-        _appSecrets = appSecrets;
-    }
+    // private readonly YarpApiKeySecret _appSecrets;
+    
+    public YarpApiKeyHandler(IOptionsMonitor<YarpApiKeySchemaOptions> options, ILoggerFactory logger, UrlEncoder encoder) : base(options, logger, encoder) { }
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
@@ -37,7 +35,7 @@ public class YarpApiKeyHandler : AuthenticationHandler<YarpApiKeySchemaOptions>
         }
 
         string? HEADER_API_KEY = Request.Headers[YarpApiKeySchemaOptions.HeaderName];
-        string? API_KEY = _appSecrets.YarpApiKey;
+        string? API_KEY = "";
 
         if (HEADER_API_KEY != API_KEY)
         {

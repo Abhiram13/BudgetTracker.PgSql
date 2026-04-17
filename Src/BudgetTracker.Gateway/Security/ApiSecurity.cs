@@ -33,7 +33,7 @@ public class ApiKeyHandler : AuthenticationHandler<ApiKeySchemaOptions>
         }
 
         string? HEADER_API_KEY = Request.Headers[ApiKeySchemaOptions.HeaderName];
-        string? API_KEY = _secrets.Secrets.ApiKey;
+        string? API_KEY = _secrets.ApiKey;
 
         if (HEADER_API_KEY != API_KEY)
         {

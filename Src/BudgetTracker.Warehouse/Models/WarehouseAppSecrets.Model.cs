@@ -3,9 +3,8 @@ using BudgetTracker.Shared.Models;
 
 namespace BudgetTracker.Warehouse.Models;
 
-public record WarehouseAppSecrets
+public record WarehouseAppSecrets : SharedSecrets
 {
-    public YarpApiKeySecret Secrets { get; set; } =  default!;
     public BigQuerySecrets BigQuery { get; set; } = default!;
 }
 

@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -12,13 +13,9 @@
 
     <PropertyGroup>
         <RootNameSpace>BudgetTracker.Shared</RootNameSpace>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+<!--        <GenerateDocumentationFile>true</GenerateDocumentationFile>-->
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
         <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);IncludeXmlInOutput</TargetsForTfmSpecificContentInPackage>
     </PropertyGroup>
-
-<!--    <ItemGroup>-->
-<!--        <Content Include="$(OutputPath)$(AssemblyName).xml" CopyToOutputDirectory="PreserveNewest" />-->
-<!--    </ItemGroup>-->
     
 </Project>
