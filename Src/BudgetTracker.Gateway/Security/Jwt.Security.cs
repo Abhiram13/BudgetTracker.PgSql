@@ -1,8 +1,8 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using BudgetTracker.Shared.Constants;
 using Microsoft.IdentityModel.Tokens;
-using JwtConstants = BudgetTracker.Shared.Constants.JwtConstants;
 
 namespace BudgetTracker.Gateway.Security;
 
@@ -15,7 +15,7 @@ public static class JwtTokenGenerator
         Claim[] claims = new Claim[1] { new Claim("scope", scope) };
         
         JwtSecurityToken token = new JwtSecurityToken(
-            issuer: JwtConstants.Issuer,
+            issuer: SharedConstants.Jwt.Issuer,
             audience: audience,
             claims: claims, 
             expires: DateTime.UtcNow.AddMinutes(1), 

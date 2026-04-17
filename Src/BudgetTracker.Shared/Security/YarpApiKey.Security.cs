@@ -13,7 +13,7 @@ namespace BudgetTracker.Shared.Security;
 public class YarpApiKeySchemaOptions : AuthenticationSchemeOptions
 {
     public const string DefaultSchema = "YarpApiKeySchema";
-    public const string HeaderName = HeaderNames.YARP_API_KEY;
+    public const string HeaderName = SharedConstants.Headers.YARP_API_KEY;
 }
 
 // Used to verify and authenticate client api calls if YARP_API_KEY exists in header
@@ -59,7 +59,7 @@ public class YarpApiKeyHandler : AuthenticationHandler<YarpApiKeySchemaOptions>
         Response.StatusCode = StatusCodes.Status401Unauthorized;
         Response.ContentType = "application/json";
 
-        string traceId = Request.Headers[HeaderNames.X_TRACE_ID]!; // FIX: Default Trace ID should be generated incase none from headers
+        string traceId = Request.Headers[SharedConstants.Headers.X_TRACE_ID]!; // FIX: Default Trace ID should be generated incase none from headers
 
         ApiResponse<string> response = new ApiResponse<string>
         {

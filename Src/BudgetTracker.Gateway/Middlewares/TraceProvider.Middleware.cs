@@ -23,9 +23,9 @@ public class TraceProviderMiddleware : ICustomMiddleware
 
         _logger.LogInformation("Starting Request = {Path} at Gateway with Trace-Id = {TraceId}", requestPath, traceId);
 
-        httpContext.Request.Headers[HeaderNames.X_TRACE_ID] = traceId;
-        httpContext.Items[HeaderNames.X_TRACE_ID] = traceId;
-        httpContext.Response.Headers[HeaderNames.X_TRACE_ID] = traceId;
+        httpContext.Request.Headers[SharedConstants.Headers.X_TRACE_ID] = traceId;
+        httpContext.Items[SharedConstants.Headers.X_TRACE_ID] = traceId;
+        httpContext.Response.Headers[SharedConstants.Headers.X_TRACE_ID] = traceId;
 
         await _next(httpContext);
 

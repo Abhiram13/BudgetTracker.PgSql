@@ -25,7 +25,7 @@ public class ExceptionHandlerMiddleware : ICustomMiddleware
         const string CONTENT_TYPE = "application/json";
         HttpRequest request = httpContext.Request;
         HttpResponse response = httpContext.Response;
-        string traceId = request.Headers[HeaderNames.X_TRACE_ID]!;
+        string traceId = request.Headers[SharedConstants.Headers.X_TRACE_ID]!;
         string requestUrl = $"{request.Scheme}://{request.Host}{request.Path}{request.QueryString}";
 
         (HttpStatusCode httpStatusCode, int apiStatusCode, string logMessage, string errorMessage) = exception switch

@@ -21,8 +21,8 @@ public abstract class FinanceTestFixture
         string traceId = Guid.NewGuid().ToString();
         string yarpApiKey = config.Secrets.YarpApiKey;
         
-        Client.DefaultRequestHeaders.Add(HeaderNames.YARP_API_KEY, yarpApiKey);
-        Client.DefaultRequestHeaders.Add(HeaderNames.X_TRACE_ID, traceId);
+        Client.DefaultRequestHeaders.Add(SharedConstants.Headers.YARP_API_KEY, yarpApiKey);
+        Client.DefaultRequestHeaders.Add(SharedConstants.Headers.X_TRACE_ID, traceId);
     }
 
     protected void DisposeFactoryAndClient()

@@ -26,10 +26,8 @@ public class Transaction : BaseEntity
     [Column("description")]
     [JsonPropertyName("description")]
     [Required(ErrorMessage = "Description is required")]
-    [MaxLength(LengthConstants.MAX_TRANSACTION_DESCRIPTION_LENGTH, ErrorMessage = "Description exceeds character limit")]
-    [MinLength(LengthConstants.MIN_TRANSACTION_DESCRIPTION_LENGTH, ErrorMessage = "Minimum characters are required")]
-    [StringLength(maximumLength: LengthConstants.MAX_TRANSACTION_DESCRIPTION_LENGTH, MinimumLength = LengthConstants.MIN_TRANSACTION_DESCRIPTION_LENGTH, ErrorMessage = "Description exceeds or does not reach required length")]
-    [RegularExpression(ValidationRegex.DESCRIPTION_PATTERN, ErrorMessage = "Only letters, numbers, spaces and # are allowed")]
+    [StringLength(maximumLength: SharedConstants.LengthConstants.MAX_TRANSACTION_DESCRIPTION_LENGTH, MinimumLength = SharedConstants.LengthConstants.MIN_TRANSACTION_DESCRIPTION_LENGTH, ErrorMessage = "Description exceeds or does not reach required length")]
+    [RegularExpression(SharedConstants.ValidationRegex.DESCRIPTION_PATTERN, ErrorMessage = "Only letters, numbers, spaces and # are allowed")]
     public string Description { get; set; } = string.Empty;
 
     [Column("from_bank")]    

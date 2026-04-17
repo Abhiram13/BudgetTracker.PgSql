@@ -35,8 +35,8 @@ public class WarehouseIntegrationTestFixture : IAsyncLifetime
         string traceId = Guid.NewGuid().ToString();
         string yarpApiKey = "";
         
-        Client.DefaultRequestHeaders.Add(HeaderNames.X_TRACE_ID, traceId);
-        Client.DefaultRequestHeaders.Add(HeaderNames.YARP_API_KEY, yarpApiKey);
+        Client.DefaultRequestHeaders.Add(SharedConstants.Headers.X_TRACE_ID, traceId);
+        Client.DefaultRequestHeaders.Add(SharedConstants.Headers.YARP_API_KEY, yarpApiKey);
     }
 
     public Task DisposeAsync()

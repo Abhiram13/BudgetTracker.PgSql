@@ -34,7 +34,7 @@ public class ApiKeyMiddleware : ICustomMiddleware
             return;
         }
 
-        httpContext.Request.Headers[HeaderNames.YARP_API_KEY] = apiKey;
+        httpContext.Request.Headers[SharedConstants.Headers.YARP_API_KEY] = apiKey;
 
         await _next(httpContext);
     }
