@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <RootNameSpace>BudgetTracker.Finance</RootNameSpace>
-<!--        <GenerateDocumentationFile>true</GenerateDocumentationFile>-->
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>

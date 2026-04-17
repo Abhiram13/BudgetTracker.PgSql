@@ -13,7 +13,7 @@
 
     <PropertyGroup>
         <RootNameSpace>BudgetTracker.Shared</RootNameSpace>
-<!--        <GenerateDocumentationFile>true</GenerateDocumentationFile>-->
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
         <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);IncludeXmlInOutput</TargetsForTfmSpecificContentInPackage>
     </PropertyGroup>
