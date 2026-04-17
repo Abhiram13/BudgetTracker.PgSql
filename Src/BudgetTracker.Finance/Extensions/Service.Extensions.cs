@@ -144,49 +144,49 @@ internal static class ServiceExtension
 
         private IServiceCollection AddSwaggerConfiguration()
         {
-            // Action<SwaggerGenOptions> configure = options =>
-            // {
-            //     string baseDir = AppContext.BaseDirectory;
-            //     string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-            //     string xmlPath = Path.Combine(baseDir, xmlFile);
-            //     options.IncludeXmlComments(xmlPath);
-            //
-            //     string sharedXml = "BudgetTracker.Shared.xml"; 
-            //     string sharedPath = Path.Combine(baseDir, sharedXml);
-            //
-            //     if (File.Exists(sharedPath))
-            //     {
-            //         options.IncludeXmlComments(sharedPath);
-            //     }
-            //
-            //     options.SwaggerDoc("v1", new OpenApiInfo
-            //     {
-            //         Title = "Budget Tracker Finance API",
-            //         Version = "v1",
-            //         Description = "Comprehensive APIs for managing bank transactions and categories."
-            //     });
-            //
-            //     const string SWAGGER_API_SCHEMA = "Yarp-Api-Key";
-            //     options.AddSecurityDefinition(SWAGGER_API_SCHEMA, new OpenApiSecurityScheme
-            //     {
-            //         Description = "Yarp api key that gets passed and authenticated to downstream apis",
-            //         Name = HeaderNames.YARP_API_KEY,
-            //         In = ParameterLocation.Header,
-            //         Type = SecuritySchemeType.ApiKey,
-            //         Scheme = YarpApiKeySchemaOptions.DefaultSchema,
-            //     });
-            //
-            //     options.AddSecurityRequirement(new OpenApiSecurityRequirement
-            //     {
-            //         { 
-            //             new OpenApiSecurityScheme { Reference = new OpenApiReference { Id = SWAGGER_API_SCHEMA, Type = ReferenceType.SecurityScheme }},
-            //             Array.Empty<string>()
-            //         }
-            //     });
-            // };
+            Action<SwaggerGenOptions> configure = options =>
+            {
+                string baseDir = AppContext.BaseDirectory;
+                string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                string xmlPath = Path.Combine(baseDir, xmlFile);
+                options.IncludeXmlComments(xmlPath);
+            
+                string sharedXml = "BudgetTracker.Shared.xml"; 
+                string sharedPath = Path.Combine(baseDir, sharedXml);
+            
+                if (File.Exists(sharedPath))
+                {
+                    options.IncludeXmlComments(sharedPath);
+                }
+            
+                options.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Budget Tracker Finance API",
+                    Version = "v1",
+                    Description = "Comprehensive APIs for managing bank transactions and categories."
+                });
+            
+                const string SWAGGER_API_SCHEMA = "Bearer";
+                options.AddSecurityDefinition(SWAGGER_API_SCHEMA, new OpenApiSecurityScheme
+                {
+                    Description = "Enter your JWT Token",
+                    Name = "JWT Authentication",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = JwtBearerDefaults.AuthenticationScheme.ToLower(),
+                    BearerFormat = "JWT"
+                });
+            
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    { 
+                        new OpenApiSecurityScheme { Reference = new OpenApiReference { Id = SWAGGER_API_SCHEMA, Type = ReferenceType.SecurityScheme }},
+                        Array.Empty<string>()
+                    }
+                });
+            };
         
-            // serviceCollection.AddSwaggerGen(configure);
-            serviceCollection.AddSwaggerGen();
+            serviceCollection.AddSwaggerGen(configure);
             return serviceCollection;
         }
 

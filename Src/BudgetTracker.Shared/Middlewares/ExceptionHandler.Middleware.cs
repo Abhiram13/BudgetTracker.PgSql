@@ -32,6 +32,7 @@ public class ExceptionHandlerMiddleware : ICustomMiddleware
         {
             InvalidDateException => (HttpStatusCode.BadRequest, StatusCodes.Status400BadRequest, "Invalid Date Exception at Request = {Request} with Trace-Id = {TraceId}. Exception message = {ExceptionMessage}", "Invalid Date provided. Please check logs for more details"),
             InvalidPayloadException => (HttpStatusCode.BadRequest, StatusCodes.Status400BadRequest, "Invalid Payload Exception at Request = {Request} with Trace-Id = {TraceId}. Exception message = {ExceptionMessage}", "Invalid Payload provided. Please check logs for more details"),
+            InvalidOperationException => (HttpStatusCode.Forbidden, StatusCodes.Status403Forbidden, "Invalid Authorisation attempt at Request = {Request} with Trace-Id = {TraceId}. Exception message = {ExceptionMessage}", "You are not allowed to access this resource. Please check logs from more details"), 
             DbUpdateException => (HttpStatusCode.InternalServerError, StatusCodes.Status500InternalServerError, "DB Exception at Request = {Request} with Trace-Id = {TraceId}, Exception message = {ExceptionMessage}", "Something went wrong. Please check logs for more details"),
             _ => (HttpStatusCode.InternalServerError, StatusCodes.Status500InternalServerError, "Unhandled Exception at Request = {Request} with Trace-Id = {TraceId}. Exception message = {ExceptionMessage}", "Unhandled exception occured. Please check logs for more details"),
         };

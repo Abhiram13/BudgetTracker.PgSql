@@ -22,15 +22,15 @@ internal static class WebApplicationExtensions
         /// <returns>The <see cref="WebApplication"/> instance for method chaining.</returns>
         public WebApplication UseApplicationServices()
         {
+            application.UseMiddleware<ExceptionHandlerMiddleware>();
+            // application.UseMiddleware<ValidateTraceIdMiddleware>();
             application.InitlizeDbMigrations();
             application.UseSwaggerConfiguration();
             application.UseRouting();
             application.UseAuthentication();
             application.UseAuthorization();
-            application.MapControllers();
             application.UseHttpsRedirection();
-            // application.UseMiddleware<ValidateTraceIdMiddleware>();
-            application.UseMiddleware<ExceptionHandlerMiddleware>();
+            application.MapControllers();
             
             return application;
         }
