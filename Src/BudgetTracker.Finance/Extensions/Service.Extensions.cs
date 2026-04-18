@@ -101,6 +101,19 @@ internal static class ServiceExtension
                 string connectionString = $"Host={postgresHost};Port={postgresPort};Database={postgresDatabase};Username={postgresUsername};Password={postgresPassword}";
                 options.UseNpgsql(connectionString);
             });
+            
+            serviceCollection.AddDbContext<MigrateDbContext>((provider, options) =>
+            {
+                PostgresSecrets secrets = provider.GetRequiredService<AppSecrets>().Postgres;
+
+                string? postgresHost = secrets.Host;
+                string? postgresPort = secrets.MigratePort;
+                string? postgresDatabase = secrets.Database;
+                string? postgresUsername = secrets.MigrateUsername;
+                string? postgresPassword = secrets.MigratePassword;
+                string connectionString = $"Host={postgresHost};Port={postgresPort};Database={postgresDatabase};Username={postgresUsername};Password={postgresPassword}";
+                options.UseNpgsql(connectionString);
+            });
         
             return serviceCollection;
         }
@@ -216,11 +229,16 @@ internal static class ServiceExtension
 
         private IServiceCollection AddSecurityConfiguration()
         {
-            serviceCollection.AddJwtConfiguration<AppSecrets>();
-            serviceCollection.AddAuthorization(options =>
-            {
-                options.AddPolicy(SharedConstants.Jwt.Policies.DOWNSTREAM_POLICY, policy => policy.RequireClaim("scope", SharedConstants.Jwt.Scopes.DOWNSTREAM));
-            });
+            serviceCollection
+                .AddJwtConfiguration<AppSecrets>()
+                .AddAuthorization(options =>
+                {
+                    options
+                        .AddPolicy(
+                            SharedConstants.Jwt.Policies.DOWNSTREAM_POLICY, 
+                            policy => policy.RequireClaim("scope", SharedConstants.Jwt.Scopes.DOWNSTREAM)
+                        );
+                });
         
             return serviceCollection;
         }

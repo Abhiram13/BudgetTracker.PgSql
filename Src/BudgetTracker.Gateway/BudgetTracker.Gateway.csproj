@@ -20,10 +20,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Services\" />
-    </ItemGroup>
-
-    <ItemGroup>
         <None Include="..\sharedsettings.json">
             <Link>sharedsettings.json</Link>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

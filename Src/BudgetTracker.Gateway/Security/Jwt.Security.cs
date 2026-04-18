@@ -12,7 +12,7 @@ public static class JwtTokenGenerator
     {
         SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
         SigningCredentials credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        Claim[] claims = new Claim[1] { new Claim("scope", scope) };
+        Claim[] claims = new Claim[] { new Claim("scope", scope) };
         
         JwtSecurityToken token = new JwtSecurityToken(
             issuer: SharedConstants.Jwt.Issuer,

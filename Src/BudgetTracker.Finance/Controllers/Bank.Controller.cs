@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 namespace BudgetTracker.Finance.Controllers;
 
 [ApiController]
-// [Authorize(AuthenticationSchemes = YarpApiKeySchemaOptions.DefaultSchema)]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = SharedConstants.Jwt.Policies.DOWNSTREAM_POLICY)]
 [Route("api/banks")]
 public class BankController : ControllerBase

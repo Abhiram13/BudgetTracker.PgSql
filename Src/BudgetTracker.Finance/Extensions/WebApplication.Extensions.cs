@@ -58,16 +58,8 @@ internal static class WebApplicationExtensions
                 try
                 {
                     logger.LogInformation("DB Migration is starting...");
-        
-                    PostgresSecrets secrets = scope.ServiceProvider.GetRequiredService<AppSecrets>().Postgres;
-                    DbContextOptionsBuilder<WriteDbContext> contextOptionsBuilder = new DbContextOptionsBuilder<WriteDbContext>();
-                    string connectionString = $"Host={secrets.Host};Port={secrets.MigratePort};Database={secrets.Database};Username={secrets.MigrateUsername};Password={secrets.MigratePassword}";
-                    contextOptionsBuilder.UseNpgsql(connectionString);
-
-                    using (WriteDbContext writeDbContext = new WriteDbContext(contextOptionsBuilder.Options))
-                    {
-                        writeDbContext.Database.Migrate();
-                    }
+                    MigrateDbContext dbContext = scope.ServiceProvider.GetService<MigrateDbContext>();
+                    dbContext.Database.Migrate();
         
                     logger.LogInformation("DB Migration completed");
                 }

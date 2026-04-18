@@ -9,6 +9,9 @@ using Microsoft.Extensions.Logging;
 
 namespace BudgetTracker.Shared.Middlwares;
 
+/// <summary>
+/// <b>Shared</b> middleware that handles exception across all services and returns custom <see cref="ApiResponse"/> with <see cref="HttpStatusCode"/>. 
+/// </summary>
 public class ExceptionHandlerMiddleware : ICustomMiddleware
 {
     private readonly RequestDelegate _requestDelegate;
@@ -42,7 +45,7 @@ public class ExceptionHandlerMiddleware : ICustomMiddleware
         response.StatusCode = apiStatusCode;
         response.ContentType = CONTENT_TYPE;
         
-        await response.WriteAsJsonAsync(new ApiResponse<string>
+        await response.WriteAsJsonAsync(new ApiResponse
         {
             StatusCode = httpStatusCode,
             Message = errorMessage,

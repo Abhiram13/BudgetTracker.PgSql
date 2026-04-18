@@ -1,9 +1,13 @@
+using System.Diagnostics;
 using BudgetTracker.Shared.Constants;
 using BudgetTracker.Shared.Interfaces;
 using BudgetTracker.Shared.Utilities;
 
 namespace BudgetTracker.Gateway.Middlewares;
 
+/// <summary>
+/// Passes Trace id in <c>X-Trace-Id</c> request headers to downstream apis
+/// </summary>
 public class TraceProviderMiddleware : ICustomMiddleware
 {
     private readonly RequestDelegate _next;

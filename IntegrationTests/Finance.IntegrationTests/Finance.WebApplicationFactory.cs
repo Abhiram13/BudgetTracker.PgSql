@@ -7,8 +7,15 @@ using Microsoft.Extensions.Options;
 using BudgetTracker.Finance;
 using Abhiram.Extensions.DotEnv;
 using Abhiram.Secrets.Configuration;
+using BudgetTracker.Shared.Models;
+using Google.Api;
+using Google.Cloud.PubSub.V1;
 using IntegrationTests.Finance.Models;
 using IntegrationTests.Finance.Builders;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Moq;
+using Encoding = System.Text.Encoding;
 
 namespace IntegrationTests.Finance.Factory;
 
@@ -38,12 +45,15 @@ public class FinanceTestWebApplicationFactory : WebApplicationFactory<Program>
         // Also registering services into Scoped lifetime
         builder.ConfigureServices((context, services) =>
         {
+            // loading all .env, appsettings.json and appsettings.<env>.json configs in FinanceConfig
             services.AddOptions<FinanceConfig>().Bind(context.Configuration).ValidateOnStart();
             ServiceDescriptor descriptor = services.Single(s => s.ServiceType == typeof(DbContextOptions<WriteDbContext>));
             ServiceDescriptor readContextDescriptor = services.Single(s => s.ServiceType == typeof(DbContextOptions<ReadDbContext>));
+            ServiceDescriptor pubSubSubscriberClientDescriptor = services.Single(s => s.ServiceType == typeof(SubscriberClient));
             
             services.Remove(descriptor);
             services.Remove(readContextDescriptor);
+            services.Remove(pubSubSubscriberClientDescriptor);
             
             // Using Same one test DB credentials for Write and Read DBs
             services.AddDbContext<WriteDbContext>((provider, option) =>
@@ -58,8 +68,34 @@ public class FinanceTestWebApplicationFactory : WebApplicationFactory<Program>
                 FinanceConfig config = provider.GetRequiredService<IOptions<FinanceConfig>>().Value;
                 option.UseNpgsql(config.DatabaseConnection.FinanceDb);
             });
+            
+            // Using Same one test DB credentials for Migrate DBs
+            services.AddDbContext<MigrateDbContext>((provider, option) =>
+            {
+                FinanceConfig config = provider.GetRequiredService<IOptions<FinanceConfig>>().Value;
+                option.UseNpgsql(config.DatabaseConnection.FinanceDb);
+            });
             services.AddScoped<CategoryBuilder>();
             services.AddScoped<BankBuilder>();
+            
+            services.AddSingleton<SubscriberClient>(_ => new Mock<SubscriberClient>().Object);
+
+            // overriding server jwt config
+            services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
+                .PostConfigure<IOptions<FinanceConfig>>((options, config) =>
+                {
+                    JwtSecret jwtSecrets = config.Value.JwtSecret;
+                    
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = "test-issuer",
+                        ValidateAudience = true,
+                        ValidAudience = jwtSecrets.Audience,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecrets.Key)),
+                    };
+                });
         });
     }
 }
