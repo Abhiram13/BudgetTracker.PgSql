@@ -1,8 +1,13 @@
+using System.Net;
 using BudgetTracker.Shared.Interfaces;
+using BudgetTracker.Shared.Models;
 using Yarp.ReverseProxy.Forwarder;
 
 namespace BudgetTracker.Gateway.Middlewares;
 
+/// <summary>
+/// Middleware used to send <c>502</c> Bad gateway response if downstream apis are down or not available 
+/// </summary>
 public class BadGatewayMiddleware : ICustomMiddleware
 {
     private readonly RequestDelegate _next;
@@ -24,10 +29,11 @@ public class BadGatewayMiddleware : ICustomMiddleware
         httpContext.Response.StatusCode = StatusCodes.Status502BadGateway;
         httpContext.Response.ContentType = "application/json";
 
-        await httpContext.Response.WriteAsJsonAsync(new
+        await httpContext.Response.WriteAsJsonAsync(new ApiResponse<string>
         {
-            Error = "Bad Gateway",
-            Message = "Downstream service unavailable"
+            StatusCode = HttpStatusCode.BadGateway,
+            Message = "Downstream service unavailable",
+            TraceId = "" // TODO: Get trace ID here
         });
     }
 }

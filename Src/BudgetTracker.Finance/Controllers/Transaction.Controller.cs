@@ -3,12 +3,14 @@ using System.Data.Entity.Infrastructure;
 using BudgetTracker.Finance.Services;
 using BudgetTracker.Finance.Entities;
 using BudgetTracker.Finance.Models;
+using BudgetTracker.Shared.Constants;
 using BudgetTracker.Shared.Exceptions;
 using BudgetTracker.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using BudgetTracker.Shared.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using BudgetTracker.Shared.Security;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace BudgetTracker.Finance.Controllers;
@@ -20,7 +22,7 @@ namespace BudgetTracker.Finance.Controllers;
 /// All requests to this controller require a valid <c>YARP_API_KEY</c> provided in the request headers.
 /// </remarks>
 [ApiController]
-[Authorize(AuthenticationSchemes = YarpApiKeySchemaOptions.DefaultSchema)]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = SharedConstants.Jwt.Policies.DOWNSTREAM_POLICY)]
 [Route("api/transactions")]
 [Produces("application/json")]
 [Consumes("application/json")]

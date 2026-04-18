@@ -13,6 +13,7 @@ using BudgetTracker.Shared.Constants;
 using BudgetTracker.Shared.Interfaces;
 using BudgetTracker.Shared.Models;
 using BudgetTracker.Warehouse.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Yarp.ReverseProxy.Model;
 using Yarp.ReverseProxy.Transforms;
 
@@ -48,7 +49,7 @@ builder.Services.AddReverseProxy()
             
             GatewayAppSecrets secrets = context.HttpContext.RequestServices.GetRequiredService<GatewayAppSecrets>();
             string token = JwtTokenGenerator.CreateToken(secretKey: secrets.JwtSecret.Key, scope: SharedConstants.Jwt.Scopes.DOWNSTREAM, audience: clusterId);
-            context.ProxyRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            context.ProxyRequest.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, token);
             return ValueTask.CompletedTask;
         });
     });
@@ -74,13 +75,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<TraceProviderMiddleware>();
+app.UseMiddleware<BadGatewayMiddleware>();
 app.UseRouting();
 app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapReverseProxy().RequireAuthorization();
 app.UseHttpsRedirection();
-app.UseMiddleware<ApiKeyMiddleware>();
-app.UseMiddleware<BadGatewayMiddleware>();
-app.UseMiddleware<TraceProviderMiddleware>();
 app.Run();
