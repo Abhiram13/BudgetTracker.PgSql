@@ -15,6 +15,7 @@ using IntegrationTests.Finance.Builders;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Moq;
+using Npgsql;
 using Encoding = System.Text.Encoding;
 
 namespace IntegrationTests.Finance.Factory;
@@ -54,30 +55,38 @@ public class FinanceTestWebApplicationFactory : WebApplicationFactory<Program>
             services.Remove(descriptor);
             services.Remove(readContextDescriptor);
             services.Remove(pubSubSubscriberClientDescriptor);
+
+            services.AddScoped<NpgsqlConnection>(provider =>
+            {
+                FinanceConfig config = provider.GetRequiredService<IOptions<FinanceConfig>>().Value;
+                NpgsqlConnection connection = new NpgsqlConnection(config.DatabaseConnection.FinanceDb);
+                connection.Open();
+                
+                return connection;
+            });
             
             // Using Same one test DB credentials for Write and Read DBs
             services.AddDbContext<WriteDbContext>((provider, option) =>
             {
-                FinanceConfig config = provider.GetRequiredService<IOptions<FinanceConfig>>().Value;
-                option.UseNpgsql(config.DatabaseConnection.FinanceDb);
+                NpgsqlConnection sharedConnection = provider.GetRequiredService<NpgsqlConnection>();
+                option.UseNpgsql(sharedConnection);
             });
             
             // Using Same one test DB credentials for Write and Read DBs
             services.AddDbContext<ReadDbContext>((provider, option) =>
             {
-                FinanceConfig config = provider.GetRequiredService<IOptions<FinanceConfig>>().Value;
-                option.UseNpgsql(config.DatabaseConnection.FinanceDb);
+                NpgsqlConnection sharedConnection = provider.GetRequiredService<NpgsqlConnection>();
+                option.UseNpgsql(sharedConnection);
             });
             
             // Using Same one test DB credentials for Migrate DBs
             services.AddDbContext<MigrateDbContext>((provider, option) =>
             {
-                FinanceConfig config = provider.GetRequiredService<IOptions<FinanceConfig>>().Value;
-                option.UseNpgsql(config.DatabaseConnection.FinanceDb);
+                NpgsqlConnection sharedConnection = provider.GetRequiredService<NpgsqlConnection>();
+                option.UseNpgsql(sharedConnection);
             });
             services.AddScoped<CategoryBuilder>();
             services.AddScoped<BankBuilder>();
-            
             services.AddSingleton<SubscriberClient>(_ => new Mock<SubscriberClient>().Object);
 
             // overriding server jwt config
