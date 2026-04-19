@@ -24,8 +24,8 @@ public abstract class FinanceTestFixture
 
     protected void SetClientHeaders(FinanceConfig config)
     {
-        string token = JwtTokenGenerator.CreateToken(secretKey: config.JwtSecret.Key, scope: SharedConstants.Jwt.Scopes.DOWNSTREAM, audience: config.JwtSecret.Audience);
-        Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, token);
+        // string token = JwtTokenGenerator.CreateToken(secretKey: config.JwtSecret.Key, scope: SharedConstants.Jwt.Scopes.DOWNSTREAM, audience: config.JwtSecret.Audience);
+        // Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, token);
     }
 
     protected void DisposeFactoryAndClient()

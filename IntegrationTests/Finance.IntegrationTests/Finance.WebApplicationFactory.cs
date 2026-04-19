@@ -64,15 +64,18 @@ public class FinanceTestWebApplicationFactory : WebApplicationFactory<Program>
                 .AddDatabaseConfiguration()
                 .AddScoped<NpgsqlConnection>(provider =>
                 {
-                    DatabaseConfiguration dbConfig = provider.GetRequiredService<IOptionsMonitor<DatabaseConfiguration>>().Get(DatabaseType.WRITE);
+                    DatabaseConfiguration dbConfig = provider
+                        .GetRequiredService<IOptionsMonitor<DatabaseConfiguration>>().Get(DatabaseType.WRITE);
                     string? postgresHost = dbConfig.Host;
                     string? postgresPort = dbConfig.Port;
                     string? postgresDatabase = dbConfig.Database;
                     string? postgresUsername = dbConfig.Username;
                     string? postgresPassword = dbConfig.Password;
-                    string connectionString = $"Host={postgresHost};Port={postgresPort};Database={postgresDatabase};Username={postgresUsername};Password={postgresPassword}";
-                    
-                    NpgsqlConnection connection = new NpgsqlConnection(connectionString); connection.Open(); 
+                    string connectionString =
+                        $"Host={postgresHost};Port={postgresPort};Database={postgresDatabase};Username={postgresUsername};Password={postgresPassword}";
+
+                    NpgsqlConnection connection = new NpgsqlConnection(connectionString);
+                    connection.Open();
                     return connection;
                 })
                 .AddPostgresDbContext<WriteDbContext>()
@@ -81,21 +84,21 @@ public class FinanceTestWebApplicationFactory : WebApplicationFactory<Program>
                 .AddScoped<CategoryBuilder>()
                 .AddScoped<BankBuilder>()
                 .AddSingleton<SubscriberClient>(_ => new Mock<SubscriberClient>().Object)
-                .AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme) // overriding server jwt config
-                .PostConfigure<IOptions<FinanceConfig>>((options, config) => // TODO: Update here with extension method
-                { 
-                    JwtSecret jwtSecrets = config.Value.JwtSecret;
-                    
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidIssuer = "test-issuer",
-                        ValidateAudience = true,
-                        ValidAudience = jwtSecrets.Audience,
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecrets.Key)),
-                    };
-                });
+                .AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme); // overriding server jwt config
+            // .PostConfigure<IOptions<FinanceConfig>>((options, config) => // TODO: Update here with extension method
+            // { 
+            //     JwtSecret jwtSecrets = config.Value.JwtSecret;
+            //     
+            //     options.TokenValidationParameters = new TokenValidationParameters
+            //     {
+            //         ValidateIssuer = true,
+            //         ValidIssuer = "test-issuer",
+            //         ValidateAudience = true,
+            //         ValidAudience = jwtSecrets.Audience,
+            //         ValidateIssuerSigningKey = true,
+            //         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecrets.Key)),
+            //     };
+            // });
         });
     }
 }

@@ -9,9 +9,12 @@ using BudgetTracker.Gateway.Middlewares;
 using BudgetTracker.Gateway.Security;
 using BudgetTracker.Shared.Utilities;
 using BudgetTracker.Gateway.Models;
+using BudgetTracker.Shared.Configurations;
 using BudgetTracker.Shared.Constants;
+using BudgetTracker.Shared.Extensions;
 using BudgetTracker.Shared.Interfaces;
 using BudgetTracker.Shared.Models;
+using BudgetTracker.Shared.Security;
 using BudgetTracker.Warehouse.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Yarp.ReverseProxy.Model;
@@ -31,6 +34,7 @@ builder.AddConsoleGoogleSeriLog();
 builder.Configuration.AddSecrets(environment: builder.Environment, optional: false);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.LoadJwtConfiguration(builder.Configuration);
 builder.Services.AddOptions<GatewayAppSecrets>().Bind(builder.Configuration).ValidateDataAnnotations().ValidateOnStart();
 builder.Services.AddSingleton<GatewayAppSecrets>(option => option.GetRequiredService<IOptions<GatewayAppSecrets>>().Value);
 builder.Services.AddReverseProxy()
@@ -47,8 +51,10 @@ builder.Services.AddReverseProxy()
                 return ValueTask.CompletedTask; // TODO: Check how to verify cluster id is valid 
             }
             
-            GatewayAppSecrets secrets = context.HttpContext.RequestServices.GetRequiredService<GatewayAppSecrets>();
-            string token = JwtTokenGenerator.CreateToken(secretKey: secrets.JwtSecret.Key, scope: SharedConstants.Jwt.Scopes.DOWNSTREAM, audience: clusterId);
+            // FIX: Since this service is not getting registerd without IOptions<T>, silent gateway error was thrown.
+            JwtConfiguration secrets = context.HttpContext.RequestServices.GetRequiredService<IOptions<JwtConfiguration>>().Value;
+            secrets.Audience = clusterId;
+            string token = JwtFactory.CreateToken(secrets, scope: SharedConstants.Jwt.Scopes.DOWNSTREAM);
             context.ProxyRequest.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, token);
             return ValueTask.CompletedTask;
         });
