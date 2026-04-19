@@ -2,7 +2,7 @@ using BudgetTracker.Finance.Configurations;
 using BudgetTracker.Finance.Interfaces;
 using BudgetTracker.Finance.Models;
 using BudgetTracker.Finance.Services;
-using BudgetTracker.Shared.Models;
+using BudgetTracker.Shared.Constants;
 
 namespace BudgetTracker.Finance.BackgroundWorkers;
 
@@ -50,7 +50,7 @@ public class OutboxProcessordWorker : BackgroundService
                 {
                     await _publisherService.PublishMessageAsync(
                         requestMessage: outbox.Payload.RootElement.ToString(), 
-                        eventType: PubSubFinanceEvents.DATEWISE_TRANSACTIONS_LIST, 
+                        eventType: SharedConstants.PubSubFinanceEvents.DATEWISE_TRANSACTIONS_LIST, 
                         traceId: null
                     ); // TODO: Use publish Id?
                     await outboxService.UpdateSuccessAsync(outbox.Id);

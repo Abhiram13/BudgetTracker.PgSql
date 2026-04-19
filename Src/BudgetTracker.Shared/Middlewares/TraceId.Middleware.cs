@@ -1,3 +1,4 @@
+using BudgetTracker.Shared.Constants;
 using BudgetTracker.Shared.Interfaces;
 using Microsoft.AspNetCore.Http;
 
@@ -14,7 +15,7 @@ public class ValidateTraceIdMiddleware : ICustomMiddleware
 
     public async Task InvokeAsync(HttpContext httpContext)
     {
-        string? traceId = httpContext.Request.Headers["X-Trace-Id"]; // TODO: How to validate Trace ID?
+        string? traceId = httpContext.Request.Headers[SharedConstants.Headers.X_TRACE_ID]; // TODO: How to validate Trace ID?
 
         if (string.IsNullOrEmpty(traceId))
         {

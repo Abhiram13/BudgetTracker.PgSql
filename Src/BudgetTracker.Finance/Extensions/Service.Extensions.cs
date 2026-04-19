@@ -20,8 +20,11 @@ using BudgetTracker.Shared.Security;
 using BudgetTracker.Shared.Models;
 using BudgetTracker.Shared.Interfaces;
 using BudgetTracker.Shared.Constants;
-
+using BudgetTracker.Shared.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Encoding = System.Text.Encoding;
 
 namespace BudgetTracker.Finance.Extensions;
 
@@ -98,6 +101,19 @@ internal static class ServiceExtension
                 string connectionString = $"Host={postgresHost};Port={postgresPort};Database={postgresDatabase};Username={postgresUsername};Password={postgresPassword}";
                 options.UseNpgsql(connectionString);
             });
+            
+            serviceCollection.AddDbContext<MigrateDbContext>((provider, options) =>
+            {
+                PostgresSecrets secrets = provider.GetRequiredService<AppSecrets>().Postgres;
+
+                string? postgresHost = secrets.Host;
+                string? postgresPort = secrets.MigratePort;
+                string? postgresDatabase = secrets.Database;
+                string? postgresUsername = secrets.MigrateUsername;
+                string? postgresPassword = secrets.MigratePassword;
+                string connectionString = $"Host={postgresHost};Port={postgresPort};Database={postgresDatabase};Username={postgresUsername};Password={postgresPassword}";
+                options.UseNpgsql(connectionString);
+            });
         
             return serviceCollection;
         }
@@ -116,7 +132,6 @@ internal static class ServiceExtension
             serviceCollection.AddScoped<OutboxService>();
             serviceCollection.AddScoped<TraceIdProvider>();
             serviceCollection.AddSingleton<AppSecrets>(sp => sp.GetRequiredService<IOptions<AppSecrets>>().Value);
-            serviceCollection.AddSingleton<YarpApiKeySecret>(sp => sp.GetRequiredService<IOptions<AppSecrets>>().Value.Secrets);
             serviceCollection.AddSingleton<PublisherClient>(provider =>
             {
                 AppSecrets secret = provider.GetRequiredService<AppSecrets>();
@@ -148,10 +163,10 @@ internal static class ServiceExtension
                 string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 string xmlPath = Path.Combine(baseDir, xmlFile);
                 options.IncludeXmlComments(xmlPath);
-    
+            
                 string sharedXml = "BudgetTracker.Shared.xml"; 
                 string sharedPath = Path.Combine(baseDir, sharedXml);
-    
+            
                 if (File.Exists(sharedPath))
                 {
                     options.IncludeXmlComments(sharedPath);
@@ -163,17 +178,18 @@ internal static class ServiceExtension
                     Version = "v1",
                     Description = "Comprehensive APIs for managing bank transactions and categories."
                 });
-    
-                const string SWAGGER_API_SCHEMA = "Yarp-Api-Key";
+            
+                const string SWAGGER_API_SCHEMA = "Bearer";
                 options.AddSecurityDefinition(SWAGGER_API_SCHEMA, new OpenApiSecurityScheme
                 {
-                    Description = "Yarp api key that gets passed and authenticated to downstream apis",
-                    Name = HeaderNames.YARP_API_KEY,
+                    Description = "Enter your JWT Token",
+                    Name = "JWT Authentication",
                     In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = YarpApiKeySchemaOptions.DefaultSchema,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = JwtBearerDefaults.AuthenticationScheme.ToLower(),
+                    BearerFormat = "JWT"
                 });
-    
+            
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     { 
@@ -184,7 +200,6 @@ internal static class ServiceExtension
             };
         
             serviceCollection.AddSwaggerGen(configure);
-        
             return serviceCollection;
         }
 
@@ -196,7 +211,7 @@ internal static class ServiceExtension
                 KeyValuePair<string, ModelStateEntry?> modelState = action.ModelState.First(m => m.Value?.Errors.Count > 0);
                 string errorAt = modelState.Key;
                 string errorMessage = modelState.Value?.Errors.FirstOrDefault()?.ErrorMessage ?? $"Something went wrong at {errorAt}";
-                string traceId = request.Headers[HeaderNames.YARP_API_KEY]!;
+                string traceId = request.Headers[SharedConstants.Headers.YARP_API_KEY]!;
                 ApiResponse<string> apiResponse = new ApiResponse<string> { Message = errorMessage, StatusCode = HttpStatusCode.BadRequest, TraceId = traceId };
                 BadRequestObjectResult badRequest = new BadRequestObjectResult(apiResponse);
             
@@ -215,10 +230,15 @@ internal static class ServiceExtension
         private IServiceCollection AddSecurityConfiguration()
         {
             serviceCollection
-                .AddAuthentication()
-                .AddScheme<YarpApiKeySchemaOptions, YarpApiKeyHandler>(YarpApiKeySchemaOptions.DefaultSchema, _ => {});
-        
-            serviceCollection.AddAuthorization();
+                .AddJwtConfiguration<AppSecrets>()
+                .AddAuthorization(options =>
+                {
+                    options
+                        .AddPolicy(
+                            SharedConstants.Jwt.Policies.DOWNSTREAM_POLICY, 
+                            policy => policy.RequireClaim("scope", SharedConstants.Jwt.Scopes.DOWNSTREAM)
+                        );
+                });
         
             return serviceCollection;
         }

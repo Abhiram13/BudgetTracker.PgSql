@@ -22,15 +22,15 @@ internal static class WebApplicationExtensions
         /// <returns>The <see cref="WebApplication"/> instance for method chaining.</returns>
         public WebApplication UseApplicationServices()
         {
+            application.UseMiddleware<ExceptionHandlerMiddleware>();
+            // application.UseMiddleware<ValidateTraceIdMiddleware>();
             application.InitlizeDbMigrations();
             application.UseSwaggerConfiguration();
             application.UseRouting();
             application.UseAuthentication();
             application.UseAuthorization();
-            application.MapControllers();
             application.UseHttpsRedirection();
-            application.UseMiddleware<ValidateTraceIdMiddleware>();
-            application.UseMiddleware<ExceptionHandlerMiddleware>();
+            application.MapControllers();
             
             return application;
         }
@@ -58,16 +58,8 @@ internal static class WebApplicationExtensions
                 try
                 {
                     logger.LogInformation("DB Migration is starting...");
-        
-                    PostgresSecrets secrets = scope.ServiceProvider.GetRequiredService<AppSecrets>().Postgres;
-                    DbContextOptionsBuilder<WriteDbContext> contextOptionsBuilder = new DbContextOptionsBuilder<WriteDbContext>();
-                    string connectionString = $"Host={secrets.Host};Port={secrets.MigratePort};Database={secrets.Database};Username={secrets.MigrateUsername};Password={secrets.MigratePassword}";
-                    contextOptionsBuilder.UseNpgsql(connectionString);
-
-                    using (WriteDbContext writeDbContext = new WriteDbContext(contextOptionsBuilder.Options))
-                    {
-                        writeDbContext.Database.Migrate();
-                    }
+                    MigrateDbContext dbContext = scope.ServiceProvider.GetService<MigrateDbContext>();
+                    dbContext.Database.Migrate();
         
                     logger.LogInformation("DB Migration completed");
                 }

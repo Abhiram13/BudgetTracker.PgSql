@@ -1,6 +1,12 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http.Headers;
+using System.Security.Claims;
+using System.Text;
 using BudgetTracker.Shared.Constants;
 using IntegrationTests.Finance.Factory;
 using IntegrationTests.Finance.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace IntegrationTests.Finance.Fixtures;
 
@@ -18,11 +24,8 @@ public abstract class FinanceTestFixture
 
     protected void SetClientHeaders(FinanceConfig config)
     {
-        string traceId = Guid.NewGuid().ToString();
-        string yarpApiKey = config.Secrets.YarpApiKey;
-        
-        Client.DefaultRequestHeaders.Add(HeaderNames.YARP_API_KEY, yarpApiKey);
-        Client.DefaultRequestHeaders.Add(HeaderNames.X_TRACE_ID, traceId);
+        string token = JwtTokenGenerator.CreateToken(secretKey: config.JwtSecret.Key, scope: SharedConstants.Jwt.Scopes.DOWNSTREAM, audience: config.JwtSecret.Audience);
+        Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, token);
     }
 
     protected void DisposeFactoryAndClient()
@@ -30,5 +33,25 @@ public abstract class FinanceTestFixture
         Client.Dispose();
         UnAuthorizedClient.Dispose();
         Factory.Dispose();
+    }
+}
+
+public static class JwtTokenGenerator
+{
+    public static string CreateToken(string secretKey, string scope, string audience)
+    {
+        SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+        SigningCredentials credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        Claim[] claims = new Claim[] { new Claim("scope", scope) };
+        
+        JwtSecurityToken token = new JwtSecurityToken(
+            issuer: "test-issuer",
+            audience: audience,
+            claims: claims, 
+            expires: DateTime.UtcNow.AddMinutes(1), 
+            signingCredentials: credentials
+        );
+        
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }

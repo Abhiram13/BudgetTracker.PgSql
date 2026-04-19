@@ -1,16 +1,18 @@
 using BudgetTracker.Finance.Services;
 using BudgetTracker.Finance.Entities;
 using BudgetTracker.Finance.Models;
+using BudgetTracker.Shared.Constants;
 using BudgetTracker.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using BudgetTracker.Shared.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using BudgetTracker.Shared.Security;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace BudgetTracker.Finance.Controllers;
 
 [ApiController]
-[Authorize(AuthenticationSchemes = YarpApiKeySchemaOptions.DefaultSchema)]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = SharedConstants.Jwt.Policies.DOWNSTREAM_POLICY)]
 [Route("api/banks")]
 public class BankController : ControllerBase
 {

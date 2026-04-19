@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Abhiram.Secrets.Providers.Exceptions;
 using Google.Cloud.PubSub.V1;
+using BudgetTracker.Shared.Constants;
 using BudgetTracker.Shared.Models;
 using BudgetTracker.Warehouse.Models;
 
@@ -40,7 +41,7 @@ public class SubscriberService
                 message.Attributes.TryGetValue("trace-id", out string traceId);
                 message.Attributes.TryGetValue("event", out string eventName);
 
-                if (eventName == PubSubFinanceEvents.DATEWISE_TRANSACTIONS_LIST)
+                if (eventName == SharedConstants.PubSubFinanceEvents.DATEWISE_TRANSACTIONS_LIST)
                 {
                     TransactionCreditDebitByDateDto? resultObject = JsonSerializer.Deserialize<TransactionCreditDebitByDateDto>(text);
                 

@@ -7,6 +7,7 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
         <PackageReference Include="Swashbuckle.AspNetCore" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
         <PackageReference Include="Yarp.ReverseProxy" />
         <PackageReference Include="Abhiram.Extensions.DotEnv" />
         <PackageReference Include="Abhiram.Abstractions.Logging" />
@@ -16,10 +17,6 @@
     <ItemGroup>
         <ProjectReference Include="..\BudgetTracker.Shared\BudgetTracker.Shared.csproj" />
         <ProjectReference Include="..\BudgetTracker.Warehouse\BudgetTracker.Warehouse.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="Services\" />
     </ItemGroup>
 
     <ItemGroup>

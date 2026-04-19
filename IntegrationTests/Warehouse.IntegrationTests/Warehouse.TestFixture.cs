@@ -33,10 +33,10 @@ public class WarehouseIntegrationTestFixture : IAsyncLifetime
     private void SetClientHeaders(WarehouseAppSecrets config)
     {
         string traceId = Guid.NewGuid().ToString();
-        string yarpApiKey = config.Secrets.YarpApiKey;
+        string yarpApiKey = "";
         
-        Client.DefaultRequestHeaders.Add(HeaderNames.X_TRACE_ID, traceId);
-        Client.DefaultRequestHeaders.Add(HeaderNames.YARP_API_KEY, yarpApiKey);
+        Client.DefaultRequestHeaders.Add(SharedConstants.Headers.X_TRACE_ID, traceId);
+        Client.DefaultRequestHeaders.Add(SharedConstants.Headers.YARP_API_KEY, yarpApiKey);
     }
 
     public Task DisposeAsync()

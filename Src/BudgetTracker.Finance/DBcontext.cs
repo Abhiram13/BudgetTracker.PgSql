@@ -31,6 +31,18 @@ public class ReadDbContext : DbContext
     public DbSet<Receipt> Receipts { get; set; }
 }
 
+public class MigrateDbContext : DbContext
+{
+    public MigrateDbContext(DbContextOptions<MigrateDbContext> options) : base (options) { }
+    
+    public DbSet<Transaction> Transactions { get; set; }
+    public DbSet<Category> Categories { get; set; }
+    public DbSet<Bank> Banks { get; set; }
+    public DbSet<TransactionsMeta> TransactionsMeta { get; set; }
+    public DbSet<FinanceOutboxEvents> FinanceOutboxEvents { get; set; }
+    public DbSet<Receipt> Receipts { get; set; }
+}
+
 // public class WriteDbContextFactory : IDesignTimeDbContextFactory<WriteDbContext>
 // {
 //     public WriteDbContext CreateDbContext(string[] args)

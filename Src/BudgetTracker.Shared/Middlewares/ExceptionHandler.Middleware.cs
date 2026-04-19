@@ -9,6 +9,9 @@ using Microsoft.Extensions.Logging;
 
 namespace BudgetTracker.Shared.Middlwares;
 
+/// <summary>
+/// <b>Shared</b> middleware that handles exception across all services and returns custom <see cref="ApiResponse"/> with <see cref="HttpStatusCode"/>. 
+/// </summary>
 public class ExceptionHandlerMiddleware : ICustomMiddleware
 {
     private readonly RequestDelegate _requestDelegate;
@@ -25,13 +28,14 @@ public class ExceptionHandlerMiddleware : ICustomMiddleware
         const string CONTENT_TYPE = "application/json";
         HttpRequest request = httpContext.Request;
         HttpResponse response = httpContext.Response;
-        string traceId = request.Headers[HeaderNames.X_TRACE_ID]!;
+        string traceId = request.Headers[SharedConstants.Headers.X_TRACE_ID]!;
         string requestUrl = $"{request.Scheme}://{request.Host}{request.Path}{request.QueryString}";
 
         (HttpStatusCode httpStatusCode, int apiStatusCode, string logMessage, string errorMessage) = exception switch
         {
             InvalidDateException => (HttpStatusCode.BadRequest, StatusCodes.Status400BadRequest, "Invalid Date Exception at Request = {Request} with Trace-Id = {TraceId}. Exception message = {ExceptionMessage}", "Invalid Date provided. Please check logs for more details"),
             InvalidPayloadException => (HttpStatusCode.BadRequest, StatusCodes.Status400BadRequest, "Invalid Payload Exception at Request = {Request} with Trace-Id = {TraceId}. Exception message = {ExceptionMessage}", "Invalid Payload provided. Please check logs for more details"),
+            InvalidOperationException => (HttpStatusCode.Forbidden, StatusCodes.Status403Forbidden, "Invalid Authorisation attempt at Request = {Request} with Trace-Id = {TraceId}. Exception message = {ExceptionMessage}", "You are not allowed to access this resource. Please check logs from more details"), 
             DbUpdateException => (HttpStatusCode.InternalServerError, StatusCodes.Status500InternalServerError, "DB Exception at Request = {Request} with Trace-Id = {TraceId}, Exception message = {ExceptionMessage}", "Something went wrong. Please check logs for more details"),
             _ => (HttpStatusCode.InternalServerError, StatusCodes.Status500InternalServerError, "Unhandled Exception at Request = {Request} with Trace-Id = {TraceId}. Exception message = {ExceptionMessage}", "Unhandled exception occured. Please check logs for more details"),
         };
@@ -41,7 +45,7 @@ public class ExceptionHandlerMiddleware : ICustomMiddleware
         response.StatusCode = apiStatusCode;
         response.ContentType = CONTENT_TYPE;
         
-        await response.WriteAsJsonAsync(new ApiResponse<string>
+        await response.WriteAsJsonAsync(new ApiResponse
         {
             StatusCode = httpStatusCode,
             Message = errorMessage,
