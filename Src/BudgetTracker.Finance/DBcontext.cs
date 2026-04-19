@@ -7,40 +7,33 @@ using System.IO;
 
 namespace BudgetTracker.Finance;
 
-public class WriteDbContext : DbContext
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
+public abstract class BaseDbContext<T> : DbContext where T : DbContext
+{
+    public BaseDbContext(DbContextOptions<T> options) : base(options) { }
+    
+    public DbSet<Transaction> Transactions { get; set; }
+    public DbSet<TransactionsMeta> TransactionsMeta { get; set; }
+    public DbSet<Category> Categories { get; set; }
+    public DbSet<Bank> Banks { get; set; }
+    public DbSet<FinanceOutboxEvents> FinanceOutboxEvents { get; set; }
+    public DbSet<Receipt> Receipts { get; set; }
+}
+
+public class WriteDbContext : BaseDbContext<WriteDbContext>
 {
     public WriteDbContext(DbContextOptions<WriteDbContext> options) : base (options) { }
-
-    public DbSet<Transaction> Transactions { get; set; }
-    public DbSet<TransactionsMeta> TransactionsMeta { get; set; }
-    public DbSet<Category> Categories { get; set; }
-    public DbSet<Bank> Banks { get; set; }
-    public DbSet<FinanceOutboxEvents> FinanceOutboxEvents { get; set; }
-    public DbSet<Receipt> Receipts { get; set; }
 }
 
-public class ReadDbContext : DbContext
+public class ReadDbContext : BaseDbContext<ReadDbContext>
 {
     public ReadDbContext(DbContextOptions<ReadDbContext> options) : base (options) { }
-    
-    public DbSet<Transaction> Transactions { get; set; }
-    public DbSet<Category> Categories { get; set; }
-    public DbSet<Bank> Banks { get; set; }
-    public DbSet<TransactionsMeta> TransactionsMeta { get; set; }
-    public DbSet<FinanceOutboxEvents> FinanceOutboxEvents { get; set; }
-    public DbSet<Receipt> Receipts { get; set; }
 }
 
-public class MigrateDbContext : DbContext
+public class MigrateDbContext : BaseDbContext<MigrateDbContext>
 {
     public MigrateDbContext(DbContextOptions<MigrateDbContext> options) : base (options) { }
-    
-    public DbSet<Transaction> Transactions { get; set; }
-    public DbSet<Category> Categories { get; set; }
-    public DbSet<Bank> Banks { get; set; }
-    public DbSet<TransactionsMeta> TransactionsMeta { get; set; }
-    public DbSet<FinanceOutboxEvents> FinanceOutboxEvents { get; set; }
-    public DbSet<Receipt> Receipts { get; set; }
 }
 
 // public class WriteDbContextFactory : IDesignTimeDbContextFactory<WriteDbContext>

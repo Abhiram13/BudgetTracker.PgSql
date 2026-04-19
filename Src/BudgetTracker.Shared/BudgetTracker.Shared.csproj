@@ -9,6 +9,7 @@
         </PackageReference>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
         <PackageReference Include="Abhiram.Abstractions.Logging" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
     </ItemGroup>
 
     <PropertyGroup>
