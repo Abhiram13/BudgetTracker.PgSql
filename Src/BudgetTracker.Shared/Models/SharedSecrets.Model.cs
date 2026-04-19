@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace BudgetTracker.Shared.Models;
 
+[Obsolete("This are not required", error: true)]
 public record SharedSecrets
 {
     [Obsolete("Use JWT", error: true)]

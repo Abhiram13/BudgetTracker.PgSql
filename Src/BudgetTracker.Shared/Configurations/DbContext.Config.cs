@@ -40,6 +40,9 @@ public record DatabaseConfiguration
     public string Password { get; init; } = string.Empty;
 }
 
+/// <summary>
+/// Contains <c>WRITE</c>, <c>READ</c>, <c>MIGRATE</c>
+/// </summary>
 public static class DatabaseType
 {
     public const string WRITE = "WRITE";

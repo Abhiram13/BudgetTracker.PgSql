@@ -3,7 +3,7 @@ using BudgetTracker.Shared.Models;
 
 namespace BudgetTracker.Warehouse.Models;
 
-public record WarehouseAppSecrets : SharedSecrets
+public record WarehouseAppSecrets
 {
     public BigQuerySecrets BigQuery { get; set; } = default!;
 }
