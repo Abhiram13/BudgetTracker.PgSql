@@ -4,11 +4,6 @@ using Microsoft.Extensions.Configuration;
 
 namespace IntegrationTests.Finance.Models;
 
-public record DatabaseConnection
-{
-    public required string FinanceDb { get; init; }
-}
-
 public record Secrets
 {
     [ConfigurationKeyName(SharedConstants.Headers.YARP_API_KEY)]
@@ -22,9 +17,6 @@ public record PubSub
 
 public record FinanceConfig : SharedSecrets
 {
-    [ConfigurationKeyName("DbConnectionStrings")]
-    public required DatabaseConnection DatabaseConnection { get; init; }
-    
     [ConfigurationKeyName("SECRETS")]
     public required Secrets Secrets { get; init; }
     

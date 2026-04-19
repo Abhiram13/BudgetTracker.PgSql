@@ -7,6 +7,8 @@ using Microsoft.Extensions.Options;
 using BudgetTracker.Finance;
 using Abhiram.Extensions.DotEnv;
 using Abhiram.Secrets.Configuration;
+using BudgetTracker.Shared.Configurations;
+using BudgetTracker.Shared.Extensions;
 using BudgetTracker.Shared.Models;
 using Google.Api;
 using Google.Cloud.PubSub.V1;
@@ -50,49 +52,38 @@ public class FinanceTestWebApplicationFactory : WebApplicationFactory<Program>
             services.AddOptions<FinanceConfig>().Bind(context.Configuration).ValidateOnStart();
             ServiceDescriptor descriptor = services.Single(s => s.ServiceType == typeof(DbContextOptions<WriteDbContext>));
             ServiceDescriptor readContextDescriptor = services.Single(s => s.ServiceType == typeof(DbContextOptions<ReadDbContext>));
+            ServiceDescriptor migrateContextDescriptor = services.Single(s => s.ServiceType == typeof(DbContextOptions<MigrateDbContext>));
             ServiceDescriptor pubSubSubscriberClientDescriptor = services.Single(s => s.ServiceType == typeof(SubscriberClient));
             
             services.Remove(descriptor);
             services.Remove(readContextDescriptor);
+            services.Remove(migrateContextDescriptor);
             services.Remove(pubSubSubscriberClientDescriptor);
 
-            services.AddScoped<NpgsqlConnection>(provider =>
-            {
-                FinanceConfig config = provider.GetRequiredService<IOptions<FinanceConfig>>().Value;
-                NpgsqlConnection connection = new NpgsqlConnection(config.DatabaseConnection.FinanceDb);
-                connection.Open();
-                
-                return connection;
-            });
-            
-            // Using Same one test DB credentials for Write and Read DBs
-            services.AddDbContext<WriteDbContext>((provider, option) =>
-            {
-                NpgsqlConnection sharedConnection = provider.GetRequiredService<NpgsqlConnection>();
-                option.UseNpgsql(sharedConnection);
-            });
-            
-            // Using Same one test DB credentials for Write and Read DBs
-            services.AddDbContext<ReadDbContext>((provider, option) =>
-            {
-                NpgsqlConnection sharedConnection = provider.GetRequiredService<NpgsqlConnection>();
-                option.UseNpgsql(sharedConnection);
-            });
-            
-            // Using Same one test DB credentials for Migrate DBs
-            services.AddDbContext<MigrateDbContext>((provider, option) =>
-            {
-                NpgsqlConnection sharedConnection = provider.GetRequiredService<NpgsqlConnection>();
-                option.UseNpgsql(sharedConnection);
-            });
-            services.AddScoped<CategoryBuilder>();
-            services.AddScoped<BankBuilder>();
-            services.AddSingleton<SubscriberClient>(_ => new Mock<SubscriberClient>().Object);
-
-            // overriding server jwt config
-            services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
-                .PostConfigure<IOptions<FinanceConfig>>((options, config) =>
+            services
+                .AddDatabaseConfiguration()
+                .AddScoped<NpgsqlConnection>(provider =>
                 {
+                    DatabaseConfiguration dbConfig = provider.GetRequiredService<IOptionsMonitor<DatabaseConfiguration>>().Get(DatabaseType.WRITE);
+                    string? postgresHost = dbConfig.Host;
+                    string? postgresPort = dbConfig.Port;
+                    string? postgresDatabase = dbConfig.Database;
+                    string? postgresUsername = dbConfig.Username;
+                    string? postgresPassword = dbConfig.Password;
+                    string connectionString = $"Host={postgresHost};Port={postgresPort};Database={postgresDatabase};Username={postgresUsername};Password={postgresPassword}";
+                    
+                    NpgsqlConnection connection = new NpgsqlConnection(connectionString); connection.Open(); 
+                    return connection;
+                })
+                .AddPostgresDbContext<WriteDbContext>()
+                .AddPostgresDbContext<ReadDbContext>()
+                .AddPostgresDbContext<MigrateDbContext>()
+                .AddScoped<CategoryBuilder>()
+                .AddScoped<BankBuilder>()
+                .AddSingleton<SubscriberClient>(_ => new Mock<SubscriberClient>().Object)
+                .AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme) // overriding server jwt config
+                .PostConfigure<IOptions<FinanceConfig>>((options, config) => // TODO: Update here with extension method
+                { 
                     JwtSecret jwtSecrets = config.Value.JwtSecret;
                     
                     options.TokenValidationParameters = new TokenValidationParameters

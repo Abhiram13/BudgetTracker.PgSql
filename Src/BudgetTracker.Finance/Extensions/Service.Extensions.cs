@@ -21,6 +21,7 @@ using BudgetTracker.Shared.Models;
 using BudgetTracker.Shared.Interfaces;
 using BudgetTracker.Shared.Constants;
 using BudgetTracker.Shared.Extensions;
+using BudgetTracker.Shared.Configurations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -54,7 +55,10 @@ internal static class ServiceExtension
         {
             serviceCollection
                 .AddLifeTimeServices()
-                .AddDbContext()
+                .AddDatabaseConfiguration()
+                .AddPostgresDbContext<WriteDbContext>(dbName: DatabaseType.WRITE)
+                .AddPostgresDbContext<ReadDbContext>(dbName: DatabaseType.READ)
+                .AddPostgresDbContext<MigrateDbContext>(dbName: DatabaseType.MIGRATE)
                 .AddOptionsConfigurations(configuration)
                 .AddBackgroundServices()
                 .AddSwaggerConfiguration()
@@ -70,50 +74,6 @@ internal static class ServiceExtension
         {
             serviceCollection.AddHostedService<OutboxProcessordWorker>();
             serviceCollection.AddHostedService<SubscriberBackgroundWorker>();
-        
-            return serviceCollection;
-        }
-
-        private IServiceCollection AddDbContext()
-        {
-            serviceCollection.AddDbContext<WriteDbContext>((provider, options) =>
-            {
-                PostgresSecrets secrets = provider.GetRequiredService<AppSecrets>().Postgres;
-
-                string? postgresHost = secrets.Host;
-                string? postgresPort = secrets.WritePort;
-                string? postgresDatabase = secrets.Database;
-                string? postgresUsername = secrets.WriteUsername;
-                string? postgresPassword = secrets.WritePassword;
-                string connectionString = $"Host={postgresHost};Port={postgresPort};Database={postgresDatabase};Username={postgresUsername};Password={postgresPassword}";
-                options.UseNpgsql(connectionString);
-            });
-        
-            serviceCollection.AddDbContext<ReadDbContext>((provider, options) =>
-            {
-                PostgresSecrets secrets = provider.GetRequiredService<AppSecrets>().Postgres;
-
-                string? postgresHost = secrets.Host;
-                string? postgresPort = secrets.ReadPort;
-                string? postgresDatabase = secrets.Database;
-                string? postgresUsername = secrets.ReadUsername;
-                string? postgresPassword = secrets.ReadPassword;
-                string connectionString = $"Host={postgresHost};Port={postgresPort};Database={postgresDatabase};Username={postgresUsername};Password={postgresPassword}";
-                options.UseNpgsql(connectionString);
-            });
-            
-            serviceCollection.AddDbContext<MigrateDbContext>((provider, options) =>
-            {
-                PostgresSecrets secrets = provider.GetRequiredService<AppSecrets>().Postgres;
-
-                string? postgresHost = secrets.Host;
-                string? postgresPort = secrets.MigratePort;
-                string? postgresDatabase = secrets.Database;
-                string? postgresUsername = secrets.MigrateUsername;
-                string? postgresPassword = secrets.MigratePassword;
-                string connectionString = $"Host={postgresHost};Port={postgresPort};Database={postgresDatabase};Username={postgresUsername};Password={postgresPassword}";
-                options.UseNpgsql(connectionString);
-            });
         
             return serviceCollection;
         }
