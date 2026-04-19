@@ -63,7 +63,7 @@ internal static class ServiceExtension
                 .AddBackgroundServices()
                 .AddSwaggerConfiguration()
                 .AddControllerConfiguration()
-                .AddSecurityConfiguration()
+                .AddSecurityConfiguration(configuration)
                 .AddEndpointsApiExplorer()
                 .AddHttpClientConfigurations();
         
@@ -187,10 +187,11 @@ internal static class ServiceExtension
             return serviceCollection;
         }
 
-        private IServiceCollection AddSecurityConfiguration()
+        private IServiceCollection AddSecurityConfiguration(IConfiguration configuration)
         {
             serviceCollection
-                .AddJwtConfiguration<AppSecrets>()
+                .LoadJwtConfiguration(configuration)
+                .AddJwtConfiguration()
                 .AddAuthorization(options =>
                 {
                     options

@@ -32,7 +32,7 @@ builder.Services.AddSingleton<WarehouseAppSecrets>(sp => sp.GetRequiredService<I
 builder.Services.AddSingleton<BigQueryService>();
 builder.Services.AddScoped<TraceIdProvider>();
 builder.Services.AddScoped<SubscriberService>();
-builder.Services.AddJwtConfiguration<WarehouseAppSecrets>();
+// builder.Services.AddJwtConfiguration(builder.Configuration);
 builder.Services.AddHostedService<SubscriberBackgroundService>();
 
 builder.WebHost.ConfigureKestrel((_, server) => {
