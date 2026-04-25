@@ -33,7 +33,7 @@ public class FinanceTestWebApplicationFactory : WebApplicationFactory<Program>
     {
         DotEnvironmentVariables.Load();
         
-        builder.UseEnvironment("Development");
+        builder.UseEnvironment("Development"); // TODO: Use Test here
 
         // loading secrets from .env and appsettings.<env>.json into builder.configuration
         builder.ConfigureAppConfiguration((context, config) =>
@@ -62,6 +62,7 @@ public class FinanceTestWebApplicationFactory : WebApplicationFactory<Program>
 
             services
                 .AddDatabaseConfiguration()
+                .LoadJwtConfiguration(context.Configuration)
                 .AddScoped<NpgsqlConnection>(provider =>
                 {
                     DatabaseConfiguration dbConfig = provider
@@ -84,21 +85,20 @@ public class FinanceTestWebApplicationFactory : WebApplicationFactory<Program>
                 .AddScoped<CategoryBuilder>()
                 .AddScoped<BankBuilder>()
                 .AddSingleton<SubscriberClient>(_ => new Mock<SubscriberClient>().Object)
-                .AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme); // overriding server jwt config
-            // .PostConfigure<IOptions<FinanceConfig>>((options, config) => // TODO: Update here with extension method
-            // { 
-            //     JwtSecret jwtSecrets = config.Value.JwtSecret;
-            //     
-            //     options.TokenValidationParameters = new TokenValidationParameters
-            //     {
-            //         ValidateIssuer = true,
-            //         ValidIssuer = "test-issuer",
-            //         ValidateAudience = true,
-            //         ValidAudience = jwtSecrets.Audience,
-            //         ValidateIssuerSigningKey = true,
-            //         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecrets.Key)),
-            //     };
-            // });
+                .AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme) // overriding server jwt config
+                .PostConfigure<IOptions<JwtConfiguration>>((options, config) =>
+                {
+                    JwtConfiguration secrets = config.Value;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = secrets.Issuer,
+                        ValidateAudience = true,
+                        ValidAudience = secrets.Audience,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secrets.SigningKey)),
+                    };
+                });
         });
     }
 }
