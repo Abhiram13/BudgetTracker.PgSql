@@ -75,18 +75,18 @@ public class CategoryTests
     }
     
     // TODO: Fix response format
-    // [Fact]
-    // public async Task Unauthorised_401_Response_Async()
-    // {
-    //     HttpResponseMessage httpResponse = await _unAuthorisedClient.GetAsync(CATEGORY_ROUTE);
-    //     ApiResponse<string>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<string>>();
-    //     
-    //     Assert.Equal(HttpStatusCode.Unauthorized, httpResponse.StatusCode);
-    //     Assert.NotNull(apiResponse);
-    //     Assert.Equal(HttpStatusCode.Unauthorized, apiResponse.StatusCode);
-    //     Assert.NotNull(apiResponse.Message);
-    //     Assert.NotEmpty(apiResponse.Message);
-    // }
+    [Fact]
+    public async Task Unauthorised_401_Response_Async()
+    {
+        HttpResponseMessage httpResponse = await _unAuthorisedClient.GetAsync(CATEGORY_ROUTE);
+        ApiResponse<string>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<string>>();
+        
+        Assert.Equal(HttpStatusCode.Unauthorized, httpResponse.StatusCode);
+        Assert.NotNull(apiResponse);
+        Assert.Equal(HttpStatusCode.Unauthorized, apiResponse.StatusCode);
+        Assert.NotNull(apiResponse.Message);
+        Assert.NotEmpty(apiResponse.Message);
+    }
 
     [Theory]
     [ClassData(typeof(InsertCategoriesTestData))]
@@ -106,7 +106,7 @@ public class CategoryTests
                 }
                 
                 HttpResponseMessage httpResponse = await _client.PostAsJsonAsync(CATEGORY_ROUTE, testData.Payload);
-                ApiResponse<string>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<string>>();
+                ApiResponse? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse>();
                 bool isDataExists = await dbContext.Categories.AnyAsync(c => c.Name == testData.Payload.Name);
                 
                 Assert.Equal(testData.ExpectedHttpStatusCode, httpResponse.StatusCode);
@@ -114,7 +114,6 @@ public class CategoryTests
                 Assert.Equal(testData.ExpectedApiStatusCode, apiResponse.StatusCode);
                 // Assert.NotNull(apiResponse.TraceId); // TODO: Trace ID is null
                 // Assert.NotEmpty(apiResponse.TraceId);
-                Assert.Null(apiResponse.Result);
                 Assert.NotNull(apiResponse.Message);
                 Assert.NotEmpty(apiResponse.Message);
 
