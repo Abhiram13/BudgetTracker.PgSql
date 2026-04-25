@@ -14,13 +14,7 @@ public sealed class CategoryBuilder
 
     public async Task<Category> CreateCategoryAsync()
     {
-        DateOnly date = DateOnly.FromDateTime(DateTime.Now);
-        Category category = new Category
-        {
-            Name = "Test category",
-            CreatedAt = date,
-            UpdatedAt = date,
-        };
+        Category category = Category.Create("Test category");
         
         await _dbContext.Categories.AddAsync(category);
         await _dbContext.SaveChangesAsync();

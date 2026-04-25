@@ -23,7 +23,7 @@ public class TransactionsMetaRepository : ITransactionsMetaRepository
     public async Task UpdateMetaAsync(UpdateTransactionMetaDto payload, int transactionId)
     {
         TransactionsMeta? meta = await _dbContext.TransactionsMeta.FirstOrDefaultAsync(m => m.TransactionId == transactionId); //TODO: Check if transaction by ID exists as well.
-        DateOnly date = DateOnly.FromDateTime(DateTime.UtcNow);
+        DateTimeOffset date = DateTimeOffset.UtcNow;
 
         if (meta is null)
         {

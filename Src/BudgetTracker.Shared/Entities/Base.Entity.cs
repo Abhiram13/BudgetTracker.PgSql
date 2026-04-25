@@ -1,5 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("IntegrationTests.Finance")]
 
 namespace BudgetTracker.Shared.Entities;
 
@@ -29,7 +32,7 @@ public abstract class BaseEntity
     [Column("created_at")]
     [JsonPropertyName("created_at")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public DateOnly CreatedAt { get; init; }
+    public DateTimeOffset CreatedAt { get; private set; }
 
     /// <summary>
     /// Gets or sets the date when the entity was last modified.
@@ -38,5 +41,24 @@ public abstract class BaseEntity
     [Column("updated_at")]
     [JsonPropertyName("updated_at")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public DateOnly UpdatedAt { get; set; }
+    public DateTimeOffset UpdatedAt { get; private set; }
+
+    protected void SetModifiedAt()
+    {
+        DateTimeOffset now =  DateTimeOffset.UtcNow;
+        CreatedAt = now;
+        UpdatedAt = now;
+    }
+    
+    protected void SetUpdatedAt()
+    {
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        UpdatedAt = now;
+    }
+
+    internal void SetTimeStamps(DateTimeOffset createdAt, DateTimeOffset updatedAt)
+    {
+        CreatedAt = createdAt;
+        UpdatedAt = updatedAt;
+    }
 }

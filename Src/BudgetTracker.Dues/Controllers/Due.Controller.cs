@@ -32,7 +32,7 @@ public class DueController : ControllerBase
         Due due = new Due
         {
             Comments = payload.Comments ?? "",
-            CreatedAt = today,
+            // CreatedAt = today,
             Creditor = payload.Creditor,
             Debtor = payload.Debtor,
             Description = payload.Description,
@@ -41,7 +41,7 @@ public class DueController : ControllerBase
             Status = Enums.DueType.Active,
             Title = payload.Title,
             TotalAmount = payload.TotalAmount,
-            UpdatedAt = today,            
+            // UpdatedAt = today,            
         };
 
         await _dueService.InsertOneAsync(due);

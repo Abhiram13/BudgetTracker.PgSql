@@ -28,15 +28,7 @@ public class CategoryController : ControllerBase
     [HttpPost(Name = "INSERT_CATEGORY")]
     public async Task<ActionResult<ApiResponse<string>>> InsertAsync([FromBody] InsertCategoryDto payload)
     {
-        DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
-        Category category = new Category
-        {
-            CreatedAt = today,
-            UpdatedAt = today,
-            Name = payload.Name
-        };
-
-        await _categoryService.InsertCategoryAsync(category);
+        await _categoryService.InsertCategoryAsync(payload);
         return StatusCode(201, new ApiResponse
         {
             StatusCode = System.Net.HttpStatusCode.Created,
@@ -76,7 +68,7 @@ public class CategoryController : ControllerBase
     [HttpPut("{id}", Name = "UPDATE_CATEGORY_BY_ID")]
     public async Task<IActionResult> UpdateOnAsync([FromRoute] int id, [FromBody] InsertCategoryDto payload)
     {
-        await _categoryService.UpdateCategoryAsync(new Category { Id = id, Name = payload.Name });
+        await _categoryService.UpdateCategoryAsync(id, payload.Name);
 
         return Ok(new ApiResponse
         {

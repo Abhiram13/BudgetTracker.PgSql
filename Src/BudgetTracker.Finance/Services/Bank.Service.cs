@@ -13,10 +13,11 @@ public class BankService
         _bankRepository = bankRepository;
     }
 
-    public async Task<Bank> InsertBankAsync(Bank payload)
+    public async Task<Bank> InsertBankAsync(InsertBankDto payload)
     {
-        Bank bank = await _bankRepository.InsertOneBankAsync(payload);
-        return bank;
+        Bank bank = Bank.Create(bankName: payload.Name);
+        
+        return await _bankRepository.InsertOneBankAsync(bank);
     }
 
     public async Task<List<BankDto>> GetBankListsAsync()
@@ -29,8 +30,8 @@ public class BankService
         return await _bankRepository.GetBankByIdAsync(id);
     }
 
-    public async Task UpdateBankAsync(Bank payload)
+    public async Task UpdateBankAsync(InsertBankDto payload, int id)
     {
-        await _bankRepository.UpdateBankAsync(payload);
+        await _bankRepository.UpdateBankAsync(id, payload.Name);
     }
 }

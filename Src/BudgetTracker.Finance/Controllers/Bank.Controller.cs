@@ -28,15 +28,7 @@ public class BankController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<ApiResponse<string>>> InsertAsync([FromBody] InsertBankDto payload)
     {
-        DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
-        Bank bank = new Bank
-        {
-            CreatedAt = today,
-            UpdatedAt = today,
-            Name = payload.Name
-        };
-
-        await _bankService.InsertBankAsync(bank);
+        await _bankService.InsertBankAsync(payload);
         return Ok(new ApiResponse<string>
         {
             StatusCode = System.Net.HttpStatusCode.Created,
@@ -77,7 +69,7 @@ public class BankController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateOneAsync([FromRoute] int id, [FromBody] InsertBankDto payload)
     {
-        await _bankService.UpdateBankAsync(new Bank { Name = payload.Name, Id = id });
+        await _bankService.UpdateBankAsync(payload, id);
 
         return Ok(new ApiResponse<string>
         {

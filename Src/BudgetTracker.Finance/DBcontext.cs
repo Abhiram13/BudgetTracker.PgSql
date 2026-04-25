@@ -52,11 +52,11 @@ public class MigrateDbContext : BaseDbContext<MigrateDbContext>
 //
 //         // 2. Extract your migration-specific credentials
 //         // You can hardcode this temporarily to test, or pull from config:
-//         var user = configuration["Postgres:MigrateUsername"];
-//         var pass = configuration["Postgres:MigratePassword"];
-//         var host = configuration["Postgres:Host"];
-//         var db = configuration["Postgres:Database"];
-//         var port = configuration["Postgres:MigratePort"];
+//         var user = configuration["Postgres:Migrate:Username"];
+//         var pass = configuration["Postgres:Migrate:Password"];
+//         var host = configuration["Postgres:Migrate:Host"];
+//         var db = configuration["Postgres:Migrate:Database"];
+//         var port = configuration["Postgres:Migrate:Port"];
 //
 //         string connectionString = $"Host={host};Port={port};Database={db};Username={user};Password={pass}";
 //

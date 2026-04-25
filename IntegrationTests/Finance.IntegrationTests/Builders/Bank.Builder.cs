@@ -14,13 +14,7 @@ public sealed class BankBuilder
 
     public async Task<Bank> CreateBankAsync()
     {
-        DateOnly date = DateOnly.FromDateTime(DateTime.Now);
-        Bank bank = new Bank
-        {
-            Name = "Test bank",
-            CreatedAt = date,
-            UpdatedAt = date,
-        };
+        Bank bank = Bank.Create("Test bank");
         
         await _dbContext.Banks.AddAsync(bank);
         await _dbContext.SaveChangesAsync();
