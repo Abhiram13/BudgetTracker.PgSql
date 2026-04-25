@@ -37,7 +37,7 @@ public record ApiResponse<T>
     /// </summary>
     [JsonPropertyName("result")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    public T? Result { get; init; }
+    public T Result { get; init; } // TODO: Make it Required
 }
 
 /// <summary>

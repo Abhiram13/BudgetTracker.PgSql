@@ -2,7 +2,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
+using BudgetTracker.Shared.Configurations;
 using BudgetTracker.Shared.Constants;
+using BudgetTracker.Shared.Security;
 using IntegrationTests.Finance.Factory;
 using IntegrationTests.Finance.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -22,10 +24,10 @@ public abstract class FinanceTestFixture
         UnAuthorizedClient = Factory.CreateClient();
     }
 
-    protected void SetClientHeaders(FinanceConfig config)
+    protected void SetClientHeaders(JwtConfiguration config)
     {
-        // string token = JwtTokenGenerator.CreateToken(secretKey: config.JwtSecret.Key, scope: SharedConstants.Jwt.Scopes.DOWNSTREAM, audience: config.JwtSecret.Audience);
-        // Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, token);
+        string token = JwtFactory.CreateToken(configuration: config, scope: SharedConstants.Jwt.Scopes.DOWNSTREAM);
+        Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, token);
     }
 
     protected void DisposeFactoryAndClient()
@@ -33,25 +35,5 @@ public abstract class FinanceTestFixture
         Client.Dispose();
         UnAuthorizedClient.Dispose();
         Factory.Dispose();
-    }
-}
-
-public static class JwtTokenGenerator
-{
-    public static string CreateToken(string secretKey, string scope, string audience)
-    {
-        SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
-        SigningCredentials credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        Claim[] claims = new Claim[] { new Claim("scope", scope) };
-        
-        JwtSecurityToken token = new JwtSecurityToken(
-            issuer: "test-issuer",
-            audience: audience,
-            claims: claims, 
-            expires: DateTime.UtcNow.AddMinutes(1), 
-            signingCredentials: credentials
-        );
-        
-        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }

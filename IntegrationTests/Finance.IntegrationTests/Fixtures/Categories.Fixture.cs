@@ -1,4 +1,5 @@
 using BudgetTracker.Finance;
+using BudgetTracker.Shared.Configurations;
 using IntegrationTests.Finance.Factory;
 using IntegrationTests.Finance.Models;
 using Microsoft.EntityFrameworkCore;
@@ -14,9 +15,9 @@ public class CategoriesTestsFixture : FinanceTestFixture, IAsyncLifetime
         using (IServiceScope scope = Factory.CreateScope())
         {
             WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
-            FinanceConfig financeConfig = scope.ServiceProvider.GetRequiredService<IOptions<FinanceConfig>>().Value;
+            JwtConfiguration jwtConfiguration = scope.ServiceProvider.GetRequiredService<IOptions<JwtConfiguration>>().Value;
             await dbContext.Database.MigrateAsync();
-            SetClientHeaders(financeConfig);
+            SetClientHeaders(jwtConfiguration);
         }
     }
 

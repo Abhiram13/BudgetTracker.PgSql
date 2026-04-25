@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using BudgetTracker.Finance;
 using BudgetTracker.Finance.Entities;
+using BudgetTracker.Shared.Configurations;
 using BudgetTracker.Shared.Constants;
 using IntegrationTests.Finance.Models;
 using IntegrationTests.Finance.Factory;
@@ -32,13 +33,13 @@ public class TransactionsIntegrationTestFixture : FinanceTestFixture, IAsyncLife
         using (IServiceScope scope = Factory.CreateScope())
         {
             WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
-            FinanceConfig financeConfig = scope.ServiceProvider.GetRequiredService<IOptions<FinanceConfig>>().Value;
+            JwtConfiguration jwtConfiguration = scope.ServiceProvider.GetRequiredService<IOptions<JwtConfiguration>>().Value;
             await dbContext.Database.MigrateAsync();
             _categoryBuilder = scope.ServiceProvider.GetRequiredService<CategoryBuilder>();
             _bankBuilder = scope.ServiceProvider.GetRequiredService<BankBuilder>();
             TestCategory = await _categoryBuilder.CreateCategoryAsync();
             TestBank = await _bankBuilder.CreateBankAsync();
-            SetClientHeaders(financeConfig);
+            SetClientHeaders(jwtConfiguration);
         }
     }
 
