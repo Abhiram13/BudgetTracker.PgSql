@@ -7,6 +7,7 @@ using BudgetTracker.Finance;
 using BudgetTracker.Finance.Entities;
 using BudgetTracker.Finance.Enums;
 using BudgetTracker.Finance.Models;
+using BudgetTracker.Shared.Exceptions;
 using BudgetTracker.Shared.Models;
 using IntegrationTests.Finance.Data.Transactions;
 using IntegrationTests.Finance.Definations.Transactions;
@@ -82,11 +83,18 @@ public class TransactionsTests
 
             await using (new TransactionDisposal(dbcontext))
             {
-                await Assert.ThrowsAsync<DbUpdateException>(async () =>
+                // TODO: Exception is not getting caught
+                await Assert.ThrowsAsync<InvalidPayloadException>(async () =>
                 {
                     await dbcontext.Transactions.AddAsync(transaction);
                     await dbcontext.SaveChangesAsync();
                 });
+
+                // Exception _ = await Record.ExceptionAsync(async () =>
+                // {
+                //     await dbcontext.Transactions.AddAsync(transaction);
+                //     await dbcontext.SaveChangesAsync();
+                // });
 
                 Transaction? data = await dbcontext.Transactions.Where(t => t.Description == transaction.Description).FirstOrDefaultAsync();
                 Assert.Null(data);
@@ -269,32 +277,26 @@ public class TransactionsTests
             {
                 List<Transaction> transactions = new List<Transaction>
                 {
-                    new Transaction
-                    {
-                        ActualAmount = 100, 
-                        Amount = 100, 
-                        CategoryId = 1, 
-                        Description = "smome description",
-                        Type = TransactionType.Debit,
-                        FromBank = _testBank.Id,
-                        ToBank = null,
-                        Date = DateOnly.FromDateTime(DateTime.UtcNow),
-                        CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
-                        UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
-                    },
-                    new Transaction
-                    {
-                        ActualAmount = 100, 
-                        Amount = 100, 
-                        CategoryId = 1, 
-                        Description = "smome description",
-                        Type = TransactionType.Debit,
-                        FromBank = _testBank.Id,
-                        ToBank = null,
-                        Date = DateOnly.FromDateTime(DateTime.UtcNow),
-                        CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
-                        UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
-                    },
+                    Transaction.Create(
+                        actualAmount: 100, 
+                        amount: 100, 
+                        categoryId: 1, 
+                        description: "smome description",
+                        type: TransactionType.Debit,
+                        fromBank: _testBank.Id,
+                        toBank: null, 
+                        date: DateOnly.FromDateTime(DateTime.UtcNow)
+                    ),
+                    Transaction.Create(
+                        actualAmount: 100, 
+                        amount: 100, 
+                        categoryId: 1, 
+                        description: "smome description",
+                        type: TransactionType.Debit,
+                        fromBank: _testBank.Id,
+                        toBank: null, 
+                        date: DateOnly.FromDateTime(DateTime.UtcNow)
+                    ),
                 };
 
                 foreach (Transaction transaction in transactions)
@@ -338,32 +340,26 @@ public class TransactionsTests
             {
                 List<Transaction> transactions = new List<Transaction>
                 {
-                    new Transaction
-                    {
-                        ActualAmount = 100, 
-                        Amount = 100, 
-                        CategoryId = 1, 
-                        Description = "some description",
-                        Type = TransactionType.Credit,
-                        FromBank = null,
-                        ToBank = _testBank.Id,
-                        Date = DateOnly.FromDateTime(DateTime.UtcNow),
-                        CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
-                        UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
-                    },
-                    new Transaction
-                    {
-                        ActualAmount = 100, 
-                        Amount = 100, 
-                        CategoryId = 1, 
-                        Description = "some description",
-                        Type = TransactionType.Credit,
-                        FromBank = null,
-                        ToBank = _testBank.Id,
-                        Date = DateOnly.FromDateTime(DateTime.UtcNow),
-                        CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
-                        UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
-                    },
+                    Transaction.Create(
+                        actualAmount: 100, 
+                        amount: 100, 
+                        categoryId: 1, 
+                        description: "smome description",
+                        type: TransactionType.Credit,
+                        fromBank: null,
+                        toBank: _testBank.Id, 
+                        date: DateOnly.FromDateTime(DateTime.UtcNow)
+                    ),
+                    Transaction.Create(
+                        actualAmount: 100, 
+                        amount: 100, 
+                        categoryId: 1, 
+                        description: "smome description",
+                        type: TransactionType.Credit,
+                        fromBank: null,
+                        toBank: _testBank.Id, 
+                        date: DateOnly.FromDateTime(DateTime.UtcNow)
+                    ),
                 };
 
                 foreach (Transaction transaction in transactions)
@@ -436,32 +432,26 @@ public class TransactionsTests
             {
                 List<Transaction> transactions = new List<Transaction>
                 {
-                    new Transaction
-                    {
-                        ActualAmount = 100, 
-                        Amount = 100, 
-                        CategoryId = 1, 
-                        Description = "some description",
-                        Type = TransactionType.Debit,
-                        FromBank = _testBank.Id,
-                        ToBank = null,
-                        Date = DateOnly.FromDateTime(DateTime.UtcNow),
-                        CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
-                        UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
-                    },
-                    new Transaction
-                    {
-                        ActualAmount = 100, 
-                        Amount = 100, 
-                        CategoryId = 1, 
-                        Description = "some description",
-                        Type = TransactionType.Debit,
-                        FromBank = _testBank.Id,
-                        ToBank = null,
-                        Date = DateOnly.FromDateTime(DateTime.UtcNow).AddMonths(-1),
-                        CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
-                        UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow),
-                    },
+                    Transaction.Create(
+                        actualAmount: 100, 
+                        amount: 100, 
+                        categoryId: 1, 
+                        description: "smome description",
+                        type: TransactionType.Debit,
+                        fromBank: _testBank.Id,
+                        toBank: null, 
+                        date: DateOnly.FromDateTime(DateTime.UtcNow)
+                    ),
+                    Transaction.Create(
+                        actualAmount: 100, 
+                        amount: 100, 
+                        categoryId: 1, 
+                        description: "smome description",
+                        type: TransactionType.Debit,
+                        fromBank: _testBank.Id,
+                        toBank: null, 
+                        date: DateOnly.FromDateTime(DateTime.UtcNow).AddMonths(-1)
+                    ),
                 };
 
                 foreach (Transaction transaction in transactions)
@@ -510,19 +500,18 @@ public class TransactionsTests
 
             await using (new TransactionDisposal(dbContext))
             {
-                Transaction transaction = new Transaction
-                {
-                    ActualAmount = 100,
-                    Amount = 100,
-                    CategoryId = 1,
-                    Description = "smome description",
-                    Type = TransactionType.Debit,
-                    FromBank = _testBank.Id,
-                    ToBank = null,
-                    Date = DateOnly.FromDateTime(DateTime.UtcNow),
-                    CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-1),
-                    UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-1),
-                };
+                Transaction transaction = Transaction.Create(
+                    actualAmount: 100,
+                    amount: 100,
+                    categoryId: 1,
+                    description: "smome description",
+                    type: TransactionType.Debit,
+                    fromBank: _testBank.Id,
+                    toBank: null,
+                    date: DateOnly.FromDateTime(DateTime.UtcNow)
+                );
+                
+                transaction.SetTimeStamps(createdAt: DateTimeOffset.UtcNow.AddDays(-1), updatedAt: DateTimeOffset.UtcNow.AddDays(-1));
                 
                 await dbContext.Transactions.AddAsync(transaction);
                 await dbContext.SaveChangesAsync();
@@ -574,19 +563,18 @@ public class TransactionsTests
 
             await using (new TransactionDisposal(dbContext))
             {
-                Transaction transaction = new Transaction
-                {
-                    ActualAmount = 100,
-                    Amount = 100,
-                    CategoryId = 1,
-                    Description = "smome description",
-                    Type = TransactionType.Debit,
-                    FromBank = _testBank.Id,
-                    ToBank = null,
-                    Date = DateOnly.FromDateTime(DateTime.UtcNow),
-                    CreatedAt = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-1),
-                    UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-1),
-                };
+                Transaction transaction = Transaction.Create(
+                    actualAmount: 100,
+                    amount: 100,
+                    categoryId: 1,
+                    description: "smome description",
+                    type: TransactionType.Debit,
+                    fromBank: _testBank.Id,
+                    toBank: null,
+                    date: DateOnly.FromDateTime(DateTime.UtcNow)
+                );
+                
+                transaction.SetTimeStamps(createdAt: DateTimeOffset.UtcNow.AddDays(-1), updatedAt: DateTimeOffset.UtcNow.AddDays(-1));
                 
                 await dbContext.Transactions.AddAsync(transaction);
                 await dbContext.SaveChangesAsync();

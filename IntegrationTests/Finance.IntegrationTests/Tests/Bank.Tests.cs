@@ -33,7 +33,7 @@ public class BankTests
             
             await using (new BankDisposal(dbcontext))
             {
-                Bank bank = new Bank { Name = bankName };
+                Bank bank = Bank.Create(bankName);
                 await dbcontext.Banks.AddAsync(bank);
                 await dbcontext.SaveChangesAsync();
 
@@ -55,7 +55,7 @@ public class BankTests
             
             await using (new BankDisposal(dbcontext))
             {
-                Bank bank = new Bank { Name = bankName };
+                Bank bank = Bank.Create(bankName);
                 await Assert.ThrowsAsync<DbUpdateException>(async () =>
                 {
                     await dbcontext.Banks.AddAsync(bank);

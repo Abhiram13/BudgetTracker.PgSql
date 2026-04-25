@@ -122,15 +122,16 @@ public class TransactionRepository : ITransactionRepository
         Transaction? tx = await _writeDbContext.Transactions.FirstOrDefaultAsync(t => t.Id == id);
         if (tx == null) throw new BadHttpRequestException("Transaction not found"); // TODO: Should use 'InvalidPayloadException'?
         
-        tx.ActualAmount = payload.ActualAmount;
-        tx.Description = payload.Description;
-        tx.Amount = payload.Amount;
-        tx.Date = payload.Date;
-        tx.CategoryId = payload.CategoryId;
-        tx.FromBank = payload.FromBank;
-        tx.ToBank = payload.ToBank;
-        tx.Type = payload.Type;
-        tx.UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
+        tx.Update(
+            actualAmount: payload.ActualAmount,
+            amount: payload.Amount,
+            description: payload.Description,
+            date: payload.Date,
+            type: payload.Type,
+            categoryId: payload.CategoryId,
+            fromBank: payload.FromBank,
+            toBank: payload.ToBank
+        );
         
         await _writeDbContext.SaveChangesAsync();
     }

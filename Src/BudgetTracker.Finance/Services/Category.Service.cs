@@ -14,7 +14,7 @@ public class CategoryService
         _categoryRepository = categoryRepository;
     }
 
-    public async Task<Category> InsertCategoryAsync(Category payload)
+    public async Task<Category> InsertCategoryAsync(InsertCategoryDto payload)
     {
         Category? category = await _categoryRepository.GetCategoryAsync(payload.Name);
         
@@ -22,8 +22,10 @@ public class CategoryService
         {
             throw new InvalidPayloadException($"Category with name ({payload.Name}) already exists");
         }
+
+        Category newCategory = Category.Create(payload.Name);
         
-        return await _categoryRepository.InsertOneCategoryAsync(payload);
+        return await _categoryRepository.InsertOneCategoryAsync(newCategory);
     }
 
     public async Task<List<CategoryDto>> GetAllCategoriesAsync()
@@ -43,8 +45,8 @@ public class CategoryService
         return category;
     }
 
-    public async Task UpdateCategoryAsync(Category payload)
+    public async Task UpdateCategoryAsync(int id, string categoryName)
     {
-        await _categoryRepository.UpdateOneCategoryAsync(payload);
+        await _categoryRepository.UpdateOneCategoryAsync(id, categoryName);
     }
 }

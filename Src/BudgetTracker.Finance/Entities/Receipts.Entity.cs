@@ -10,35 +10,48 @@ public class Receipt : BaseEntity
     [Key]
     [Column("id")]
     [JsonPropertyName("id")]
-    public new Guid Id { get; set; } = Guid.NewGuid();
+    public new Guid Id { get; private set; } = Guid.NewGuid();
     
     [Required]
     [Column("file_name")]
-    [JsonPropertyName("file_name")]
-    public required string FileName { get; set; }
+    public string FileName { get; private set; }
     
     [Required]
     [Column("object_key")]
-    [JsonPropertyName("object_key")]
-    public required string ObjectKey { get; set; }
+    public string ObjectKey { get; private set; }
     
     [Required]
     [Column("extension")]
-    [JsonPropertyName("extension")]
-    public required string Extension { get; set; }
+    public string Extension { get; private set; }
     
     [Required]
     [Column("mime_type")]
-    [JsonPropertyName("mime_type")]
-    public required string MimeType { get; set; }
+    public string MimeType { get; private set; }
     
     [Required]
     [Column("file_size_bytes")]
-    [JsonPropertyName("file_size_bytes")]
-    public required long FileSize { get; set; }
+    public long FileSize { get; private set; }
     
     [Required]
     [Column("md5_hash")]
-    [JsonPropertyName("md5_hash")]
-    public string? MdHash { get; set; }
+    public string? MdHash { get; private set; }
+    
+    private Receipt() { }
+
+    public static Receipt Create(string fileName, string objectKey, string extension, string mimeType, long fileSize, string? hash)
+    {
+        // TODO: Validations
+
+        Receipt receipt = new Receipt
+        {
+            Extension =  extension,
+            FileName =  fileName,
+            FileSize = fileSize,
+            MdHash = hash,
+            MimeType = mimeType,
+            ObjectKey =  objectKey,
+        };
+        
+        return receipt;
+    }
 }
