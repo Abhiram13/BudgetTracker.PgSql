@@ -25,11 +25,11 @@ public class TransactionsMeta
 
     [Column("created_at")]
     [JsonPropertyName("created_at")]
-    public DateOnly CreatedAt { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
 
     [Column("updated_at")]
     [JsonPropertyName("updated_at")]
-    public DateOnly UpdatedAt { get; set; }
+    public DateTimeOffset UpdatedAt { get; set; }
 
     [Column("tags")]
     [JsonPropertyName("tags")]

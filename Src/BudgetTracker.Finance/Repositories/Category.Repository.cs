@@ -33,18 +33,16 @@ public class CategoryRepository : ICategoryRepository
         return list;
     }
 
-    public async Task UpdateOneCategoryAsync(Category payload)
+    public async Task UpdateOneCategoryAsync(int id, string categoryName)
     {
-        Category? category = await GetCategoryAsync(payload.Id);
+        Category? category = await GetCategoryAsync(id);
 
         if (category == null)
         {
-            throw new InvalidPayloadException($"Category with ({payload.Id}) not found");
+            throw new InvalidPayloadException($"Category with ({id}) not found");
         }
         
-        category.Name = payload.Name;
-        category.UpdatedAt = DateOnly.FromDateTime(DateTime.UtcNow);
-        
+        category.Update(categoryName);
         await _writeDbContext.SaveChangesAsync();
     }
 

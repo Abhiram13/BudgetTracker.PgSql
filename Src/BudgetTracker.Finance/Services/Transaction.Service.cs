@@ -79,7 +79,7 @@ public class TransactionService
         if (IsNotValidCredit()) throw new InvalidPayloadException("Invalid credit for a transaction is not allowed");
     }
 
-    private async Task InsertTransactionsMetaAsync(InsertTransactionDto payload, DateOnly currentDate, int transactionId)
+    private async Task InsertTransactionsMetaAsync(InsertTransactionDto payload, DateTimeOffset currentDate, int transactionId)
     {
         bool ShouldCreateTransactionsMeta() => payload.DueId is not null || payload.EmiId is not null || !string.IsNullOrEmpty(payload.Tags);
         
@@ -119,21 +119,18 @@ public class TransactionService
             try
             {
                 InsertValidations(payload);
-        
-                DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
-                Transaction transaction = new Transaction
-                {
-                    CreatedAt = today,
-                    UpdatedAt = today,
-                    ActualAmount = payload.ActualAmount,
-                    Amount = payload.Amount,
-                    Description = payload.Description,
-                    CategoryId = payload.CategoryId,
-                    Date = payload.Date,
-                    FromBank = payload.FromBank,
-                    ToBank = payload.ToBank,
-                    Type = payload.Type,
-                };
+
+                DateTimeOffset today = DateTimeOffset.UtcNow;
+                Transaction transaction = Transaction.Create(
+                    actualAmount: payload.ActualAmount,
+                    amount: payload.Amount,
+                    description: payload.Description,
+                    categoryId: payload.CategoryId,
+                    date: payload.Date,
+                    fromBank: payload.FromBank,
+                    toBank: payload.ToBank,
+                    type: payload.Type
+                );
 
                 await _repository.InsertOneTransactionAsync(transaction);
                 _logger.LogInformation("Transaction with Id = {TransactionId} has been inserted successfully", transaction.Id);

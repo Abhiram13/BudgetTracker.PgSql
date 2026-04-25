@@ -22,7 +22,7 @@ public class CategoryServiceUnitTests
     public async Task GetCategoryById_Success_Async()
     {
         // Arrange
-        Category category = new Category { Id = 1, Name = "Food" };
+        Category category = Category.Create("Food");
         _categoryRepository.Setup(r => r.GetCategoryAsync(1)).ReturnsAsync(category);
 
         // Act
@@ -52,7 +52,7 @@ public class CategoryServiceUnitTests
     [Fact]
     public void Invalid_Category_Name()
     {
-        Category category = new Category { Name = null };
+        Category category = Category.Create(null);
         
         Assert.Throws<BadHttpRequestException>(() => category);
     }

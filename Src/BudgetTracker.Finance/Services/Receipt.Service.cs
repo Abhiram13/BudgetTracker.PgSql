@@ -17,15 +17,14 @@ public class ReceiptService
 
     public async Task AddReceiptAsync(InsertReceiptDto payload)
     {
-        Receipt receipt = new Receipt
-        {
-            Extension = payload.Extension,
-            ObjectKey = payload.ObjectKey,
-            FileName = payload.FileName,
-            MimeType = payload.MimeType,
-            FileSize = payload.FileSize,
-            MdHash = payload.MdHash
-        };
+        Receipt receipt = Receipt.Create(
+            extension: payload.Extension,
+            fileName: payload.FileName,
+            fileSize: payload.FileSize,
+            hash: payload.MdHash,
+            mimeType: payload.MimeType,
+            objectKey: payload.ObjectKey
+        );
         
         await _receiptRepository.InsertOneAsync(receipt);
     }

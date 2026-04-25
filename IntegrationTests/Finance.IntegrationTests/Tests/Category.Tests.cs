@@ -37,7 +37,7 @@ public class CategoryTests
             
             await using (new CategoryDisposal(dbcontext))
             {
-                Category category = new Category { Name = categoryName };
+                Category category = Category.Create(categoryName);
                 await dbcontext.Categories.AddAsync(category);
                 await dbcontext.SaveChangesAsync();
                 
@@ -59,7 +59,7 @@ public class CategoryTests
             
             await using (new CategoryDisposal(dbcontext))
             {
-                Category category = new Category { Name = categoryName };
+                Category category = Category.Create(categoryName);
 
                 await Assert.ThrowsAsync<DbUpdateException>(async () =>
                 {
@@ -100,8 +100,7 @@ public class CategoryTests
             {
                 if (testData.PreSeedData) // Duplicate test. Preseed data
                 {
-                    DateOnly dateOnly = DateOnly.FromDateTime(DateTime.Now);
-                    await dbContext.Categories.AddAsync(new Category { Name = testData.Payload.Name, CreatedAt = dateOnly, UpdatedAt = dateOnly });
+                    await dbContext.Categories.AddAsync(Category.Create(testData.Payload.Name));
                     await dbContext.SaveChangesAsync();
                 }
                 
