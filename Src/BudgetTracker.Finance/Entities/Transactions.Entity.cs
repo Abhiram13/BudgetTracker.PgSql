@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.RegularExpressions;
 using BudgetTracker.Finance.Enums;
 using Microsoft.EntityFrameworkCore;
 using BudgetTracker.Shared.Entities;
@@ -11,24 +12,16 @@ namespace BudgetTracker.Finance.Entities;
 [Table("transactions")]
 public class Transaction : BaseEntity
 {
-    [Required(ErrorMessage = "Transaction Amount is required")]
     [Column("amount")]
     [JsonPropertyName("amount")]
-    [Comment(comment: "Amount that will be used in a transaction")]
-    [Range(type: typeof(decimal), minimum: "0.01",  maximum: "1000000", ErrorMessage = "Given amount is greater than limit")]
     public decimal Amount { get; private set; }
 
     [Column("actual_amount")]
     [JsonPropertyName("actual_amount")]
-    [Range(type: typeof(decimal), minimum: "0.01",  maximum: "1000000", ErrorMessage = "Given actual amount is greater than limit")]
-    [Comment(comment: "Amount that will be used in a transaction and left the bank account. Credit card transaction amounts won't be added in actual amount")]
     public decimal? ActualAmount { get; private set; }
     
     [Column("description")]
     [JsonPropertyName("description")]
-    [Required(ErrorMessage = "Description is required")]
-    [StringLength(maximumLength: SharedConstants.LengthConstants.MAX_TRANSACTION_DESCRIPTION_LENGTH, MinimumLength = SharedConstants.LengthConstants.MIN_TRANSACTION_DESCRIPTION_LENGTH, ErrorMessage = "Description exceeds or does not reach required length")]
-    [RegularExpression(SharedConstants.ValidationRegex.DESCRIPTION_PATTERN, ErrorMessage = "Only letters, numbers, spaces and # are allowed")]
     public string Description { get; private set; } = string.Empty;
 
     [Column("from_bank")]    
@@ -38,8 +31,7 @@ public class Transaction : BaseEntity
     [Column("to_bank")]
     [JsonPropertyName("to_bank")]
     public int? ToBank { get; private set; }
-
-    [Required(ErrorMessage = "Category Id is required")]
+    
     [Column("category_id")]
     [JsonPropertyName("category_id")]
     public int CategoryId { get; private set; }
@@ -47,8 +39,7 @@ public class Transaction : BaseEntity
     [Column(name: "date")]
     [JsonPropertyName("date")]
     public DateOnly Date { get; private set; }
-
-    [Required(ErrorMessage = "Transaction type is required")]
+    
     [Column("type")]
     [JsonPropertyName("type")]
     public TransactionType Type { get; private set; }
@@ -69,17 +60,8 @@ public class Transaction : BaseEntity
 
     public static Transaction Create(decimal amount, decimal? actualAmount, string description, int categoryId, int? fromBank, int? toBank, TransactionType type, DateOnly date)
     {
-        if (amount < 0.01m || amount > 1000000)
-        {
-            throw new InvalidPayloadException("Amount must be between 0.01 and 1000000");
-        }
+        Validate(amount, actualAmount, description, date);
         
-        if (actualAmount is not null && (actualAmount < 0.01m || amount > 1000000))
-        {
-            throw new InvalidPayloadException("Actual Amount must be between 0.01 and 1000000");
-        }
-        
-        //TODO: more validations here
         Transaction transaction = new Transaction
         {
             ActualAmount = actualAmount,
@@ -99,6 +81,8 @@ public class Transaction : BaseEntity
 
     public void Update(decimal amount, decimal? actualAmount, string description, int categoryId, int? fromBank, int? toBank, TransactionType type, DateOnly date)
     {
+        Validate(amount, actualAmount, description, date);
+        
         ActualAmount = actualAmount;
         Amount = amount;
         Description = description;
@@ -109,5 +93,39 @@ public class Transaction : BaseEntity
         Type = type;
         
         SetUpdatedAt();
+    }
+
+    private static void Validate(decimal amount, decimal? actualAmount, string description, DateOnly date)
+    {
+        if (amount < 0.01m || amount > 1000000)
+        {
+            throw new InvalidPayloadException("Amount must be between 0.01 and 1000000");
+        }
+        
+        if (actualAmount is not null && (actualAmount < 0.01m || amount > 1000000))
+        {
+            throw new InvalidPayloadException("Actual Amount must be between 0.01 and 1000000");
+        }
+
+        if (string.IsNullOrEmpty(description))
+        {
+            throw new InvalidPayloadException("Description is required");
+        }
+
+        if (!Regex.IsMatch(description, SharedConstants.ValidationRegex.DESCRIPTION_PATTERN))
+        {
+            throw new InvalidPayloadException("Description contains invalid characters. Only letters, numbers, spaces and # are allowed");
+        }
+
+        if (description.Length < SharedConstants.LengthConstants.MIN_TRANSACTION_DESCRIPTION_LENGTH ||
+            description.Length > SharedConstants.LengthConstants.MAX_TRANSACTION_DESCRIPTION_LENGTH)
+        {
+            throw new InvalidPayloadException("Description exceeds or does not reach required length");
+        }
+
+        if (date > DateOnly.FromDateTime(DateTime.UtcNow))
+        {
+            throw new InvalidPayloadException("Date cannot be in the future");
+        }
     }
 }
