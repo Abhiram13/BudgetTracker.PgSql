@@ -58,9 +58,8 @@ internal static class WebApplicationExtensions
                 try
                 {
                     logger.LogInformation("DB Migration is starting...");
-                    MigrateDbContext dbContext = scope.ServiceProvider.GetService<MigrateDbContext>();
+                    MigrateDbContext dbContext = scope.ServiceProvider.GetRequiredService<MigrateDbContext>();
                     dbContext.Database.Migrate();
-        
                     logger.LogInformation("DB Migration completed");
                 }
                 catch (Exception e)

@@ -85,11 +85,13 @@ internal static class ServiceExtension
             serviceCollection.AddScoped<ICategoryRepository, CategoryRepository>();
             serviceCollection.AddScoped<ITransactionsMetaRepository, TransactionsMetaRepository>();
             serviceCollection.AddScoped<IOutboxRepository, OutboxRepository>();
+            serviceCollection.AddScoped<IDueRepository, DueRepository>();
             serviceCollection.AddScoped<BankService>();
             serviceCollection.AddScoped<TransactionService>();
             serviceCollection.AddScoped<TransactionsMetaService>();
             serviceCollection.AddScoped<CategoryService>();
             serviceCollection.AddScoped<OutboxService>();
+            serviceCollection.AddScoped<DueService>();
             serviceCollection.AddScoped<TraceIdProvider>();
             serviceCollection.AddSingleton<AppSecrets>(sp => sp.GetRequiredService<IOptions<AppSecrets>>().Value);
             serviceCollection.AddSingleton<PublisherClient>(provider =>
