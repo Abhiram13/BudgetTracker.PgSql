@@ -25,6 +25,7 @@ public class TransactionService
     private readonly TransactionsMetaService _transactionsMetaService;
     private readonly OutboxService _outboxService;
     private readonly WriteDbContext _writeDbContext;
+    private readonly DueService _dueService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TransactionService"/> class.
@@ -34,18 +35,21 @@ public class TransactionService
     /// <param name="transactionsMetaService">The <see cref="TransactionsMetaService"/> responsible for managing <see cref="TransactionsMeta"/> DB operations.</param>
     /// <param name="writeDbContext">The primary <see cref="WriteDbContext"/> used for write operations.</param>
     /// <param name="outboxService">The <see cref="OutboxService"/> used to insert events in <see cref="OutboxEvents"/>.</param>
+    /// <param name="dueService"></param>
     public TransactionService(
         ITransactionRepository repository, 
         ILogger<TransactionService> logger, 
         TransactionsMetaService transactionsMetaService,
         WriteDbContext writeDbContext,
-        OutboxService outboxService
+        OutboxService outboxService,
+        DueService dueService
     ) {
         _repository = repository;
         _logger = logger;
         _transactionsMetaService = transactionsMetaService;
         _writeDbContext = writeDbContext;
         _outboxService = outboxService;
+        _dueService = dueService;
     }
 
     private void InsertValidations(TransactionDto payload)
@@ -119,6 +123,16 @@ public class TransactionService
             try
             {
                 InsertValidations(payload);
+
+                if (payload.DueId is not null)
+                {
+                    bool isDueExist = await _dueService.IsDueExists((int)payload.DueId);
+                    
+                    if (!isDueExist)
+                    {
+                        throw new InvalidPayloadException("Due id is invalid");
+                    }
+                }
 
                 DateTimeOffset today = DateTimeOffset.UtcNow;
                 Transaction transaction = Transaction.Create(
