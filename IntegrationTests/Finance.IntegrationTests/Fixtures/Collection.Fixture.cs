@@ -22,4 +22,9 @@ namespace IntegrationTests.Finance.Fixtures;
 /// </list>
 /// </remarks>
 [CollectionDefinition(nameof(DatabaseFixture))]
-public abstract class DatabaseFixture : ICollectionFixture<TransactionsIntegrationTestFixture>, ICollectionFixture<CategoriesTestsFixture>, ICollectionFixture<BanksTestsFixture> { }
+public abstract class DatabaseFixture : 
+    ICollectionFixture<TransactionsIntegrationTestFixture>, 
+    ICollectionFixture<CategoriesTestsFixture>, 
+    ICollectionFixture<BanksTestsFixture>,
+    ICollectionFixture<DuesTestsFixture>
+{ }
