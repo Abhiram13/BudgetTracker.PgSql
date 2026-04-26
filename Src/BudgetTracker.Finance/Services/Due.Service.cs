@@ -28,4 +28,14 @@ public sealed class DueService
         
         await _dueRepository.InsertOneAsync(due);
     }
+
+    public async Task<List<DueListDetailsDto>> GetListAsync()
+    {
+        return await _dueRepository.GetListOfDuesAsync();
+    }
+
+    public async Task<bool> IsDueExists(int id)
+    {
+        return await _dueRepository.IsDueExistAsync(id);
+    }
 }

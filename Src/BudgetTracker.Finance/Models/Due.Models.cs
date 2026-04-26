@@ -23,6 +23,18 @@ public sealed record InsertDueDto
     [JsonPropertyName("remarks")]
     public string? Remarks { get; init; } = null;
 
-    [JsonPropertyName("comments")] 
+    [JsonPropertyName("comments")]
     public string? Comments { get; init; } = null;
+}
+
+public sealed record DueListDetailsDto
+{
+    [JsonPropertyName("id")]
+    public int Id { get; init; }
+    
+    [JsonPropertyName("debtor")]
+    public string? Debtor { get; init; }
+    
+    [JsonPropertyName("creditor")]
+    public string? Creditor { get; init; }
 }

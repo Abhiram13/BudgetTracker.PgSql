@@ -36,4 +36,17 @@ public class DueController : ControllerBase
             TraceId = ""
         });
     }
+
+    [HttpGet]
+    public async Task<ActionResult<ApiResponse<List<DueListDetailsDto>>>> GetAllDuesAsync()
+    {
+        List<DueListDetailsDto> result = await _dueService.GetListAsync();
+
+        return Ok(new ApiResponse<List<DueListDetailsDto>>
+        {
+            StatusCode =  HttpStatusCode.OK,
+            Result = result,
+            TraceId = ""
+        });
+    }
 }
