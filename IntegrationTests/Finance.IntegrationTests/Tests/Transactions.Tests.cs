@@ -261,6 +261,31 @@ public class TransactionsTests
             }
         }
     }
+
+    [Theory]
+    [ClassData(typeof(TransactionsInsertDueMetaTestData))]
+    public async Task InsertTransaction_DueInsert_TransactionsMeta_ValidResponse_Async(InsertTransactionDto payload)
+    {
+        using (IServiceScope scope = _fixture.Factory.CreateScope())
+        {
+            WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
+
+            await using (new TransactionDisposal(dbContext))
+            {
+                HttpResponseMessage httpResponse = await _client.PostAsJsonAsync(TRANSACTIONS_ROUTE, payload);
+                ApiResponse<InsertTransactionResponseDto>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<InsertTransactionResponseDto>>();
+                TransactionsMeta? meta = await dbContext.TransactionsMeta.Where(m => m.TransactionId == apiResponse!.Result.TransactionId).FirstOrDefaultAsync();
+                
+                Assert.NotNull(meta);
+                Assert.NotNull(apiResponse);
+                Assert.NotNull(apiResponse.Message);
+                Assert.NotEmpty(apiResponse.Message);
+                Assert.Equal(payload.DueId, meta.DueId);
+                Assert.Equal(HttpStatusCode.Created, httpResponse.StatusCode);
+                Assert.Equal(HttpStatusCode.Created, apiResponse.StatusCode);
+            }
+        }
+    }
     
     #endregion
 
