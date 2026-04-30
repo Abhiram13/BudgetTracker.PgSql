@@ -406,6 +406,25 @@ public class TransactionsInsertSecurityEdgeCasesTestData : TheoryData<InsertTran
     }
 }
 
+public class TransactionsInsertDueMetaTestData : TheoryTestData<InsertTransactionDto>
+{
+    public TransactionsInsertDueMetaTestData()
+    {
+        Add(new InsertTransactionDto
+        {
+            ActualAmount = 200,
+            Amount = 200,
+            CategoryId = 1,
+            Description = "First Due Transaction #1",
+            Type = TransactionType.Debit,
+            FromBank = 1,
+            ToBank = null,
+            Date = _currentDate,
+            DueId = 1,
+        });
+    }
+}
+
 #endregion
 
 public class TransactionsByDateInvalidOfFutureTestData : TheoryData<string>

@@ -84,6 +84,7 @@ public class FinanceTestWebApplicationFactory : WebApplicationFactory<Program>
                 .AddPostgresDbContext<MigrateDbContext>()
                 .AddScoped<CategoryBuilder>()
                 .AddScoped<BankBuilder>()
+                .AddScoped<DueBuilder>()
                 .AddSingleton<SubscriberClient>(_ => new Mock<SubscriberClient>().Object)
                 .AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme) // overriding server jwt config
                 .PostConfigure<IOptions<JwtConfiguration>>((options, config) =>

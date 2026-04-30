@@ -25,8 +25,10 @@ public class TransactionsIntegrationTestFixture : FinanceTestFixture, IAsyncLife
 {
     public Category TestCategory { get; private set; } = default!;
     public Bank TestBank { get; private set; } = default!;
+    public Due TestDue { get; private set; } = default!;
     private CategoryBuilder _categoryBuilder = default!;
     private BankBuilder _bankBuilder = default!;
+    private DueBuilder _dueBuilder = default!;
     
     public async Task InitializeAsync()
     {
@@ -37,8 +39,10 @@ public class TransactionsIntegrationTestFixture : FinanceTestFixture, IAsyncLife
             await dbContext.Database.MigrateAsync();
             _categoryBuilder = scope.ServiceProvider.GetRequiredService<CategoryBuilder>();
             _bankBuilder = scope.ServiceProvider.GetRequiredService<BankBuilder>();
+            _dueBuilder = scope.ServiceProvider.GetRequiredService<DueBuilder>();
             TestCategory = await _categoryBuilder.CreateCategoryAsync();
             TestBank = await _bankBuilder.CreateBankAsync();
+            TestDue = await _dueBuilder.CreateDueAsync();
             SetClientHeaders(jwtConfiguration);
         }
     }
@@ -56,6 +60,7 @@ public class TransactionsIntegrationTestFixture : FinanceTestFixture, IAsyncLife
             // If not every transactions tests access new dynamic bank or category id
             await dbContext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE categories RESTART IDENTITY CASCADE");
             await dbContext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE banks RESTART IDENTITY CASCADE");
+            await dbContext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE dues RESTART IDENTITY CASCADE");
         }
         
         DisposeFactoryAndClient();
