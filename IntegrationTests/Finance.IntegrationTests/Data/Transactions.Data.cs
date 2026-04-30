@@ -406,21 +406,52 @@ public class TransactionsInsertSecurityEdgeCasesTestData : TheoryData<InsertTran
     }
 }
 
-public class TransactionsInsertDueMetaTestData : TheoryTestData<InsertTransactionDto>
+public class TransactionsInsertDueMetaSuccessTestData : TheoryTestData<InsertTransactionDueIdMetaDataDef>
 {
-    public TransactionsInsertDueMetaTestData()
+    public TransactionsInsertDueMetaSuccessTestData()
     {
-        Add(new InsertTransactionDto
+        Add(new InsertTransactionDueIdMetaDataDef
         {
-            ActualAmount = 200,
-            Amount = 200,
-            CategoryId = 1,
-            Description = "First Due Transaction #1",
-            Type = TransactionType.Debit,
-            FromBank = 1,
-            ToBank = null,
-            Date = _currentDate,
-            DueId = 1,
+            ExpectedApiStatusCode = HttpStatusCode.Created,
+            ExpectedHttpStatusCode = HttpStatusCode.Created,
+            ExpectedMetaData = true,
+            Payload = new InsertTransactionDto
+            {
+                ActualAmount = 200,
+                Amount = 200,
+                CategoryId = 1,
+                Description = "First Due Transaction #1",
+                Type = TransactionType.Debit,
+                FromBank = 1,
+                ToBank = null,
+                Date = _currentDate,
+                DueId = 1,
+            }
+        });
+    }
+}
+
+public class TransactionsInsertDueMetaFailureTestData : TheoryTestData<InsertTransactionDueIdMetaDataDef>
+{
+    public TransactionsInsertDueMetaFailureTestData()
+    {
+        Add(new InsertTransactionDueIdMetaDataDef
+        {
+            ExpectedApiStatusCode = HttpStatusCode.BadRequest,
+            ExpectedHttpStatusCode = HttpStatusCode.BadRequest,
+            ExpectedMetaData = false,
+            Payload = new InsertTransactionDto
+            {
+                ActualAmount = 200,
+                Amount = 200,
+                CategoryId = 1,
+                Description = "First Invalid Due Transaction #1",
+                Type = TransactionType.Debit,
+                FromBank = 1,
+                ToBank = null,
+                Date = _currentDate,
+                DueId = 10, // invalid due id
+            }
         });
     }
 }

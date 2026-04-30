@@ -17,7 +17,7 @@ using IntegrationTests.Finance.Disposals;
 namespace IntegrationTests.Finance.Tests.Transactions;
 
 [Collection(nameof(DatabaseFixture))]
-public class TransactionsTests
+public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixture>
 {
     private readonly Category _testCategory;
     private readonly Bank _testBank;
@@ -261,10 +261,10 @@ public class TransactionsTests
             }
         }
     }
-
+    
     [Theory]
-    [ClassData(typeof(TransactionsInsertDueMetaTestData))]
-    public async Task InsertTransaction_DueInsert_TransactionsMeta_ValidResponse_Async(InsertTransactionDto payload)
+    [ClassData(typeof(TransactionsInsertDueMetaSuccessTestData))]
+    public async Task InsertTransaction_DueInsert_TransactionsMeta_SuccessResponse_Async(InsertTransactionDueIdMetaDataDef data)
     {
         using (IServiceScope scope = _fixture.Factory.CreateScope())
         {
@@ -272,17 +272,46 @@ public class TransactionsTests
 
             await using (new TransactionDisposal(dbContext))
             {
-                HttpResponseMessage httpResponse = await _client.PostAsJsonAsync(TRANSACTIONS_ROUTE, payload);
+                HttpResponseMessage httpResponse = await _client.PostAsJsonAsync(TRANSACTIONS_ROUTE, data.Payload);
                 ApiResponse<InsertTransactionResponseDto>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<InsertTransactionResponseDto>>();
                 TransactionsMeta? meta = await dbContext.TransactionsMeta.Where(m => m.TransactionId == apiResponse!.Result.TransactionId).FirstOrDefaultAsync();
                 
-                Assert.NotNull(meta);
                 Assert.NotNull(apiResponse);
                 Assert.NotNull(apiResponse.Message);
                 Assert.NotEmpty(apiResponse.Message);
-                Assert.Equal(payload.DueId, meta.DueId);
-                Assert.Equal(HttpStatusCode.Created, httpResponse.StatusCode);
-                Assert.Equal(HttpStatusCode.Created, apiResponse.StatusCode);
+                Assert.NotNull(apiResponse.Result);
+                Assert.Equal(data.ExpectedHttpStatusCode, httpResponse.StatusCode);
+                Assert.Equal(data.ExpectedApiStatusCode, apiResponse.StatusCode);
+                Assert.Equal(data.ExpectedMetaData, meta is not null);
+
+                if (data.ExpectedMetaData)
+                {
+                    Assert.Equal(meta!.DueId, data.Payload.DueId);
+                }
+            }
+        }
+    }
+    
+    [Theory]
+    [ClassData(typeof(TransactionsInsertDueMetaFailureTestData))]
+    public async Task InsertTransaction_DueInsert_TransactionsMeta_FailureResponse_Async(InsertTransactionDueIdMetaDataDef data)
+    {
+        using (IServiceScope scope = _fixture.Factory.CreateScope())
+        {
+            WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
+
+            await using (new TransactionDisposal(dbContext))
+            {
+                HttpResponseMessage httpResponse = await _client.PostAsJsonAsync(TRANSACTIONS_ROUTE, data.Payload);
+                ApiResponse? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse>();
+                int? metaDataCount = await dbContext.TransactionsMeta.CountAsync();
+                
+                Assert.NotNull(apiResponse);
+                Assert.NotNull(apiResponse.Message);
+                Assert.NotEmpty(apiResponse.Message);
+                Assert.Equal(0, metaDataCount);
+                Assert.Equal(data.ExpectedHttpStatusCode, httpResponse.StatusCode);
+                Assert.Equal(data.ExpectedApiStatusCode, apiResponse.StatusCode);
             }
         }
     }

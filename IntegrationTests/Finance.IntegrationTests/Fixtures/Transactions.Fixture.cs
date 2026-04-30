@@ -30,6 +30,8 @@ public class TransactionsIntegrationTestFixture : FinanceTestFixture, IAsyncLife
     private BankBuilder _bankBuilder = default!;
     private DueBuilder _dueBuilder = default!;
     
+    public TransactionsIntegrationTestFixture(FinanceTestWebApplicationFactory factory) : base(factory) { }
+    
     public async Task InitializeAsync()
     {
         using (IServiceScope scope = Factory.CreateScope())

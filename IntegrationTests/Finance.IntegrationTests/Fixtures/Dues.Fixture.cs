@@ -10,6 +10,8 @@ namespace IntegrationTests.Finance.Fixtures;
 
 public class DuesTestsFixture : FinanceTestFixture, IAsyncLifetime
 {
+    public DuesTestsFixture(FinanceTestWebApplicationFactory factory) : base(factory) { }
+    
     public async Task InitializeAsync()
     {
         using (IServiceScope scope = Factory.CreateScope())

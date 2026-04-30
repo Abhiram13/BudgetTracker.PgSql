@@ -1,3 +1,5 @@
+using IntegrationTests.Finance.Factory;
+
 namespace IntegrationTests.Finance.Fixtures;
 
 /// <summary>
@@ -22,9 +24,4 @@ namespace IntegrationTests.Finance.Fixtures;
 /// </list>
 /// </remarks>
 [CollectionDefinition(nameof(DatabaseFixture))]
-public abstract class DatabaseFixture : 
-    ICollectionFixture<TransactionsIntegrationTestFixture>, 
-    ICollectionFixture<CategoriesTestsFixture>, 
-    ICollectionFixture<BanksTestsFixture>,
-    ICollectionFixture<DuesTestsFixture>
-{ }
+public abstract class DatabaseFixture : ICollectionFixture<FinanceTestWebApplicationFactory> { }
