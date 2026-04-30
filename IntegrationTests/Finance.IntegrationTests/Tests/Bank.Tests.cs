@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace IntegrationTests.Finance.Tests.Banks;
 
 [Collection(nameof(DatabaseFixture))]
-public class BankTests
+public class BankTests : IClassFixture<BanksTestsFixture>
 {
     private readonly HttpClient _client;
     private readonly HttpClient _unAuthorizedClient;

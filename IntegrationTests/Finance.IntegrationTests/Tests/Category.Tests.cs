@@ -13,7 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace IntegrationTests.Finance.Tests.Categories;
 
 [Collection(nameof(DatabaseFixture))]
-public class CategoryTests
+public class CategoryTests : IClassFixture<CategoriesTestsFixture>
 {
     private readonly HttpClient _client;
     private readonly HttpClient _unAuthorisedClient;

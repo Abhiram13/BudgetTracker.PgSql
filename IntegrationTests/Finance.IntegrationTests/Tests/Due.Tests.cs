@@ -13,7 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace IntegrationTests.Finance.Tests.Dues;
 
 [Collection(nameof(DatabaseFixture))]
-public class DueTests
+public class DueTests : IClassFixture<BanksTestsFixture>
 {
     private readonly HttpClient _client;
     private readonly DuesTestsFixture _fixture;

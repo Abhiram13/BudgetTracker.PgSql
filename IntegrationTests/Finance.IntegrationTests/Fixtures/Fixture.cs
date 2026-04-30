@@ -14,12 +14,13 @@ namespace IntegrationTests.Finance.Fixtures;
 
 public abstract class FinanceTestFixture
 {
-    public FinanceTestWebApplicationFactory Factory { get; } = new FinanceTestWebApplicationFactory();
+    public FinanceTestWebApplicationFactory Factory { get; }
     public HttpClient Client { get; }
     public HttpClient UnAuthorizedClient { get; }
 
-    protected FinanceTestFixture()
+    protected FinanceTestFixture(FinanceTestWebApplicationFactory factory)
     {
+        Factory = factory;
         Client = Factory.CreateClient();
         UnAuthorizedClient = Factory.CreateClient();
     }
