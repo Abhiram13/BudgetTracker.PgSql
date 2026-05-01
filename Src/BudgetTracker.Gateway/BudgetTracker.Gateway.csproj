@@ -25,12 +25,12 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <DependentUpon>Program.cs</DependentUpon>
         </None>
-        <None Include="..\sharedsettings.Development.json">
+        <None Include="..\sharedsettings.Development.json" Condition="Exists('..\sharedsettings.Development.json')">
             <Link>sharedsettings.Development.json</Link>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <DependentUpon>Program.cs</DependentUpon>
         </None>
-        <None Include="..\sharedsettings.GoogleCloud.json">
+        <None Include="..\sharedsettings.GoogleCloud.json" Condition="Exists('..\sharedsettings.GoogleCloud.json')">
             <Link>sharedsettings.GoogleCloud.json</Link>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <DependentUpon>Program.cs</DependentUpon>
