@@ -67,7 +67,7 @@ public class TransactionController : ControllerBase
     public async Task<ActionResult<ApiResponse<InsertTransactionResponseDto>>> InsertAsync([FromBody] InsertTransactionDto payload)
     {
         InsertTransactionResponseDto response = await _transactionService.InsertTransactionAsync(payload);
-        return StatusCode(201, new ApiResponse<InsertTransactionResponseDto>
+        return StatusCode(StatusCodes.Status201Created, new ApiResponse<InsertTransactionResponseDto>
         {
             StatusCode = System.Net.HttpStatusCode.Created,
             TraceId = _traceProvider.TraceId,

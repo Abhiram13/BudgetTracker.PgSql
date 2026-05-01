@@ -3,6 +3,7 @@ using Abhiram.Extensions.DotEnv;
 using Abhiram.Abstractions.Logging;
 using Abhiram.Secrets.Configuration;
 using BudgetTracker.Finance.Extensions;
+using BudgetTracker.Shared.Models;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 DotEnvironmentVariables.Load();
@@ -26,6 +27,7 @@ builder.WebHost.ConfigureKestrel((_, server) => {
 WebApplication app = builder.Build();
 
 app.UseApplicationServices();
+app.MapGet("/", () => new ApiResponse { StatusCode = HttpStatusCode.OK, Message = "This is Downstream Finance API services" });
 app.Run();
 
 namespace BudgetTracker.Finance

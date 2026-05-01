@@ -31,9 +31,9 @@ steps:
       - '$_LOCATION'
       - '--platform'
       - 'managed'
-      - --allow-unauthenticated
+      - '--allow-unauthenticated'
       - '--set-env-vars'
-      - 'GOOGLE_CLOUD_PROJECT_ID=$_PROJECT_ID'
+      - 'GOOGLE_CLOUD_PROJECT_ID=$_PROJECT_ID,ASPNETCORE_ENVIRONMENT=GoogleCloud'
 
 # Optional: declare the image for metadata
 images:
