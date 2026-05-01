@@ -36,7 +36,11 @@ steps:
       - 'managed'
       - '--allow-unauthenticated'
       - '--set-env-vars'
-      - 'GOOGLE_CLOUD_PROJECT_ID=$_PROJECT_ID,ASPNETCORE_ENVIRONMENT=GoogleCloud'
+      - 'GOOGLE_CLOUD_PROJECT_ID=$_PROJECT_ID'
+      - '--set-env-vars'
+      - 'ASPNETCORE_ENVIRONMENT=GoogleCloud'
+      - '--set-env-vars'
+      - 'ReverseProxy__Clusters__finance-cluster__Destinations__instance-01__Address=$_FINANCE_ROUTE'      
 
 # Optional: declare the image for metadata
 images:
