@@ -72,8 +72,8 @@ internal static class ServiceExtension
 
         private IServiceCollection AddBackgroundServices()
         {
-            serviceCollection.AddHostedService<OutboxProcessordWorker>();
-            serviceCollection.AddHostedService<SubscriberBackgroundWorker>();
+            // serviceCollection.AddHostedService<OutboxProcessordWorker>();
+            // serviceCollection.AddHostedService<SubscriberBackgroundWorker>();
         
             return serviceCollection;
         }
