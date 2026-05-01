@@ -55,6 +55,7 @@ builder.Services.AddReverseProxy()
             JwtConfiguration secrets = context.HttpContext.RequestServices.GetRequiredService<IOptions<JwtConfiguration>>().Value;
             secrets.Audience = clusterId;
             string token = JwtFactory.CreateToken(secrets, scope: SharedConstants.Jwt.Scopes.DOWNSTREAM);
+            Console.WriteLine(token);
             context.ProxyRequest.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, token);
             return ValueTask.CompletedTask;
         });
@@ -89,6 +90,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapReverseProxy().RequireAuthorization();
 app.UseHttpsRedirection();
-app.MapGet("/", () => new ApiResponse { StatusCode = HttpStatusCode.OK, Message = "This is YARP API Gateway" });
-app.MapControllers();
+// app.MapGet("/", () => new ApiResponse { StatusCode = HttpStatusCode.OK, Message = "This is YARP API Gateway" });
+// app.MapControllers();
 app.Run();
