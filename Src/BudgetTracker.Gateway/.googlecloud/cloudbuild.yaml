@@ -4,12 +4,15 @@ steps:
     id: 'Docker Build'
     args:
       - 'build'
+      - '--no-cache'
       - '-t'
       - '$_LOCATION-docker.pkg.dev/$_PROJECT_ID/$_REPOSITORY/$_IMAGE:latest'
       - '-f'
       - 'Src/BudgetTracker.Gateway/Dockerfile'
       - '--build-arg'
       - 'NUGET_PAT=$_NUGET_PAT'
+      - '--build-arg'
+      - 'APP_ENV=GoogleCloud'
       - '.'
 
   # Step 2: Push the image to Container Registry

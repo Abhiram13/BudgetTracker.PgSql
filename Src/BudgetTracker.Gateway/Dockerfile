@@ -1,19 +1,32 @@
 # Use a build argument for the PAT
 ARG NUGET_PAT
 ARG DOTNET_VERSION=10.0
+ARG APP_ENV
 
 FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_VERSION} AS build-env
+
+ARG APP_ENV
+
+RUN echo "$APP_ENV"
+
+RUN if [ -z "$APP_ENV" ]; then \
+    echo "ERROR: APP_ENV build argument is required (e.g., --build-arg APP_ENV=Production)"; \
+    exit 1; \
+fi
+
 WORKDIR /app
 
 COPY BudgetTracker.sln ./
 COPY Directory.Build.props ./
 COPY Directory.Packages.props ./
-
 COPY Src/BudgetTracker.Gateway/ ./BudgetTracker.Gateway/
 COPY Src/BudgetTracker.Shared/ ./BudgetTracker.Shared/
+COPY Src/sharedsettings.json ./sharedsettings.json
+COPY Src/sharedsettings.${APP_ENV}.json ./sharedsettings.${APP_ENV}.json
 
 # Re-declare the build argument to make it available in this stage
 ARG NUGET_PAT
+ARG DOTNET_VERSION=10.0
 
 # Add the private package source using the build argument
 RUN dotnet nuget add source --name "github" "https://nuget.pkg.github.com/Abhiram13/index.json" --username Abhiram13 --password "${NUGET_PAT}" --store-password-in-clear-text
