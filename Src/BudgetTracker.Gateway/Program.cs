@@ -89,4 +89,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapReverseProxy().RequireAuthorization();
 app.UseHttpsRedirection();
+app.MapGet("/", () => new ApiResponse { StatusCode = HttpStatusCode.OK, Message = "This is YARP API Gateway" });
+app.MapControllers();
 app.Run();

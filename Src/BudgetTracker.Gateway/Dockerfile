@@ -1,7 +1,8 @@
 # Use a build argument for the PAT
 ARG NUGET_PAT
+ARG DOTNET_VERSION=10.0
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_VERSION} AS build-env
 WORKDIR /app
 
 COPY BudgetTracker.sln ./
@@ -29,7 +30,7 @@ RUN dotnet publish BudgetTracker.Gateway/BudgetTracker.Gateway.csproj -c Release
 # RUN dotnet publish -c Release -o out
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+FROM mcr.microsoft.com/dotnet/aspnet:${DOTNET_VERSION}
 WORKDIR /app
 # COPY --from=build-env /app/out .
 COPY --from=build-env /out ./
