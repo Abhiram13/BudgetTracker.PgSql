@@ -41,7 +41,7 @@ steps:
       - 'ASPNETCORE_ENVIRONMENT=GoogleCloud'
       - '--set-env-vars'
       - 'ReverseProxy__Clusters__finance-cluster__Destinations__instance-01__Address=$_FINANCE_ROUTE'      
-      - '--vpc-egress=private-ranges-only'
+      - '--vpc-egress=all-traffic'
       - '--network=budget-tracker-asia'
       - '--subnet=asia-south-sub-net'
 
