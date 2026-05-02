@@ -22,8 +22,8 @@ public static class ServiceExtension
     {
         AddScopedServices(serviceCollection);
         AddDbContext(serviceCollection);
-        serviceCollection.AddAuthentication().AddScheme<YarpApiKeySchemaOptions, YarpApiKeyHandler>(YarpApiKeySchemaOptions.DefaultSchema, _ => {});
-        serviceCollection.AddAuthorization();
+        // serviceCollection.AddAuthentication().AddScheme<YarpApiKeySchemaOptions, YarpApiKeyHandler>(YarpApiKeySchemaOptions.DefaultSchema, _ => {});
+        // serviceCollection.AddAuthorization();
         serviceCollection.AddEndpointsApiExplorer();
         serviceCollection.AddSwaggerGen();
         serviceCollection.AddControllers().ConfigureApiBehaviorOptions(options =>
@@ -59,7 +59,8 @@ public static class ServiceExtension
             string? postgresDatabase = secrets.Database;
             string? postgresUsername = secrets.Username;
             string? postgresPassword = secrets.Password;
-            string connectionString = $"Host={postgresHost};Port={postgresPort};Database={postgresDatabase};Username={postgresUsername};Password={postgresPassword}";
+            // string connectionString = $"Host={postgresHost};Port={postgresPort};Database={postgresDatabase};Username={postgresUsername};Password={postgresPassword}";
+            string connectionString = $"Host=localhost;Port=5432;Database=BudgetTracker.Finance;Username=finance_migrate;Password=migrate_pass_secured_345";
             options.UseNpgsql(connectionString);
         });
     }

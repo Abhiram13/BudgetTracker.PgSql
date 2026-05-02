@@ -14,7 +14,7 @@ using BudgetTracker.Warehouse.Services;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 DotEnvironmentVariables.Load();
 
-builder.AddConsoleGoogleSeriLog(template: "[{Level:u3}] [Source: {SourceContext}] {Message:lj}{NewLine}{Exception}");
+builder.AddConsoleGoogleSeriLog();
 builder.Configuration.AddSecrets(environment: builder.Environment, optional: false);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

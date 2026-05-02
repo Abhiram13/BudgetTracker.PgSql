@@ -16,7 +16,7 @@ using OpenTelemetry.Trace;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 DotEnvironmentVariables.Load();
 
-builder.AddConsoleGoogleSeriLog(template: "[{Level:u3}] [Source: {SourceContext}] {Message:lj}{NewLine}{Exception}");
+builder.AddConsoleGoogleSeriLog();
 builder.Logging.AddFilter("Yarp.ReverseProxy.Forwarder.HttpForwarder", LogLevel.Warning);
 builder.Environment.EnvironmentName = "Development";
 builder.Configuration.AddSecrets(environment: builder.Environment, optional: false);
@@ -49,12 +49,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseRouting();
+app.UseMiddleware<ApiKeyMiddleware>();
+app.UseMiddleware<ActivityLoggerMiddleware>();
 app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapReverseProxy().RequireAuthorization();
 app.UseHttpsRedirection();
-app.UseMiddleware<ActivityLoggerMiddleware>();
-app.UseMiddleware<ApiKeyMiddleware>();
 app.UseMiddleware<BadGatewayMiddleware>();
 app.Run();

@@ -9,20 +9,21 @@ using BudgetTracker.Finance.Services;
 using BudgetTracker.Finance.Interfaces;
 using BudgetTracker.Finance.Models;
 using BudgetTracker.Shared.Models;
-// using Google.Cloud.Diagnostics.AspNetCore3;
-using Google.Cloud.Diagnostics.Common;
+// using Google.Apis.Auth.OAuth2;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
-using Grafana.OpenTelemetry;
 using OpenTelemetry;
+using OpenTelemetry.Exporter.OpenTelemetryProtocol;
+// using Google.Cloud.Diagnostics.AspNetCore3;
+// using Google.Cloud.Diagnostics.Common;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 DotEnvironmentVariables.Load();
 
-// builder.AddConsoleGoogleSeriLog(template: "[{Level:u3}] [Source: {SourceContext}] {Message:lj}{NewLine}{Exception}");
+builder.AddConsoleGoogleSeriLog();
 builder.Environment.EnvironmentName = "Development";
 builder.Configuration.AddSecrets(environment: builder.Environment, optional: false);
 builder.Services.AddOptions<AppSecrets>().Bind(builder.Configuration).ValidateDataAnnotations().ValidateOnStart();
@@ -35,7 +36,8 @@ builder.Services.AddSwaggerGen();
 // {
 //     ServiceOptions = new TraceServiceOptions()
 //     {
-//         ProjectId = ""
+//         ProjectId = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT_ID"),
+//         Options = TraceOptions.Create(qpsSampleRate: 1.0)
 //     }
 // });
 // builder.Services.AddGoogleTrace(new TraceServiceOptions
@@ -82,6 +84,64 @@ builder.Services.AddSwaggerGen();
 //     .ConfigureResource(resource => resource.AddService("budget-tracker-service"))
 //     .WithTracing(tracing => tracing.AddAspNetCoreInstrumentation().AddConsoleExporter())
 //     .WithMetrics(metrics => metrics.AddAspNetCoreInstrumentation().AddConsoleExporter());
+
+// builder.Services.AddOpenTelemetry()
+//     .WithTracing(tracing => tracing.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation().AddOtlpExporter(options => options.Endpoint = new Uri("https://telemetry.googleapis.com")));
+
+// async Task<string> GetAccessToken()
+// {
+//     GoogleCredential? credential = await GoogleCredential.GetApplicationDefaultAsync();
+//     string url = "https://www.googleapis.com/auth/cloud-platform";
+//     var token = await credential?.GetA
+//
+//     return token;
+// }
+AppContext.SetSwitch("OpenTelemetrySdkEventSource", true);
+
+builder.Logging.AddFilter("OpenTelemetry", LogLevel.Trace);
+builder.Services.AddOpenTelemetry()
+    .WithTracing(trace =>
+    {
+        trace
+            .ConfigureResource(resource => resource
+                    .AddService("budget-tracker-finance") // Give it a clear name!
+            )
+            // .AddSource("test-span")
+            // .SetSampler(new AlwaysOnSampler())
+            .AddAspNetCoreInstrumentation()
+            // .AddConsoleExporter()
+            // .AddHttpClientInstrumentation()
+            .AddHttpClientInstrumentation(options =>
+            {
+                // This is the CRITICAL part:
+                // Don't trace calls to Google APIs (Logging, Trace, etc.)
+                options.FilterHttpRequestMessage = (request) => !request.RequestUri.Host.Contains("googleapis.com");
+            })
+            .AddOtlpExporter(o =>
+            {
+                // o.Endpoint = new Uri("https://telemetry.googleapis.com/v1/traces");
+                o.Endpoint = new Uri("http://localhost:9999");
+                o.Protocol = OtlpExportProtocol.HttpProtobuf;
+                // o.ExportProcessorType = ExportProcessorType.Simple;
+                // o.HttpClientFactory = () =>
+                // {
+                //     HttpClient client = new HttpClient();
+                //
+                //     client.DefaultRequestHeaders.TryAddWithoutValidation(
+                //         "X-Debug-Mode", "true");
+                //
+                //     return client;
+                // };
+            });
+        // .AddOtlpExporter(options =>
+        // {
+        //     options.Endpoint = new Uri("https://telemetry.googleapis.com/v1/traces");
+        //     options.Protocol = OtlpExportProtocol.HttpProtobuf;
+        //
+        //     // IMPORTANT: don't hardcode token in real apps
+        //     // options.Headers = $"Authorization=Bearer {GetAccessToken()}";
+        // });
+    });
 
 #endregion
 

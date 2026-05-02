@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using BudgetTracker.Finance.Services;
 using BudgetTracker.Finance.Entities;
 using BudgetTracker.Finance.Models;
@@ -10,7 +11,7 @@ using BudgetTracker.Shared.Security;
 namespace BudgetTracker.Finance.Controllers;
 
 [ApiController]
-[Authorize(AuthenticationSchemes = YarpApiKeySchemaOptions.DefaultSchema)]
+// [Authorize(AuthenticationSchemes = YarpApiKeySchemaOptions.DefaultSchema)]
 [Route("api/transactions")]
 public class TransactionController : ControllerBase
 {
@@ -51,6 +52,13 @@ public class TransactionController : ControllerBase
     public async Task<IActionResult> CountOfTransactionsAsync([FromQuery] int? month, [FromQuery] int? year)
     {
         int count = await _transactionService.CountOfAllTransactionsAsync(month, year);
+        
+        var source = new ActivitySource("test-span");
+
+        using (var activity = source.StartActivity("manual-test"))
+        {
+            Console.WriteLine("Manual span created");
+        }
 
         return Ok(new ApiResponse<int>
         {
