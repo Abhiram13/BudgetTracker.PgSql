@@ -5,6 +5,7 @@ using BudgetTracker.Shared.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 
 namespace BudgetTracker.Shared.Configurations;
@@ -82,7 +83,7 @@ public class ConfigureJwtOptions : IConfigureNamedOptions<JwtBearerOptions>
             ValidateLifetime = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.SigningKey)),
             ValidateIssuerSigningKey = false, // TODO: Setting this to false to verify google oauth. This is temporary.
-            SignatureValidator = (token, _) => new JwtSecurityToken(token),
+            SignatureValidator = (token, _) => new JsonWebToken(token),
         };
     }
 }
