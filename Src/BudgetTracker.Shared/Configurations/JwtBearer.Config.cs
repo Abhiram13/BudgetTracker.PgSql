@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using BudgetTracker.Shared.Constants;
 using BudgetTracker.Shared.Models;
@@ -81,6 +82,7 @@ public class ConfigureJwtOptions : IConfigureNamedOptions<JwtBearerOptions>
             ValidateLifetime = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.SigningKey)),
             ValidateIssuerSigningKey = false, // TODO: Setting this to false to verify google oauth. This is temporary.
+            SignatureValidator = (token, _) => new JwtSecurityToken(token),
         };
     }
 }

@@ -1,5 +1,6 @@
 using BudgetTracker.Shared.Configurations;
 using BudgetTracker.Shared.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,7 +43,23 @@ public static class SharedServiceExtensions
             collection
                 .ConfigureOptions<ConfigureJwtOptions>()
                 .AddAuthentication()
-                .AddJwtBearer();
+                .AddJwtBearer(options =>
+                {
+                    options.IncludeErrorDetails = true;
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnAuthenticationFailed = context =>
+                        {
+                            Console.WriteLine($"[AUTH FAILED] {context.Exception.Message}");
+                            return Task.CompletedTask;
+                        },
+                        OnTokenValidated = _ => 
+                        {
+                            Console.WriteLine("[AUTH SUCCESS] Token is valid!");
+                            return Task.CompletedTask;
+                        }
+                    };
+                });
             
             return collection;
         }
