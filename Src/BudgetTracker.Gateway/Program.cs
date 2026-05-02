@@ -15,7 +15,7 @@ using BudgetTracker.Shared.Extensions;
 using BudgetTracker.Shared.Interfaces;
 using BudgetTracker.Shared.Models;
 using BudgetTracker.Shared.Security;
-// using BudgetTracker.Warehouse.Services;
+using BudgetTracker.Gateway.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Yarp.ReverseProxy.Model;
 using Yarp.ReverseProxy.Transforms;
@@ -42,24 +42,15 @@ builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"))
     .AddTransforms(transform =>
     {
-        transform.AddRequestTransform(context =>
+        if (builder.Environment.IsDevelopment())
         {
-            RouteModel cluster = context.HttpContext.GetRouteModel();
-            string? clusterId = cluster.Config.ClusterId;
+            transform.ConfigJwtAuthentication();
+        }
 
-            if (string.IsNullOrEmpty(clusterId))
-            {
-                return ValueTask.CompletedTask; // TODO: Check how to verify cluster id is valid 
-            }
-            
-            // FIX: Since this service is not getting registerd without IOptions<T>, silent gateway error was thrown.
-            JwtConfiguration secrets = context.HttpContext.RequestServices.GetRequiredService<IOptions<JwtConfiguration>>().Value;
-            secrets.Audience = clusterId;
-            string token = JwtFactory.CreateToken(secrets, scope: SharedConstants.Jwt.Scopes.DOWNSTREAM);
-            Console.WriteLine(token);
-            context.ProxyRequest.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, token);
-            return ValueTask.CompletedTask;
-        });
+        if (builder.Environment.IsEnvironment("GoogleCloud"))
+        {
+            transform.ConfigGoogleOAuth();
+        }
     });
 builder.Services.AddAuthentication().AddScheme<ApiKeySchemaOptions, ApiKeyHandler>(ApiKeySchemaOptions.DefaultSchema, _ => {});
 builder.Services.AddScoped<TraceIdProvider>();
