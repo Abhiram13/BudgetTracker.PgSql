@@ -46,19 +46,6 @@ public static class SharedServiceExtensions
                 .AddJwtBearer(options =>
                 {
                     options.IncludeErrorDetails = true;
-                    options.Events = new JwtBearerEvents
-                    {
-                        OnAuthenticationFailed = context =>
-                        {
-                            Console.WriteLine($"[AUTH FAILED] {context.Exception.Message}");
-                            return Task.CompletedTask;
-                        },
-                        OnTokenValidated = _ => 
-                        {
-                            Console.WriteLine("[AUTH SUCCESS] Token is valid!");
-                            return Task.CompletedTask;
-                        }
-                    };
                 });
             
             return collection;

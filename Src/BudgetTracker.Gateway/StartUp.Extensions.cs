@@ -31,7 +31,6 @@ public static class StartUpExtensions
                 JwtConfiguration secrets = context.HttpContext.RequestServices.GetRequiredService<IOptions<JwtConfiguration>>().Value;
                 secrets.Audience = clusterId;
                 string token = JwtFactory.CreateToken(secrets, scope: SharedConstants.Jwt.Scopes.DOWNSTREAM);
-                Console.WriteLine(token);
                 context.ProxyRequest.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, token);
                 return ValueTask.CompletedTask;
             });
@@ -46,16 +45,12 @@ public static class StartUpExtensions
                 RouteModel cluster = context.HttpContext.GetRouteModel();
                 string? address = cluster.Cluster?.Destinations.Values.FirstOrDefault()?.Model.Config.Address;
                 
-                Console.WriteLine("CLUSTER ADDRESS: {0}", address);
-                
                 if (!string.IsNullOrEmpty(address))
                 {
                     string audience = address.TrimEnd('/');
-                    Console.WriteLine("AUDIENCE ADDED: {0}", audience);
                     GoogleCredential? credential = await GoogleCredential.GetApplicationDefaultAsync();
                     OidcToken token = await credential?.GetOidcTokenAsync(OidcTokenOptions.FromTargetAudience(audience))!;
                     string jwt = await token.GetAccessTokenAsync();
-                    Console.WriteLine("CLUSTER JWT: {0}", jwt);
                     context.ProxyRequest.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, jwt);
                 }
             });
