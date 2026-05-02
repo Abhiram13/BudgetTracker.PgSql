@@ -41,6 +41,9 @@ steps:
       - 'ASPNETCORE_ENVIRONMENT=GoogleCloud'
       - '--set-env-vars'
       - 'ReverseProxy__Clusters__finance-cluster__Destinations__instance-01__Address=$_FINANCE_ROUTE'      
+      - '--vpc-egress=private-ranges-only'
+      - '--network=budget-tracker-asia'
+      - '--subnet=asia-south-sub-net'
 
 # Optional: declare the image for metadata
 images:
