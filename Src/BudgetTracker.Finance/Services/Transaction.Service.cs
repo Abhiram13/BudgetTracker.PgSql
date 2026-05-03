@@ -4,6 +4,7 @@ using BudgetTracker.Finance.Entities;
 using BudgetTracker.Finance.Models;
 using BudgetTracker.Shared.Models;
 using System.Text.Json;
+using BudgetTracker.Finance.Configurations;
 using BudgetTracker.Finance.Enums;
 using BudgetTracker.Shared.Exceptions;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +27,7 @@ public class TransactionService
     private readonly OutboxService _outboxService;
     private readonly WriteDbContext _writeDbContext;
     private readonly DueService _dueService;
+    private readonly AppSecrets _secrets;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TransactionService"/> class.
@@ -42,7 +44,8 @@ public class TransactionService
         TransactionsMetaService transactionsMetaService,
         WriteDbContext writeDbContext,
         OutboxService outboxService,
-        DueService dueService
+        DueService dueService,
+        AppSecrets secrets
     ) {
         _repository = repository;
         _logger = logger;
@@ -50,6 +53,7 @@ public class TransactionService
         _writeDbContext = writeDbContext;
         _outboxService = outboxService;
         _dueService = dueService;
+        _secrets = secrets;
     }
 
     private void InsertValidations(TransactionDto payload)
@@ -175,6 +179,7 @@ public class TransactionService
     /// <inheritdoc cref="ITransactionRepository.CountOfAllTransactionsAsync"/>
     public async Task<int> CountOfAllTransactionsAsync(int? month, int? year)
     {
+        _logger.LogWarning("Count Api Called. The TestConfig is = {Value}", _secrets.TestConfig?.TestValue);
         return await _repository.CountOfAllTransactionsAsync(month, year);
     }
 
