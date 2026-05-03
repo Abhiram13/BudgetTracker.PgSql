@@ -57,6 +57,7 @@ public class TransactionsIntegrationTestFixture : FinanceTestFixture, IAsyncLife
 
             await dbContext.Categories.ExecuteDeleteAsync();
             await dbContext.Banks.ExecuteDeleteAsync();
+            await dbContext.Dues.ExecuteDeleteAsync();
             
             // since hard-coded banks & category ids "1" and "2" are used in transaction tests, resetting the banks & category table identity.
             // If not every transactions tests access new dynamic bank or category id
@@ -65,6 +66,6 @@ public class TransactionsIntegrationTestFixture : FinanceTestFixture, IAsyncLife
             await dbContext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE dues RESTART IDENTITY CASCADE");
         }
         
-        DisposeFactoryAndClient();
+        DisposeClients();
     }
 }

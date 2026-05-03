@@ -27,7 +27,6 @@ public class TransactionService
     private readonly OutboxService _outboxService;
     private readonly WriteDbContext _writeDbContext;
     private readonly DueService _dueService;
-    private readonly AppSecrets _secrets;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TransactionService"/> class.
@@ -44,8 +43,7 @@ public class TransactionService
         TransactionsMetaService transactionsMetaService,
         WriteDbContext writeDbContext,
         OutboxService outboxService,
-        DueService dueService,
-        AppSecrets secrets
+        DueService dueService
     ) {
         _repository = repository;
         _logger = logger;
@@ -53,7 +51,6 @@ public class TransactionService
         _writeDbContext = writeDbContext;
         _outboxService = outboxService;
         _dueService = dueService;
-        _secrets = secrets;
     }
 
     private void InsertValidations(TransactionDto payload)

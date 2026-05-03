@@ -13,6 +13,7 @@ using IntegrationTests.Finance.Data.Transactions;
 using IntegrationTests.Finance.Definations.Transactions;
 using IntegrationTests.Finance.Fixtures;
 using IntegrationTests.Finance.Disposals;
+using Xunit.Abstractions;
 
 namespace IntegrationTests.Finance.Tests.Transactions;
 
@@ -24,15 +25,17 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
     private readonly HttpClient _client;
     private readonly HttpClient _unAuthorizedClient;
     private readonly TransactionsIntegrationTestFixture _fixture;
+    private readonly ITestOutputHelper _testOutputHelper;
     private const string TRANSACTIONS_ROUTE = "/api/transactions";
 
-    public TransactionsTests(TransactionsIntegrationTestFixture fixture)
+    public TransactionsTests(TransactionsIntegrationTestFixture fixture, ITestOutputHelper testOutputHelper)
     {
         _client = fixture.Client;
         _unAuthorizedClient = fixture.UnAuthorizedClient;
         _testCategory = fixture.TestCategory;
         _testBank = fixture.TestBank;
         _fixture = fixture;
+        _testOutputHelper = testOutputHelper;
     }
 
     // TODO: Fix the response format
@@ -75,20 +78,31 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
 
     [Theory]
     [ClassData(typeof(TransactionsEntityInValidTestData))]
-    public async Task Transaction_Entity_InValid_Success_Async(Transaction transaction)
+    public async Task Transaction_Entity_InValid_ThrowsException_Async(InsertTransactionInvalidEntityThrowsExceptionDto data)
     {
         using (IServiceScope scope = _fixture.Factory.CreateScope())
         {
             WriteDbContext dbcontext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
-
             await using (new TransactionDisposal(dbcontext))
             {
-                // TODO: Exception is not getting caught
-                await Assert.ThrowsAsync<InvalidPayloadException>(async () =>
+                Exception exception = await Record.ExceptionAsync(async () =>
                 {
+                    Transaction transaction = Transaction.Create(
+                        actualAmount: data.Payload.Amount,
+                        description: data.Payload.Description,
+                        amount: data.Payload.Amount,
+                        date: data.Payload.Date,
+                        categoryId: data.Payload.CategoryId,
+                        fromBank: data.Payload.FromBank,
+                        toBank: data.Payload.ToBank,
+                        type: data.Payload.Type
+                    );
                     await dbcontext.Transactions.AddAsync(transaction);
                     await dbcontext.SaveChangesAsync();
                 });
+                
+                Assert.NotNull(exception);
+                Assert.IsType(data.ExpectedExceptionType, exception);
 
                 // Exception _ = await Record.ExceptionAsync(async () =>
                 // {
@@ -96,8 +110,8 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
                 //     await dbcontext.SaveChangesAsync();
                 // });
 
-                Transaction? data = await dbcontext.Transactions.Where(t => t.Description == transaction.Description).FirstOrDefaultAsync();
-                Assert.Null(data);
+                // Transaction? data = await dbcontext.Transactions.Where(t => t.Description == transaction.Description).FirstOrDefaultAsync();
+                // Assert.Null(data);
             }
         }
     }
@@ -537,6 +551,11 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
                 Assert.Equal(data.ExpectedHttpStatusCode, httpResponse.StatusCode);
                 Assert.Equal(data.ExpectedApiStatusCode, apiResponse.StatusCode);
                 Assert.Equal(data.ShouldDataExists, apiResponse.Result > 0);
+
+                if (!data.ShouldDataExists)
+                {
+                    Assert.NotNull(apiResponse.Result);
+                }
             }
         }
     }

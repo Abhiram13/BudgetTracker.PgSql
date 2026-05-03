@@ -31,6 +31,6 @@ public class DuesTestsFixture : FinanceTestFixture, IAsyncLifetime
             await dbContext.Dues.ExecuteDeleteAsync();
         }
         
-        DisposeFactoryAndClient();
+        DisposeClients();
     }
 }

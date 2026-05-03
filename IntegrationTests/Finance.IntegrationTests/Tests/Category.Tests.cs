@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using BudgetTracker.Finance;
 using BudgetTracker.Finance.Entities;
+using BudgetTracker.Shared.Exceptions;
 using BudgetTracker.Shared.Models;
 using IntegrationTests.Finance.Data.Categories;
 using IntegrationTests.Finance.Definations.Categories;
@@ -51,7 +52,7 @@ public class CategoryTests : IClassFixture<CategoriesTestsFixture>
     
     [Theory]
     [ClassData(typeof(CategoryEntityInValidTestData))]
-    public async Task Insert_Category_Entity_InValid_Fail_Async(string categoryName)
+    public async Task Insert_Category_Entity_InValid_ThrowsException_Async(string categoryName)
     {
         using (IServiceScope scope = _fixture.Factory.CreateScope())
         {
@@ -59,16 +60,14 @@ public class CategoryTests : IClassFixture<CategoriesTestsFixture>
             
             await using (new CategoryDisposal(dbcontext))
             {
-                Category category = Category.Create(categoryName);
-
-                await Assert.ThrowsAsync<DbUpdateException>(async () =>
+                await Assert.ThrowsAsync<InvalidPayloadException>(async () =>
                 {
+                    Category category = Category.Create(categoryName);
                     await dbcontext.Categories.AddAsync(category);
                     await dbcontext.SaveChangesAsync();
                 });
                 
                 Category? data = await dbcontext.Categories.Where(c => c.Name == categoryName).FirstOrDefaultAsync();
-                
                 Assert.Null(data);
             }
         }

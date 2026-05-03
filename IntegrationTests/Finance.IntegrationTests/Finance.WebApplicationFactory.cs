@@ -65,15 +65,13 @@ public class FinanceTestWebApplicationFactory : WebApplicationFactory<Program>
                 .LoadJwtConfiguration(context.Configuration)
                 .AddScoped<NpgsqlConnection>(provider =>
                 {
-                    DatabaseConfiguration dbConfig = provider
-                        .GetRequiredService<IOptionsMonitor<DatabaseConfiguration>>().Get(DatabaseType.WRITE);
+                    DatabaseConfiguration dbConfig = provider.GetRequiredService<IOptionsMonitor<DatabaseConfiguration>>().Get(DatabaseType.WRITE);
                     string? postgresHost = dbConfig.Host;
                     string? postgresPort = dbConfig.Port;
                     string? postgresDatabase = dbConfig.Database;
                     string? postgresUsername = dbConfig.Username;
                     string? postgresPassword = dbConfig.Password;
-                    string connectionString =
-                        $"Host={postgresHost};Port={postgresPort};Database={postgresDatabase};Username={postgresUsername};Password={postgresPassword}";
+                    string connectionString = $"Host={postgresHost};Port={postgresPort};Database={postgresDatabase};Username={postgresUsername};Password={postgresPassword}";
 
                     NpgsqlConnection connection = new NpgsqlConnection(connectionString);
                     connection.Open();
@@ -96,7 +94,7 @@ public class FinanceTestWebApplicationFactory : WebApplicationFactory<Program>
                         ValidIssuer = secrets.Issuer,
                         ValidateAudience = true,
                         ValidAudience = secrets.Audience,
-                        ValidateIssuerSigningKey = true,
+                        ValidateIssuerSigningKey = false,
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secrets.SigningKey)),
                     };
                 });

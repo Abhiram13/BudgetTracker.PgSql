@@ -28,10 +28,9 @@ public class CategoriesTestsFixture : FinanceTestFixture, IAsyncLifetime
         using (IServiceScope scope = Factory.CreateScope())
         {
             WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
-
             await dbContext.Categories.ExecuteDeleteAsync();
         }
         
-        DisposeFactoryAndClient();
+        DisposeClients();
     }
 }

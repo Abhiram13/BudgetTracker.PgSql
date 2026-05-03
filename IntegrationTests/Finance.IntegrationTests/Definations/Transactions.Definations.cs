@@ -51,3 +51,9 @@ public record InsertTransactionDueIdMetaDataDef
     public bool ExpectedMetaData { get; init; } = true;
     public required InsertTransactionDto Payload { get; init; }
 }
+
+public record InsertTransactionInvalidEntityThrowsExceptionDto
+{
+    public required InsertTransactionDto Payload { get; init; }
+    public required Type ExpectedExceptionType { get; init; }
+}

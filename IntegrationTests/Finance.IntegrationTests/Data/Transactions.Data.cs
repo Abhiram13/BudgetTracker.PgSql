@@ -2,7 +2,9 @@ using System.Net;
 using BudgetTracker.Finance.Entities;
 using BudgetTracker.Finance.Enums;
 using BudgetTracker.Finance.Models;
+using BudgetTracker.Shared.Exceptions;
 using IntegrationTests.Finance.Definations.Transactions;
+using Microsoft.EntityFrameworkCore;
 
 namespace IntegrationTests.Finance.Data.Transactions;
 
@@ -660,312 +662,436 @@ public class TransactionsEntityValidTestData : TheoryData<Transaction>
     }
 }
 
-public class TransactionsEntityInValidTestData : TheoryData<Transaction>
+public class TransactionsEntityInValidTestData : TheoryData<InsertTransactionInvalidEntityThrowsExceptionDto>
 {
     public TransactionsEntityInValidTestData()
     {
         // Actual amount is zero
-        Add(Transaction.Create(
-            actualAmount: 0,
-            amount: 100,
-            description: "A Sample Description",
-            categoryId: 1,
-            fromBank: 1,
-            toBank: null,
-            type: TransactionType.Debit,
-            date: DateOnly.FromDateTime(DateTime.UtcNow)
-        ));
+        Add(new InsertTransactionInvalidEntityThrowsExceptionDto
+        {
+            Payload = new InsertTransactionDto
+            {
+                ActualAmount = 0,
+                Amount = 100,
+                Description = "A Sample Description",
+                CategoryId = 1,
+                FromBank = 1,
+                ToBank = null,
+                Type = TransactionType.Debit,
+                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+            },
+            ExpectedExceptionType = typeof(InvalidPayloadException),
+        });
         
         // Actual amount is above limit
-        Add(Transaction.Create(
-            actualAmount: 1_000_001m,
-            amount: 100,
-            description: "A Sample Description",
-            categoryId: 1,
-            fromBank: 1,
-            toBank: null,
-            type: TransactionType.Debit,
-            date: DateOnly.FromDateTime(DateTime.UtcNow)
-        ));
+        Add(new InsertTransactionInvalidEntityThrowsExceptionDto
+        {
+            Payload = new InsertTransactionDto
+            {
+                ActualAmount = 1_000_001m,
+                Amount = 100,
+                Description = "A Sample Description",
+                CategoryId = 1,
+                FromBank = 1,
+                ToBank = null,
+                Type = TransactionType.Debit,
+                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+            },
+            ExpectedExceptionType = typeof(InvalidPayloadException),
+        });
         
         // Amount is above limit
-        Add(Transaction.Create(
-            actualAmount: 100,
-            amount: 1_000_001m,
-            description: "A Sample Description",
-            categoryId: 1,
-            fromBank: 1,
-            toBank: null,
-            type: TransactionType.Debit,
-            date: DateOnly.FromDateTime(DateTime.UtcNow)
-        ));
+        Add(new InsertTransactionInvalidEntityThrowsExceptionDto
+        {
+            Payload = new InsertTransactionDto
+            {
+                ActualAmount = 100,
+                Amount = 1_000_001m,
+                Description = "A Sample Description",
+                CategoryId = 1,
+                FromBank = 1,
+                ToBank = null,
+                Type = TransactionType.Debit,
+                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+            },
+            ExpectedExceptionType = typeof(InvalidPayloadException),
+        });
         
         // Amount is zero
-        Add(Transaction.Create(
-            actualAmount: 100,
-            amount: 0,
-            description: "A Sample Description",
-            categoryId: 1,
-            fromBank: 1,
-            toBank: null,
-            type: TransactionType.Debit,
-            date: DateOnly.FromDateTime(DateTime.UtcNow)
-        ));
+        Add(new InsertTransactionInvalidEntityThrowsExceptionDto
+        {
+            Payload = new InsertTransactionDto
+            {
+                ActualAmount = 100,
+                Amount = 0,
+                Description = "A Sample Description",
+                CategoryId = 1,
+                FromBank = 1,
+                ToBank = null,
+                Type = TransactionType.Debit,
+                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+            },
+            ExpectedExceptionType = typeof(InvalidPayloadException),
+        });
         
-        // Amount is null // TODO: Check Amount:null
-        Add(Transaction.Create(
-            amount: 0,
-            actualAmount: 100,
-            description: "A Sample Description",
-            categoryId: 1,
-            fromBank: 1,
-            toBank: null,
-            type: TransactionType.Debit,
-            date: DateOnly.FromDateTime(DateTime.UtcNow)
-        ));
-        
-        // Less than min length description
-        Add(Transaction.Create(
-            amount: 100,
-            actualAmount: 0,
-            description: "A",
-            categoryId: 1,
-            fromBank: 1,
-            toBank: null,
-            type: TransactionType.Debit,
-            date: DateOnly.FromDateTime(DateTime.UtcNow)
-        ));
+        // Amount is not given 
+        Add(new InsertTransactionInvalidEntityThrowsExceptionDto
+        {
+            Payload = new InsertTransactionDto
+            {
+                ActualAmount = 100,
+                Description = "A Sample Description",
+                CategoryId = 1,
+                FromBank = 1,
+                ToBank = null,
+                Type = TransactionType.Debit,
+                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+            },
+            ExpectedExceptionType = typeof(InvalidPayloadException),
+        });
         
         // Less than min length description
-        Add(Transaction.Create(
-            amount: 100,
-            actualAmount: 0,
-            description: "Ab",
-            categoryId: 1,
-            fromBank: 1,
-            toBank: null,
-            type: TransactionType.Debit,
-            date: DateOnly.FromDateTime(DateTime.UtcNow)
-        ));
+        Add(new InsertTransactionInvalidEntityThrowsExceptionDto
+        {
+            Payload = new InsertTransactionDto
+            {
+                ActualAmount = 0,
+                Amount = 100,
+                Description = "A",
+                CategoryId = 1,
+                FromBank = 1,
+                ToBank = null,
+                Type = TransactionType.Debit,
+                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+            },
+            ExpectedExceptionType = typeof(InvalidPayloadException),
+        });
+        
+        // Less than min length description
+        Add(new InsertTransactionInvalidEntityThrowsExceptionDto
+        {
+            Payload = new InsertTransactionDto
+            {
+                ActualAmount = 0,
+                Amount = 100,
+                Description = "Ab",
+                CategoryId = 1,
+                FromBank = 1,
+                ToBank = null,
+                Type = TransactionType.Debit,
+                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+            },
+            ExpectedExceptionType = typeof(InvalidPayloadException),
+        });
         
         // Empty description
-        Add(Transaction.Create(
-            amount: 100,
-            actualAmount: 0,
-            description: "",
-            categoryId: 1,
-            fromBank: 1,
-            toBank: null,
-            type: TransactionType.Debit,
-            date: DateOnly.FromDateTime(DateTime.UtcNow)
-        ));
+        Add(new InsertTransactionInvalidEntityThrowsExceptionDto
+        {
+            Payload = new InsertTransactionDto
+            {
+                ActualAmount = 0,
+                Amount = 100,
+                Description = "",
+                CategoryId = 1,
+                FromBank = 1,
+                ToBank = null,
+                Type = TransactionType.Debit,
+                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+            },
+            ExpectedExceptionType = typeof(InvalidPayloadException),
+        });
         
         // Spaces description
-        Add(Transaction.Create(
-            amount: 100,
-            actualAmount: 0,
-            description: " ",
-            categoryId: 1,
-            fromBank: 1,
-            toBank: null,
-            type: TransactionType.Debit,
-            date: DateOnly.FromDateTime(DateTime.UtcNow)
-        ));
+        Add(new InsertTransactionInvalidEntityThrowsExceptionDto
+        {
+            Payload = new InsertTransactionDto
+            {
+                ActualAmount = 0,
+                Amount = 100,
+                Description = " ",
+                CategoryId = 1,
+                FromBank = 1,
+                ToBank = null,
+                Type = TransactionType.Debit,
+                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+            },
+            ExpectedExceptionType = typeof(InvalidPayloadException),
+        });
         
         // Spaces description
-        Add(Transaction.Create(
-            amount: 100,
-            actualAmount: 0,
-            description: "   ",
-            categoryId: 1,
-            fromBank: 1,
-            toBank: null,
-            type: TransactionType.Debit,
-            date: DateOnly.FromDateTime(DateTime.UtcNow)
-        ));
+        Add(new InsertTransactionInvalidEntityThrowsExceptionDto
+        {
+            Payload = new InsertTransactionDto
+            {
+                ActualAmount = 0,
+                Amount = 100,
+                Description = "   ",
+                CategoryId = 1,
+                FromBank = 1,
+                ToBank = null,
+                Type = TransactionType.Debit,
+                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+            },
+            ExpectedExceptionType = typeof(InvalidPayloadException),
+        });
         
         // Null description
-        Add(Transaction.Create(
-            amount: 100,
-            actualAmount: 0,
-            description: null,
-            categoryId: 1,
-            fromBank: 1,
-            toBank: null,
-            type: TransactionType.Debit,
-            date: DateOnly.FromDateTime(DateTime.UtcNow)
-        ));
+        Add(new InsertTransactionInvalidEntityThrowsExceptionDto
+        {
+            Payload = new InsertTransactionDto
+            {
+                ActualAmount = 0,
+                Amount = 100,
+                Description = null,
+                CategoryId = 1,
+                FromBank = 1,
+                ToBank = null,
+                Type = TransactionType.Debit,
+                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+            },
+            ExpectedExceptionType = typeof(InvalidPayloadException),
+        });
         
         // numbers description
-        Add(Transaction.Create(
-            amount: 100,
-            actualAmount: 0,
-            description: "1234567",
-            categoryId: 1,
-            fromBank: 1,
-            toBank: null,
-            type: TransactionType.Debit,
-            date: DateOnly.FromDateTime(DateTime.UtcNow)
-        ));
+        Add(new InsertTransactionInvalidEntityThrowsExceptionDto
+        {
+            Payload = new InsertTransactionDto
+            {
+                ActualAmount = 0,
+                Amount = 100,
+                Description = "1234567",
+                CategoryId = 1,
+                FromBank = 1,
+                ToBank = null,
+                Type = TransactionType.Debit,
+                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+            },
+            ExpectedExceptionType = typeof(InvalidPayloadException),
+        });
         
         const string SPECIAL_CHARS = "!@$%^&*()-_+={}[]\\|;:'?/><.~`";
 
         foreach (char c in SPECIAL_CHARS)
         {
-            Add(Transaction.Create(
-                amount: 100,
-                actualAmount: 100,
-                description: $"A Sample Description {c}",
-                categoryId: 1,
-                fromBank: 1,
-                toBank: null,
-                type: TransactionType.Debit,
-                date: DateOnly.FromDateTime(DateTime.UtcNow)
-            ));
+            Add(new InsertTransactionInvalidEntityThrowsExceptionDto
+            {
+                Payload = new InsertTransactionDto
+                {
+                    ActualAmount = 100,
+                    Amount = 100,
+                    Description = $"A Sample Description {c}",
+                    CategoryId = 1,
+                    FromBank = 1,
+                    ToBank = null,
+                    Type = TransactionType.Debit,
+                    Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                },
+                ExpectedExceptionType = typeof(InvalidPayloadException),
+            });
         }
         
         // Invalid category id
-        Add(Transaction.Create(
-            amount: 100,
-            actualAmount: 100,
-            description: "A Sample Description",
-            categoryId: 0,
-            fromBank: 1,
-            toBank: null,
-            type: TransactionType.Debit,
-            date: DateOnly.FromDateTime(DateTime.UtcNow)
-        ));
+        Add(new InsertTransactionInvalidEntityThrowsExceptionDto
+        {
+            Payload = new InsertTransactionDto
+            {
+                ActualAmount = 10,
+                Amount = 100,
+                Description = "A Sample Description",
+                CategoryId = 0,
+                FromBank = 1,
+                ToBank = null,
+                Type = TransactionType.Debit,
+                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+            },
+            ExpectedExceptionType = typeof(DbUpdateException),
+        });
         
         // Invalid category id
-        Add(Transaction.Create(
-            amount: 100,
-            actualAmount: 100,
-            description: "A Sample Description",
-            categoryId: 100,
-            fromBank: 1,
-            toBank: null,
-            type: TransactionType.Debit,
-            date: DateOnly.FromDateTime(DateTime.UtcNow)
-        ));
+        Add(new InsertTransactionInvalidEntityThrowsExceptionDto
+        {
+            Payload = new InsertTransactionDto
+            {
+                ActualAmount = 10,
+                Amount = 100,
+                Description = "A Sample Description",
+                CategoryId = 100,
+                FromBank = 1,
+                ToBank = null,
+                Type = TransactionType.Debit,
+                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+            },
+            ExpectedExceptionType = typeof(DbUpdateException),
+        });
         
         // Invalid from bank id
-        Add(Transaction.Create(
-            amount: 100,
-            actualAmount: 100,
-            description: "A Sample Description",
-            categoryId: 1,
-            fromBank: 0,
-            toBank: null,
-            type: TransactionType.Debit,
-            date: DateOnly.FromDateTime(DateTime.UtcNow)
-        ));
+        Add(new InsertTransactionInvalidEntityThrowsExceptionDto
+        {
+            Payload = new InsertTransactionDto
+            {
+                ActualAmount = 10,
+                Amount = 100,
+                Description = "A Sample Description",
+                CategoryId = 1,
+                FromBank = 0,
+                ToBank = null,
+                Type = TransactionType.Debit,
+                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+            },
+            ExpectedExceptionType = typeof(DbUpdateException),
+        });
         
         // Invalid from bank id
-        Add(Transaction.Create(
-            amount: 100,
-            actualAmount: 100,
-            description: "A Sample Description",
-            categoryId: 1,
-            fromBank: 0,
-            toBank: null,
-            type: TransactionType.Debit,
-            date: DateOnly.FromDateTime(DateTime.UtcNow)
-        ));
+        Add(new InsertTransactionInvalidEntityThrowsExceptionDto
+        {
+            Payload = new InsertTransactionDto
+            {
+                ActualAmount = 10,
+                Amount = 100,
+                Description = "A Sample Description",
+                CategoryId = 1,
+                FromBank = 100,
+                ToBank = null,
+                Type = TransactionType.Debit,
+                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+            },
+            ExpectedExceptionType = typeof(DbUpdateException),
+        });
         
         // Invalid to bank id
-        Add(Transaction.Create(
-            amount: 100,
-            actualAmount: 100,
-            description: "A Sample Description",
-            categoryId: 1,
-            fromBank: null,
-            toBank: 0,
-            type: TransactionType.Credit,
-            date: DateOnly.FromDateTime(DateTime.UtcNow)
-        ));
+        Add(new InsertTransactionInvalidEntityThrowsExceptionDto
+        {
+            Payload = new InsertTransactionDto
+            {
+                ActualAmount = 10,
+                Amount = 100,
+                Description = "A Sample Description",
+                CategoryId = 1,
+                FromBank = null,
+                ToBank = 0,
+                Type = TransactionType.Credit,
+                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+            },
+            ExpectedExceptionType = typeof(DbUpdateException),
+        });
         
         // Invalid to bank id
-        Add(Transaction.Create(
-            amount: 100,
-            actualAmount: 100,
-            description: "A Sample Description",
-            categoryId: 1,
-            fromBank: null,
-            toBank: 100,
-            type: TransactionType.Credit,
-            date: DateOnly.FromDateTime(DateTime.UtcNow)
-        ));
+        Add(new InsertTransactionInvalidEntityThrowsExceptionDto
+        {
+            Payload = new InsertTransactionDto
+            {
+                ActualAmount = 10,
+                Amount = 100,
+                Description = "A Sample Description",
+                CategoryId = 1,
+                FromBank = null,
+                ToBank = 100,
+                Type = TransactionType.Credit,
+                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+            },
+            ExpectedExceptionType = typeof(DbUpdateException),
+        });
         
         // Invalid to bank and from bank id with credit type
-        Add(Transaction.Create(
-            amount: 100,
-            actualAmount: 100,
-            description: "A Sample Description",
-            categoryId: 1,
-            fromBank: 10,
-            toBank: 100,
-            type: TransactionType.Credit,
-            date: DateOnly.FromDateTime(DateTime.UtcNow)
-        ));
+        Add(new InsertTransactionInvalidEntityThrowsExceptionDto
+        {
+            Payload = new InsertTransactionDto
+            {
+                ActualAmount = 10,
+                Amount = 100,
+                Description = "A Sample Description",
+                CategoryId = 1,
+                FromBank = 10,
+                ToBank = 100,
+                Type = TransactionType.Credit,
+                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+            },
+            ExpectedExceptionType = typeof(DbUpdateException),
+        });
         
         // Invalid to bank and from bank id with debit type
-        Add(Transaction.Create(
-            amount: 100,
-            actualAmount: 100,
-            description: "A Sample Description",
-            categoryId: 1,
-            fromBank: 10,
-            toBank: 100,
-            type: TransactionType.Debit,
-            date: DateOnly.FromDateTime(DateTime.UtcNow)
-        ));
+        Add(new InsertTransactionInvalidEntityThrowsExceptionDto
+        {
+            Payload = new InsertTransactionDto
+            {
+                ActualAmount = 10,
+                Amount = 100,
+                Description = "A Sample Description",
+                CategoryId = 1,
+                FromBank = 10,
+                ToBank = 100,
+                Type = TransactionType.Debit,
+                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+            },
+            ExpectedExceptionType = typeof(DbUpdateException),
+        });
         
         // Same to bank and from bank id with debit type
-        Add(Transaction.Create(
-            amount: 100,
-            actualAmount: 100,
-            description: "A Sample Description",
-            categoryId: 1,
-            fromBank: 10,
-            toBank: 10,
-            type: TransactionType.Debit,
-            date: DateOnly.FromDateTime(DateTime.UtcNow)
-        ));
+        Add(new InsertTransactionInvalidEntityThrowsExceptionDto
+        {
+            Payload = new InsertTransactionDto
+            {
+                ActualAmount = 10,
+                Amount = 100,
+                Description = "A Sample Description",
+                CategoryId = 1,
+                FromBank = 10,
+                ToBank = 10,
+                Type = TransactionType.Debit,
+                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+            },
+            ExpectedExceptionType = typeof(DbUpdateException),
+        });
         
         // Same to bank and from bank id with credit type
-        Add(Transaction.Create(
-            amount: 100,
-            actualAmount: 100,
-            description: "A Sample Description",
-            categoryId: 1,
-            fromBank: 10,
-            toBank: 10,
-            type: TransactionType.Credit,
-            date: DateOnly.FromDateTime(DateTime.UtcNow)
-        ));
+        Add(new InsertTransactionInvalidEntityThrowsExceptionDto
+        {
+            Payload = new InsertTransactionDto
+            {
+                ActualAmount = 10,
+                Amount = 100,
+                Description = "A Sample Description",
+                CategoryId = 1,
+                FromBank = 10,
+                ToBank = 10,
+                Type = TransactionType.Credit,
+                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+            },
+            ExpectedExceptionType = typeof(DbUpdateException),
+        });
         
         // To bank with debit type
-        Add(Transaction.Create(
-            amount: 100,
-            actualAmount: 100,
-            description: "A Sample Description",
-            categoryId: 1,
-            fromBank: null,
-            toBank: 1,
-            type: TransactionType.Debit,
-            date: DateOnly.FromDateTime(DateTime.UtcNow)
-        ));
+        Add(new InsertTransactionInvalidEntityThrowsExceptionDto
+        {
+            Payload = new InsertTransactionDto
+            {
+                ActualAmount = 10,
+                Amount = 100,
+                Description = "A Sample Description",
+                CategoryId = 1,
+                FromBank = null,
+                ToBank = 1,
+                Type = TransactionType.Debit,
+                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+            },
+            ExpectedExceptionType = typeof(DbUpdateException),
+        });
         
         // From bank with Credit type
-        Add(Transaction.Create(
-            amount: 100,
-            actualAmount: 100,
-            description: "A Sample Description",
-            categoryId: 1,
-            fromBank: 1,
-            toBank: null,
-            type: TransactionType.Credit,
-            date: DateOnly.FromDateTime(DateTime.UtcNow)
-        ));
+        Add(new InsertTransactionInvalidEntityThrowsExceptionDto
+        {
+            Payload = new InsertTransactionDto
+            {
+                ActualAmount = 10,
+                Amount = 100,
+                Description = "A Sample Description",
+                CategoryId = 1,
+                FromBank = 1,
+                ToBank = null,
+                Type = TransactionType.Credit,
+                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+            },
+            ExpectedExceptionType = typeof(DbUpdateException),
+        });
     }
 }

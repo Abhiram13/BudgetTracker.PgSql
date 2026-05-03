@@ -31,10 +31,9 @@ public abstract class FinanceTestFixture
         Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, token);
     }
 
-    protected void DisposeFactoryAndClient()
+    protected void DisposeClients()
     {
         Client.Dispose();
         UnAuthorizedClient.Dispose();
-        Factory.Dispose();
     }
 }
