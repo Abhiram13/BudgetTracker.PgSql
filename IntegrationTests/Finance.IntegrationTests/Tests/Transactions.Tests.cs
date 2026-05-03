@@ -103,15 +103,6 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
                 
                 Assert.NotNull(exception);
                 Assert.IsType(data.ExpectedExceptionType, exception);
-
-                // Exception _ = await Record.ExceptionAsync(async () =>
-                // {
-                //     await dbcontext.Transactions.AddAsync(transaction);
-                //     await dbcontext.SaveChangesAsync();
-                // });
-
-                // Transaction? data = await dbcontext.Transactions.Where(t => t.Description == transaction.Description).FirstOrDefaultAsync();
-                // Assert.Null(data);
             }
         }
     }

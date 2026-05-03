@@ -39,6 +39,7 @@ public class TransactionsIntegrationTestFixture : FinanceTestFixture, IAsyncLife
             WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
             JwtConfiguration jwtConfiguration = scope.ServiceProvider.GetRequiredService<IOptions<JwtConfiguration>>().Value;
             await dbContext.Database.MigrateAsync();
+            await TruncateTables(dbContext);
             _categoryBuilder = scope.ServiceProvider.GetRequiredService<CategoryBuilder>();
             _bankBuilder = scope.ServiceProvider.GetRequiredService<BankBuilder>();
             _dueBuilder = scope.ServiceProvider.GetRequiredService<DueBuilder>();
@@ -58,12 +59,6 @@ public class TransactionsIntegrationTestFixture : FinanceTestFixture, IAsyncLife
             await dbContext.Categories.ExecuteDeleteAsync();
             await dbContext.Banks.ExecuteDeleteAsync();
             await dbContext.Dues.ExecuteDeleteAsync();
-            
-            // since hard-coded banks & category ids "1" and "2" are used in transaction tests, resetting the banks & category table identity.
-            // If not every transactions tests access new dynamic bank or category id
-            await dbContext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE categories RESTART IDENTITY CASCADE");
-            await dbContext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE banks RESTART IDENTITY CASCADE");
-            await dbContext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE dues RESTART IDENTITY CASCADE");
         }
         
         DisposeClients();

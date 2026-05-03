@@ -19,6 +19,7 @@ public class CategoriesTestsFixture : FinanceTestFixture, IAsyncLifetime
             WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
             JwtConfiguration jwtConfiguration = scope.ServiceProvider.GetRequiredService<IOptions<JwtConfiguration>>().Value;
             await dbContext.Database.MigrateAsync();
+            await TruncateTables(dbContext);
             SetClientHeaders(jwtConfiguration);
         }
     }

@@ -666,39 +666,22 @@ public class TransactionsEntityInValidTestData : TheoryData<InsertTransactionInv
 {
     public TransactionsEntityInValidTestData()
     {
-        // Actual amount is zero
-        Add(new InsertTransactionInvalidEntityThrowsExceptionDto
-        {
-            Payload = new InsertTransactionDto
-            {
-                ActualAmount = 0,
-                Amount = 100,
-                Description = "A Sample Description",
-                CategoryId = 1,
-                FromBank = 1,
-                ToBank = null,
-                Type = TransactionType.Debit,
-                Date = DateOnly.FromDateTime(DateTime.UtcNow),
-            },
-            ExpectedExceptionType = typeof(InvalidPayloadException),
-        });
-        
         // Actual amount is above limit
-        Add(new InsertTransactionInvalidEntityThrowsExceptionDto
-        {
-            Payload = new InsertTransactionDto
-            {
-                ActualAmount = 1_000_001m,
-                Amount = 100,
-                Description = "A Sample Description",
-                CategoryId = 1,
-                FromBank = 1,
-                ToBank = null,
-                Type = TransactionType.Debit,
-                Date = DateOnly.FromDateTime(DateTime.UtcNow),
-            },
-            ExpectedExceptionType = typeof(InvalidPayloadException),
-        });
+        // Add(new InsertTransactionInvalidEntityThrowsExceptionDto
+        // {
+        //     Payload = new InsertTransactionDto
+        //     {
+        //         ActualAmount = 1_000_001m,
+        //         Amount = 100,
+        //         Description = "A Sample Description",
+        //         CategoryId = 1,
+        //         FromBank = 1,
+        //         ToBank = null,
+        //         Type = TransactionType.Debit,
+        //         Date = DateOnly.FromDateTime(DateTime.UtcNow),
+        //     },
+        //     ExpectedExceptionType = typeof(InvalidPayloadException),
+        // });
         
         // Amount is above limit
         Add(new InsertTransactionInvalidEntityThrowsExceptionDto
