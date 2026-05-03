@@ -538,15 +538,11 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
                 ApiResponse<int>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<int>>();
                 
                 Assert.NotNull(apiResponse);
+                Assert.NotNull(apiResponse.Result);
                 // Assert.NotEmpty(apiResponse.TraceId); // TODO: Empty Trace ID
                 Assert.Equal(data.ExpectedHttpStatusCode, httpResponse.StatusCode);
                 Assert.Equal(data.ExpectedApiStatusCode, apiResponse.StatusCode);
                 Assert.Equal(data.ShouldDataExists, apiResponse.Result > 0);
-
-                if (!data.ShouldDataExists)
-                {
-                    Assert.NotNull(apiResponse.Result);
-                }
             }
         }
     }

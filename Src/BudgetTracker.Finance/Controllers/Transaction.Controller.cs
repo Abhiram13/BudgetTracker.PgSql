@@ -142,7 +142,7 @@ public class TransactionController : ControllerBase
     {
         await _transactionService.UpdateTransactionAsync(payload, id);
         
-        return Ok(new ApiResponse<string>
+        return Ok(new ApiResponse
         {
             StatusCode = System.Net.HttpStatusCode.OK,
             TraceId = _traceProvider.TraceId,

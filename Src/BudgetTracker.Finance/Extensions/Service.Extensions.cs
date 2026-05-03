@@ -174,7 +174,7 @@ internal static class ServiceExtension
                 string errorAt = modelState.Key;
                 string errorMessage = modelState.Value?.Errors.FirstOrDefault()?.ErrorMessage ?? $"Something went wrong at {errorAt}";
                 string traceId = request.Headers[SharedConstants.Headers.YARP_API_KEY]!;
-                ApiResponse<string> apiResponse = new ApiResponse<string> { Message = errorMessage, StatusCode = HttpStatusCode.BadRequest, TraceId = traceId };
+                ApiResponse apiResponse = new ApiResponse { Message = errorMessage, StatusCode = HttpStatusCode.BadRequest, TraceId = traceId };
                 BadRequestObjectResult badRequest = new BadRequestObjectResult(apiResponse);
             
                 return badRequest;

@@ -59,7 +59,7 @@ public class ApiKeyHandler : AuthenticationHandler<ApiKeySchemaOptions>
 
         string traceId = Request.Headers[SharedConstants.Headers.X_TRACE_ID]!; // FIX: Default Trace ID should be generated incase none from headers
 
-        ApiResponse<string> response = new ApiResponse<string>
+        ApiResponse response = new ApiResponse
         {
             StatusCode = System.Net.HttpStatusCode.Unauthorized,
             TraceId = traceId, // TODO: Trace Id is null here.
