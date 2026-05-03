@@ -12,31 +12,31 @@ public record DatabaseConfiguration
     /// <summary>
     /// Host of the DB (Write, Read or Migrate)
     /// </summary>
-    [ConfigurationKeyName("HOST")]
+    [ConfigurationKeyName("Host")]
     public string Host { get; init; } = string.Empty;
     
     /// <summary>
     /// Host of the DB (Write, Read or Migrate)
     /// </summary>
-    [ConfigurationKeyName("PORT")]
+    [ConfigurationKeyName("Port")]
     public string Port { get; init; } = string.Empty;
     
     /// <summary>
     /// Name of the DB (Write, Read or Migrate)
     /// </summary>
-    [ConfigurationKeyName("DATABASE")]
+    [ConfigurationKeyName("Database")]
     public string Database { get; init; } = string.Empty;
     
     /// <summary>
     /// Username of the DB (Write, Read or Migrate)
     /// </summary>
-    [ConfigurationKeyName("USERNAME")]
+    [ConfigurationKeyName("Username")]
     public string Username { get; init; } = string.Empty;
     
     /// <summary>
     /// Password of the DB (Write, Read or Migrate)
     /// </summary>
-    [ConfigurationKeyName("PASSWORD")]
+    [ConfigurationKeyName("Password")]
     public string Password { get; init; } = string.Empty;
 }
 
@@ -67,6 +67,6 @@ public class DatabaseConfigurationSetup : IConfigureNamedOptions<DatabaseConfigu
 
     public void Configure(string? name, DatabaseConfiguration options)
     {
-        _configuration.GetSection($"POSTGRES:{name}").Bind(options);
+        _configuration.GetSection($"Postgres:{name}").Bind(options);
     }
 }

@@ -14,7 +14,7 @@ string environment = builder.Environment.EnvironmentName;
 builder.Configuration
     .AddJsonFile(Path.Combine(baseDir, "sharedsettings.json"), optional: false, reloadOnChange: true)
     .AddJsonFile(Path.Combine(baseDir, $"sharedsettings.{environment}.json"), optional: false, reloadOnChange: true)
-    .AddJsonFile(Path.Combine("/secrets/finance-secrets.json"), optional: true, reloadOnChange: true);
+    .AddJsonFile(Path.Combine("/secrets/", "finance-secrets.json"), optional: true, reloadOnChange: true);
 
 builder.AddConsoleGoogleSeriLog();
 builder.Configuration.AddSecrets(environment: builder.Environment, optional: false);
