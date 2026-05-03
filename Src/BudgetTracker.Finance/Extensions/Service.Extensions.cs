@@ -199,20 +199,17 @@ internal static class ServiceExtension
                     options
                         .AddPolicy(SharedConstants.Jwt.Policies.DOWNSTREAM_POLICY, policy =>
                         {
-                            // string? environment = configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT");
-                            //
-                            // switch (environment)
-                            // {
-                            //     case "Development":
-                            //     case "Test":
-                            policy.RequireClaim("scope", SharedConstants.Jwt.Scopes.DOWNSTREAM);
-                            //         break;
-                            //     case "GoogleCloud":
-                            //         policy.RequireAuthenticatedUser();
-                            //         break;
-                            // }
+                            string? environment = configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT");
                             
-                            
+                            switch (environment)
+                            {
+                                case "GoogleCloud":
+                                    policy.RequireAuthenticatedUser();
+                                    break;
+                                default:
+                                    policy.RequireClaim("scope", SharedConstants.Jwt.Scopes.DOWNSTREAM);
+                                    break;
+                            }
                         });
                 });
         
