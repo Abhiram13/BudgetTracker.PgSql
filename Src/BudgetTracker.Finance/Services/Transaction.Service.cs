@@ -179,7 +179,6 @@ public class TransactionService
     /// <inheritdoc cref="ITransactionRepository.CountOfAllTransactionsAsync"/>
     public async Task<int> CountOfAllTransactionsAsync(int? month, int? year)
     {
-        _logger.LogWarning("Count Api Called. The TestConfig is = {Value}", _secrets.TestConfig?.TestValue);
         return await _repository.CountOfAllTransactionsAsync(month, year);
     }
 

@@ -16,7 +16,7 @@ public sealed record AppSecrets
     /// <summary>
     /// Gets the configuration settings for Google Cloud Pub/Sub.
     /// </summary>
-    [ConfigurationKeyName("PUB_SUB")]
+    [ConfigurationKeyName("PubSub")]
     public PubSubSecrets PubSub { get; init; } = default!;
 
     /// <summary>
@@ -33,9 +33,6 @@ public sealed record AppSecrets
     /// </remarks>
     [ConfigurationKeyName("GOOGLE_CLOUD_PROJECT_ID")]
     public string GoogleCloudProjectId { get; init; } = string.Empty;
-
-    [ConfigurationKeyName("TestConfig")] 
-    public TestConfig? TestConfig { get; init; } = null;
 }
 
 /// <summary>
@@ -63,10 +60,4 @@ public record OutboxConfig
     /// Interval time to run Outbox background service
     /// </summary>
     public int Period { get; init; } = 100;
-}
-
-public record TestConfig
-{
-    [ConfigurationKeyName("TestValue")]
-    public string TestValue { get; init; } = string.Empty;
 }
