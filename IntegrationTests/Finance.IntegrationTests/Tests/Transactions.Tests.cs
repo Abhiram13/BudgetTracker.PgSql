@@ -24,6 +24,8 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
     private readonly Bank _testBank;
     private readonly HttpClient _client;
     private readonly HttpClient _unAuthorizedClient;
+    private readonly HttpClient _invalidJwtClient;
+    private readonly HttpClient _noPolicyJwtClient;
     private readonly TransactionsIntegrationTestFixture _fixture;
     private readonly ITestOutputHelper _testOutputHelper;
     private const string TRANSACTIONS_ROUTE = "/api/transactions";
@@ -32,26 +34,62 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
     {
         _client = fixture.Client;
         _unAuthorizedClient = fixture.UnAuthorizedClient;
+        _invalidJwtClient = fixture.InvalidTokenClient;
+        _noPolicyJwtClient = fixture.NoPolicyTokenClient;
         _testCategory = fixture.TestCategory;
         _testBank = fixture.TestBank;
         _fixture = fixture;
         _testOutputHelper = testOutputHelper;
     }
 
-    // TODO: Fix the response format
-    // [Fact]
-    // public async Task Unauthorised_401_Response_Async()
-    // {
-    //     string date = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd");
-    //     HttpResponseMessage httpResponse = await _unAuthorizedClient.GetAsync($"{TRANSACTIONS_ROUTE}/date/{date}");
-    //     ApiResponse? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse>();
-    //     
-    //     Assert.Equal(HttpStatusCode.Unauthorized, httpResponse.StatusCode);
-    //     Assert.NotNull(apiResponse);
-    //     Assert.Equal(HttpStatusCode.Unauthorized, apiResponse.StatusCode);
-    //     Assert.NotNull(apiResponse.Message);
-    //     Assert.NotEmpty(apiResponse.Message);
-    // }
+    #region Authentication and Authorisation Tests
+    
+    [Fact]
+    public async Task Unauthorised_401_Response_Async()
+    {
+        string date = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd");
+        HttpResponseMessage httpResponse = await _unAuthorizedClient.GetAsync($"{TRANSACTIONS_ROUTE}/date/{date}");
+        ApiResponse? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse>();
+        
+        Assert.Equal(HttpStatusCode.Unauthorized, httpResponse.StatusCode);
+        Assert.NotNull(apiResponse);
+        Assert.Equal(HttpStatusCode.Unauthorized, apiResponse.StatusCode);
+        Assert.NotNull(apiResponse.Message);
+        Assert.NotEmpty(apiResponse.Message);
+        Assert.Equal("You are not authorized. Token may be missing or invalid.", apiResponse.Message);
+    }
+    
+    [Fact]
+    public async Task InValid_Token_401_Response_Async()
+    {
+        string date = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd");
+        HttpResponseMessage httpResponse = await _invalidJwtClient.GetAsync($"{TRANSACTIONS_ROUTE}/date/{date}");
+        ApiResponse? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse>();
+        
+        Assert.Equal(HttpStatusCode.Unauthorized, httpResponse.StatusCode);
+        Assert.NotNull(apiResponse);
+        Assert.Equal(HttpStatusCode.Unauthorized, apiResponse.StatusCode);
+        Assert.NotNull(apiResponse.Message);
+        Assert.NotEmpty(apiResponse.Message);
+        Assert.Equal("You are not authorized. Token may be missing or invalid.", apiResponse.Message);
+    }
+    
+    [Fact]
+    public async Task NoPolicy_Token_403_Response_Async()
+    {
+        string date = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd");
+        HttpResponseMessage httpResponse = await _noPolicyJwtClient.GetAsync($"{TRANSACTIONS_ROUTE}/date/{date}");
+        ApiResponse? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse>();
+        
+        Assert.Equal(HttpStatusCode.Forbidden, httpResponse.StatusCode);
+        Assert.NotNull(apiResponse);
+        Assert.Equal(HttpStatusCode.Forbidden, apiResponse.StatusCode);
+        Assert.NotNull(apiResponse.Message);
+        Assert.NotEmpty(apiResponse.Message);
+        Assert.Equal("Access Denied: You do not have permission to perform this action.", apiResponse.Message);
+    }
+    
+    #endregion
     
     #region Transaction Entity
 

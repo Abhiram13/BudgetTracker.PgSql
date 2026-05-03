@@ -19,24 +19,40 @@ public abstract class FinanceTestFixture
     public FinanceTestWebApplicationFactory Factory { get; }
     public HttpClient Client { get; }
     public HttpClient UnAuthorizedClient { get; }
+    public HttpClient InvalidTokenClient { get; }
+    public HttpClient NoPolicyTokenClient { get; }
 
     protected FinanceTestFixture(FinanceTestWebApplicationFactory factory)
     {
         Factory = factory;
         Client = Factory.CreateClient();
         UnAuthorizedClient = Factory.CreateClient();
+        InvalidTokenClient = Factory.CreateClient();
+        NoPolicyTokenClient = Factory.CreateClient();
     }
 
     protected void SetClientHeaders(JwtConfiguration config)
     {
         string token = JwtFactory.CreateToken(configuration: config, scope: SharedConstants.Jwt.Scopes.DOWNSTREAM);
+        string noPolicyToken = JwtFactory.CreateToken(configuration: config, scope: "");
+        
         Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, token);
+        NoPolicyTokenClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, noPolicyToken);
+        
+        SetInvalidJwtClientHeaders();
     }
 
     protected void DisposeClients()
     {
         Client.Dispose();
         UnAuthorizedClient.Dispose();
+    }
+
+    private void SetInvalidJwtClientHeaders()
+    {
+        JwtConfiguration config = new JwtConfiguration { Audience = "Tst", Issuer = "Tst", SigningKey = "zShpO5nR4fWCb/84NaDMqsCHNwrOD5TnIPUikEt/LBs=" };
+        string token = JwtFactory.CreateToken(configuration: config, scope: SharedConstants.Jwt.Scopes.DOWNSTREAM);
+        InvalidTokenClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, token);
     }
 
     /// <summary>
