@@ -29,7 +29,7 @@ public class BadGatewayMiddleware : ICustomMiddleware
         httpContext.Response.StatusCode = StatusCodes.Status502BadGateway;
         httpContext.Response.ContentType = "application/json";
 
-        await httpContext.Response.WriteAsJsonAsync(new ApiResponse<string>
+        await httpContext.Response.WriteAsJsonAsync(new ApiResponse
         {
             StatusCode = HttpStatusCode.BadGateway,
             Message = "Downstream service unavailable",

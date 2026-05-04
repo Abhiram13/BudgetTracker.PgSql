@@ -1,5 +1,7 @@
 using System.Net;
+using BudgetTracker.Finance.Entities;
 using BudgetTracker.Finance.Enums;
+using BudgetTracker.Finance.Models;
 
 namespace IntegrationTests.Finance.Definations.Transactions;
 
@@ -39,3 +41,19 @@ public record TransactionsByMonthYearDataDef
     public required HttpStatusCode ExpectedApiStatusCode { get; init; }
 }
 
+/// <summary>
+/// Defination used to verify transaction insertion with invalid or valid due id along with <see cref="TransactionsMeta"/>
+/// </summary>
+public record InsertTransactionDueIdMetaDataDef
+{
+    public required HttpStatusCode ExpectedHttpStatusCode { get; init; }
+    public required HttpStatusCode ExpectedApiStatusCode { get; init; }
+    public bool ExpectedMetaData { get; init; } = true;
+    public required InsertTransactionDto Payload { get; init; }
+}
+
+public record InsertTransactionInvalidEntityThrowsExceptionDto
+{
+    public required InsertTransactionDto Payload { get; init; }
+    public required Type ExpectedExceptionType { get; init; }
+}

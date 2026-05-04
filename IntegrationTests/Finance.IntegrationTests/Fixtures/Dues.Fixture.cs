@@ -8,9 +8,9 @@ using Microsoft.Extensions.Options;
 
 namespace IntegrationTests.Finance.Fixtures;
 
-public class CategoriesTestsFixture : FinanceTestFixture, IAsyncLifetime
+public class DuesTestsFixture : FinanceTestFixture, IAsyncLifetime
 {
-    public CategoriesTestsFixture(FinanceTestWebApplicationFactory factory) : base(factory) { }
+    public DuesTestsFixture(FinanceTestWebApplicationFactory factory) : base(factory) { }
     
     public async Task InitializeAsync()
     {
@@ -29,7 +29,7 @@ public class CategoriesTestsFixture : FinanceTestFixture, IAsyncLifetime
         using (IServiceScope scope = Factory.CreateScope())
         {
             WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
-            await dbContext.Categories.ExecuteDeleteAsync();
+            await dbContext.Dues.ExecuteDeleteAsync();
         }
         
         DisposeClients();

@@ -36,8 +36,7 @@ public record ApiResponse<T>
     /// The payload of the response. This is <c>null</c> if the request fails.
     /// </summary>
     [JsonPropertyName("result")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    public T Result { get; init; } // TODO: Make it Required
+    public T? Result { get; init; } = default;
 }
 
 /// <summary>

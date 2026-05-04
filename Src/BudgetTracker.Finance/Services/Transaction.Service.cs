@@ -4,6 +4,7 @@ using BudgetTracker.Finance.Entities;
 using BudgetTracker.Finance.Models;
 using BudgetTracker.Shared.Models;
 using System.Text.Json;
+using BudgetTracker.Finance.Configurations;
 using BudgetTracker.Finance.Enums;
 using BudgetTracker.Shared.Exceptions;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +26,7 @@ public class TransactionService
     private readonly TransactionsMetaService _transactionsMetaService;
     private readonly OutboxService _outboxService;
     private readonly WriteDbContext _writeDbContext;
+    private readonly DueService _dueService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TransactionService"/> class.
@@ -34,18 +36,21 @@ public class TransactionService
     /// <param name="transactionsMetaService">The <see cref="TransactionsMetaService"/> responsible for managing <see cref="TransactionsMeta"/> DB operations.</param>
     /// <param name="writeDbContext">The primary <see cref="WriteDbContext"/> used for write operations.</param>
     /// <param name="outboxService">The <see cref="OutboxService"/> used to insert events in <see cref="OutboxEvents"/>.</param>
+    /// <param name="dueService"></param>
     public TransactionService(
         ITransactionRepository repository, 
         ILogger<TransactionService> logger, 
         TransactionsMetaService transactionsMetaService,
         WriteDbContext writeDbContext,
-        OutboxService outboxService
+        OutboxService outboxService,
+        DueService dueService
     ) {
         _repository = repository;
         _logger = logger;
         _transactionsMetaService = transactionsMetaService;
         _writeDbContext = writeDbContext;
         _outboxService = outboxService;
+        _dueService = dueService;
     }
 
     private void InsertValidations(TransactionDto payload)
@@ -103,7 +108,10 @@ public class TransactionService
     /// Validates the payload, inserts the <see cref="Transaction"/> and then inserts the <see cref="TransactionsMeta"/>
     /// and then inserts an event in <see cref="OutboxEvents"/> for later processing
     /// </summary>
-    /// <remarks>Rollsback all insertions if an exception is thrown</remarks>
+    /// <remarks>
+    /// <para>Rollsback all insertions if an exception is thrown</para>
+    /// <para><b><see cref="OutboxEvents"/> will not be updated for time being</b></para>
+    /// </remarks>
     /// <param name="payload"><see cref="InsertTransactionDto"/></param>
     /// <returns><see cref="InsertTransactionResponseDto"/> - An Object containing inserted Transaction ID</returns>
     /// <exception cref="InvalidPayloadException">
@@ -119,6 +127,16 @@ public class TransactionService
             try
             {
                 InsertValidations(payload);
+
+                if (payload.DueId is not null)
+                {
+                    bool isDueExist = await _dueService.IsDueExists((int)payload.DueId);
+                    
+                    if (!isDueExist)
+                    {
+                        throw new InvalidPayloadException("Due id is invalid");
+                    }
+                }
 
                 DateTimeOffset today = DateTimeOffset.UtcNow;
                 Transaction transaction = Transaction.Create(
@@ -138,7 +156,7 @@ public class TransactionService
                 await InsertTransactionsMetaAsync(payload, currentDate: today, transactionId: transaction.Id);
                 _logger.LogInformation("Transaction meta data with Transaction-Id = {TransactionId} has been inserted successfully", transaction.Id);
                 
-                await OutboxTransanctionMessageUpdateAsync(payload.Date, transaction.Id);
+                // await OutboxTransanctionMessageUpdateAsync(payload.Date, transaction.Id); // TODO: OutBox pattern to only understand patterns. Is this necessay now?
                 await dbTransaction.CommitAsync();
 
                 return new InsertTransactionResponseDto { TransactionId = transaction.Id };
@@ -207,6 +225,21 @@ public class TransactionService
         {
             throw new InvalidPayloadException($"No Debit or Credit is available at Transaction-Id = {transactionId} with Date = {transactionDate}. Credit Debit by date = {creditDebitByDate}");
         }
+    }
+    
+    public async Task<List<TransactionsListByMonthYear>> GetTransactionsByMonthYearAsync(int? month, int? year)
+    {
+        return await _repository.GetListOfTransactionsByMonthYear(month, year);
+    }
+    
+    public async Task<List<CategoryBankTransactionsByMonthYear>> GetCategoryTransactionsByMonthYearAsync(int? month, int? year)
+    {
+        return await _repository.GetListOfCategoryTransactionsByMonthYear(month, year);
+    }
+    
+    public async Task<List<CategoryBankTransactionsByMonthYear>> GetBankTransactionsByMonthYearAsync(int? month, int? year)
+    {
+        return await _repository.GetListOfBankTransactionsByMonthYear(month, year);
     }
     
     [Obsolete(message: "Publishing transactions is moved to Outbox pattern. So this method is Obselete", error: true)]

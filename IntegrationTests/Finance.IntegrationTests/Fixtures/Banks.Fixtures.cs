@@ -10,6 +10,8 @@ namespace IntegrationTests.Finance.Fixtures;
 
 public class BanksTestsFixture : FinanceTestFixture, IAsyncLifetime
 {
+    public BanksTestsFixture(FinanceTestWebApplicationFactory factory) : base(factory) { }
+    
     public async Task InitializeAsync()
     {
         using (IServiceScope scope = Factory.CreateScope())
@@ -17,6 +19,7 @@ public class BanksTestsFixture : FinanceTestFixture, IAsyncLifetime
             WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
             JwtConfiguration jwtConfiguration = scope.ServiceProvider.GetRequiredService<IOptions<JwtConfiguration>>().Value;
             await dbContext.Database.MigrateAsync();
+            await TruncateTables(dbContext);
             SetClientHeaders(jwtConfiguration);
         }
     }
@@ -30,6 +33,6 @@ public class BanksTestsFixture : FinanceTestFixture, IAsyncLifetime
             await dbContext.Banks.ExecuteDeleteAsync();
         }
         
-        DisposeFactoryAndClient();
+        DisposeClients();
     }
 }

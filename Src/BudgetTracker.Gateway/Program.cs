@@ -15,7 +15,7 @@ using BudgetTracker.Shared.Extensions;
 using BudgetTracker.Shared.Interfaces;
 using BudgetTracker.Shared.Models;
 using BudgetTracker.Shared.Security;
-using BudgetTracker.Warehouse.Services;
+using BudgetTracker.Gateway.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Yarp.ReverseProxy.Model;
 using Yarp.ReverseProxy.Transforms;
@@ -34,6 +34,7 @@ builder.AddConsoleGoogleSeriLog();
 builder.Configuration.AddSecrets(environment: builder.Environment, optional: false);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddControllers();
 builder.Services.LoadJwtConfiguration(builder.Configuration);
 builder.Services.AddOptions<GatewayAppSecrets>().Bind(builder.Configuration).ValidateDataAnnotations().ValidateOnStart();
 builder.Services.AddSingleton<GatewayAppSecrets>(option => option.GetRequiredService<IOptions<GatewayAppSecrets>>().Value);
@@ -41,23 +42,15 @@ builder.Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"))
     .AddTransforms(transform =>
     {
-        transform.AddRequestTransform(context =>
+        if (builder.Environment.IsDevelopment())
         {
-            RouteModel cluster = context.HttpContext.GetRouteModel();
-            string? clusterId = cluster.Config.ClusterId;
+            transform.ConfigJwtAuthentication();
+        }
 
-            if (string.IsNullOrEmpty(clusterId))
-            {
-                return ValueTask.CompletedTask; // TODO: Check how to verify cluster id is valid 
-            }
-            
-            // FIX: Since this service is not getting registerd without IOptions<T>, silent gateway error was thrown.
-            JwtConfiguration secrets = context.HttpContext.RequestServices.GetRequiredService<IOptions<JwtConfiguration>>().Value;
-            secrets.Audience = clusterId;
-            string token = JwtFactory.CreateToken(secrets, scope: SharedConstants.Jwt.Scopes.DOWNSTREAM);
-            context.ProxyRequest.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, token);
-            return ValueTask.CompletedTask;
-        });
+        if (builder.Environment.IsEnvironment("GoogleCloud"))
+        {
+            transform.ConfigGoogleOAuth();
+        }
     });
 builder.Services.AddAuthentication().AddScheme<ApiKeySchemaOptions, ApiKeyHandler>(ApiKeySchemaOptions.DefaultSchema, _ => {});
 builder.Services.AddScoped<TraceIdProvider>();
@@ -89,4 +82,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapReverseProxy().RequireAuthorization();
 app.UseHttpsRedirection();
+app.MapControllers();
+app.MapGet("/", () => new ApiResponse { StatusCode = HttpStatusCode.OK, Message = "This is YARP API Gateway" });
 app.Run();

@@ -72,8 +72,8 @@ internal static class ServiceExtension
 
         private IServiceCollection AddBackgroundServices()
         {
-            serviceCollection.AddHostedService<OutboxProcessordWorker>();
-            serviceCollection.AddHostedService<SubscriberBackgroundWorker>();
+            // serviceCollection.AddHostedService<OutboxProcessordWorker>();
+            // serviceCollection.AddHostedService<SubscriberBackgroundWorker>();
         
             return serviceCollection;
         }
@@ -85,11 +85,13 @@ internal static class ServiceExtension
             serviceCollection.AddScoped<ICategoryRepository, CategoryRepository>();
             serviceCollection.AddScoped<ITransactionsMetaRepository, TransactionsMetaRepository>();
             serviceCollection.AddScoped<IOutboxRepository, OutboxRepository>();
+            serviceCollection.AddScoped<IDueRepository, DueRepository>();
             serviceCollection.AddScoped<BankService>();
             serviceCollection.AddScoped<TransactionService>();
             serviceCollection.AddScoped<TransactionsMetaService>();
             serviceCollection.AddScoped<CategoryService>();
             serviceCollection.AddScoped<OutboxService>();
+            serviceCollection.AddScoped<DueService>();
             serviceCollection.AddScoped<TraceIdProvider>();
             serviceCollection.AddSingleton<AppSecrets>(sp => sp.GetRequiredService<IOptions<AppSecrets>>().Value);
             serviceCollection.AddSingleton<PublisherClient>(provider =>
@@ -172,7 +174,7 @@ internal static class ServiceExtension
                 string errorAt = modelState.Key;
                 string errorMessage = modelState.Value?.Errors.FirstOrDefault()?.ErrorMessage ?? $"Something went wrong at {errorAt}";
                 string traceId = request.Headers[SharedConstants.Headers.YARP_API_KEY]!;
-                ApiResponse<string> apiResponse = new ApiResponse<string> { Message = errorMessage, StatusCode = HttpStatusCode.BadRequest, TraceId = traceId };
+                ApiResponse apiResponse = new ApiResponse { Message = errorMessage, StatusCode = HttpStatusCode.BadRequest, TraceId = traceId };
                 BadRequestObjectResult badRequest = new BadRequestObjectResult(apiResponse);
             
                 return badRequest;
@@ -195,10 +197,20 @@ internal static class ServiceExtension
                 .AddAuthorization(options =>
                 {
                     options
-                        .AddPolicy(
-                            SharedConstants.Jwt.Policies.DOWNSTREAM_POLICY, 
-                            policy => policy.RequireClaim("scope", SharedConstants.Jwt.Scopes.DOWNSTREAM)
-                        );
+                        .AddPolicy(SharedConstants.Jwt.Policies.DOWNSTREAM_POLICY, policy =>
+                        {
+                            string? environment = configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT");
+                            
+                            switch (environment)
+                            {
+                                case "GoogleCloud":
+                                    policy.RequireAuthenticatedUser();
+                                    break;
+                                default:
+                                    policy.RequireClaim("scope", SharedConstants.Jwt.Scopes.DOWNSTREAM);
+                                    break;
+                            }
+                        });
                 });
         
             return serviceCollection;

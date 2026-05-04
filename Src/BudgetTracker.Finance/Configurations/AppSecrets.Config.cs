@@ -16,7 +16,7 @@ public sealed record AppSecrets
     /// <summary>
     /// Gets the configuration settings for Google Cloud Pub/Sub.
     /// </summary>
-    [ConfigurationKeyName("PUB_SUB")]
+    [ConfigurationKeyName("PubSub")]
     public PubSubSecrets PubSub { get; init; } = default!;
 
     /// <summary>

@@ -25,8 +25,12 @@ public class TransactionsIntegrationTestFixture : FinanceTestFixture, IAsyncLife
 {
     public Category TestCategory { get; private set; } = default!;
     public Bank TestBank { get; private set; } = default!;
+    public Due TestDue { get; private set; } = default!;
     private CategoryBuilder _categoryBuilder = default!;
     private BankBuilder _bankBuilder = default!;
+    private DueBuilder _dueBuilder = default!;
+    
+    public TransactionsIntegrationTestFixture(FinanceTestWebApplicationFactory factory) : base(factory) { }
     
     public async Task InitializeAsync()
     {
@@ -35,10 +39,13 @@ public class TransactionsIntegrationTestFixture : FinanceTestFixture, IAsyncLife
             WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
             JwtConfiguration jwtConfiguration = scope.ServiceProvider.GetRequiredService<IOptions<JwtConfiguration>>().Value;
             await dbContext.Database.MigrateAsync();
+            await TruncateTables(dbContext);
             _categoryBuilder = scope.ServiceProvider.GetRequiredService<CategoryBuilder>();
             _bankBuilder = scope.ServiceProvider.GetRequiredService<BankBuilder>();
+            _dueBuilder = scope.ServiceProvider.GetRequiredService<DueBuilder>();
             TestCategory = await _categoryBuilder.CreateCategoryAsync();
             TestBank = await _bankBuilder.CreateBankAsync();
+            TestDue = await _dueBuilder.CreateDueAsync();
             SetClientHeaders(jwtConfiguration);
         }
     }
@@ -51,13 +58,9 @@ public class TransactionsIntegrationTestFixture : FinanceTestFixture, IAsyncLife
 
             await dbContext.Categories.ExecuteDeleteAsync();
             await dbContext.Banks.ExecuteDeleteAsync();
-            
-            // since hard-coded banks & category ids "1" and "2" are used in transaction tests, resetting the banks & category table identity.
-            // If not every transactions tests access new dynamic bank or category id
-            await dbContext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE categories RESTART IDENTITY CASCADE");
-            await dbContext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE banks RESTART IDENTITY CASCADE");
+            await dbContext.Dues.ExecuteDeleteAsync();
         }
         
-        DisposeFactoryAndClient();
+        DisposeClients();
     }
 }

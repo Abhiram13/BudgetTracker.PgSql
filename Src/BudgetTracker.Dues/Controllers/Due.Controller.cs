@@ -45,7 +45,7 @@ public class DueController : ControllerBase
         };
 
         await _dueService.InsertOneAsync(due);
-        return Ok(new ApiResponse<string>
+        return Ok(new ApiResponse
         {
             StatusCode = System.Net.HttpStatusCode.Created,
             TraceId =_traceProvider.TraceId,

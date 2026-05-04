@@ -93,22 +93,7 @@ public class TransactionRepository : ITransactionRepository
     /// <inheritdoc />
     public async Task<int> CountOfAllTransactionsAsync(int? month, int? year) // TODO: Move validations to Transactions Service class
     {
-        int m = month ?? DateTime.Now.Month;
-        int y = year ?? DateTime.Now.Year;
-
-        if (m > DateTime.Now.Month)
-        {
-            throw new InvalidPayloadException("Month cannot be greater than current month.");
-        }
-
-        if (y > DateTime.Now.Year)
-        {
-            throw new InvalidPayloadException("Year cannot be greater than current year.");
-        }
-        
-        DateOnly start = new DateOnly(y, m, 1);
-        DateOnly end = start.AddMonths(1);
-
+        (DateOnly start, DateOnly end) = ValidateMonthYear(month, year);
         int count = await _readDbContext.Transactions
             .Where(t => t.Date >= start && t.Date < end)
             .CountAsync();
@@ -142,5 +127,78 @@ public class TransactionRepository : ITransactionRepository
         List<DateOnly> dates = await _readDbContext.Transactions.GroupBy(t => t.Date).Select(t => t.Key).ToListAsync();
 
         return dates;
+    }
+
+    /// <inheritdoc />
+    public async Task<List<TransactionsListByMonthYear>> GetListOfTransactionsByMonthYear(int? month, int? year)
+    {
+        (DateOnly start, DateOnly end) = ValidateMonthYear(month, year);
+        List<TransactionsListByMonthYear> result = await _readDbContext.Transactions 
+            .Where(t => t.Date >= start && t.Date < end)
+            .GroupBy(t => t.Date)
+            .Select(t => new TransactionsListByMonthYear
+            {
+                TransactionDate = t.Key,
+                Debit = t.Where(d => d.Type == TransactionType.Debit).Sum(d => d.Amount),
+                Credit = t.Where(c => c.Type == TransactionType.Credit).Sum(c => c.Amount),
+            })
+            .ToListAsync();;
+
+        return result;
+    }
+
+    /// <inheritdoc />
+    public async Task<List<CategoryBankTransactionsByMonthYear>> GetListOfCategoryTransactionsByMonthYear(int? month, int? year)
+    {
+        (DateOnly start, DateOnly end) = ValidateMonthYear(month, year);
+        List<CategoryBankTransactionsByMonthYear> result = await _readDbContext.Transactions
+            .Where(t => t.Date >= start && t.Date < end)
+            .GroupBy(t => new { t.CategoryId, t.CategoryF.Name })
+            .Select(g => new CategoryBankTransactionsByMonthYear
+            {
+                Name = g.Key.Name,
+                Amount = g.Where(d => d.Type == TransactionType.Debit).Sum(d => d.Amount),
+            })
+            .ToListAsync();;
+
+        return result;
+    }
+
+    /// <inheritdoc />
+    public async Task<List<CategoryBankTransactionsByMonthYear>> GetListOfBankTransactionsByMonthYear(int? month, int? year)
+    {
+        (DateOnly start, DateOnly end) = ValidateMonthYear(month, year);
+        List<CategoryBankTransactionsByMonthYear> result = await _readDbContext.Transactions
+            .Where(t => t.Date >= start && t.Date < end)
+            .GroupBy(t => new { t.FromBank, t.FromBankF.Name })
+            .Select(g => new CategoryBankTransactionsByMonthYear
+            {
+                Name = g.Key.Name,
+                Amount = g.Where(d => d.Type == TransactionType.Debit).Sum(d => d.Amount),
+            })
+            .ToListAsync();;
+
+        return result;
+    }
+
+    private (DateOnly start, DateOnly end) ValidateMonthYear(int? month, int? year)
+    {
+        int m = month ?? DateTime.Now.Month;
+        int y = year ?? DateTime.Now.Year;
+
+        if (m > DateTime.Now.Month)
+        {
+            throw new InvalidPayloadException("Month cannot be greater than current month.");
+        }
+
+        if (y > DateTime.Now.Year)
+        {
+            throw new InvalidPayloadException("Year cannot be greater than current year.");
+        }
+        
+        DateOnly start = new DateOnly(y, m, 1);
+        DateOnly end = start.AddMonths(1);
+        
+        return (start, end);
     }
 }

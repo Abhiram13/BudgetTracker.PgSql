@@ -19,6 +19,7 @@ public abstract class BaseDbContext<T> : DbContext where T : DbContext
     public DbSet<Bank> Banks { get; set; }
     public DbSet<FinanceOutboxEvents> FinanceOutboxEvents { get; set; }
     public DbSet<Receipt> Receipts { get; set; }
+    public DbSet<Due> Dues { get; set; }
 }
 
 public class WriteDbContext : BaseDbContext<WriteDbContext>

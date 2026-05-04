@@ -13,42 +13,83 @@ using IntegrationTests.Finance.Data.Transactions;
 using IntegrationTests.Finance.Definations.Transactions;
 using IntegrationTests.Finance.Fixtures;
 using IntegrationTests.Finance.Disposals;
+using Xunit.Abstractions;
 
 namespace IntegrationTests.Finance.Tests.Transactions;
 
 [Collection(nameof(DatabaseFixture))]
-public class TransactionsTests
+public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixture>
 {
     private readonly Category _testCategory;
     private readonly Bank _testBank;
     private readonly HttpClient _client;
     private readonly HttpClient _unAuthorizedClient;
+    private readonly HttpClient _invalidJwtClient;
+    private readonly HttpClient _noPolicyJwtClient;
     private readonly TransactionsIntegrationTestFixture _fixture;
+    private readonly ITestOutputHelper _testOutputHelper;
     private const string TRANSACTIONS_ROUTE = "/api/transactions";
 
-    public TransactionsTests(TransactionsIntegrationTestFixture fixture)
+    public TransactionsTests(TransactionsIntegrationTestFixture fixture, ITestOutputHelper testOutputHelper)
     {
         _client = fixture.Client;
         _unAuthorizedClient = fixture.UnAuthorizedClient;
+        _invalidJwtClient = fixture.InvalidTokenClient;
+        _noPolicyJwtClient = fixture.NoPolicyTokenClient;
         _testCategory = fixture.TestCategory;
         _testBank = fixture.TestBank;
         _fixture = fixture;
+        _testOutputHelper = testOutputHelper;
     }
 
-    // TODO: Fix the response format
-    // [Fact]
-    // public async Task Unauthorised_401_Response_Async()
-    // {
-    //     string date = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd");
-    //     HttpResponseMessage httpResponse = await _unAuthorizedClient.GetAsync($"{TRANSACTIONS_ROUTE}/date/{date}");
-    //     ApiResponse? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse>();
-    //     
-    //     Assert.Equal(HttpStatusCode.Unauthorized, httpResponse.StatusCode);
-    //     Assert.NotNull(apiResponse);
-    //     Assert.Equal(HttpStatusCode.Unauthorized, apiResponse.StatusCode);
-    //     Assert.NotNull(apiResponse.Message);
-    //     Assert.NotEmpty(apiResponse.Message);
-    // }
+    #region Authentication and Authorisation Tests
+    
+    [Fact]
+    public async Task Unauthorised_401_Response_Async()
+    {
+        string date = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd");
+        HttpResponseMessage httpResponse = await _unAuthorizedClient.GetAsync($"{TRANSACTIONS_ROUTE}/date/{date}");
+        ApiResponse? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse>();
+        
+        Assert.Equal(HttpStatusCode.Unauthorized, httpResponse.StatusCode);
+        Assert.NotNull(apiResponse);
+        Assert.Equal(HttpStatusCode.Unauthorized, apiResponse.StatusCode);
+        Assert.NotNull(apiResponse.Message);
+        Assert.NotEmpty(apiResponse.Message);
+        Assert.Equal("You are not authorized. Token may be missing or invalid.", apiResponse.Message);
+    }
+    
+    [Fact]
+    public async Task InValid_Token_401_Response_Async()
+    {
+        string date = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd");
+        HttpResponseMessage httpResponse = await _invalidJwtClient.GetAsync($"{TRANSACTIONS_ROUTE}/date/{date}");
+        ApiResponse? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse>();
+        
+        Assert.Equal(HttpStatusCode.Unauthorized, httpResponse.StatusCode);
+        Assert.NotNull(apiResponse);
+        Assert.Equal(HttpStatusCode.Unauthorized, apiResponse.StatusCode);
+        Assert.NotNull(apiResponse.Message);
+        Assert.NotEmpty(apiResponse.Message);
+        Assert.Equal("You are not authorized. Token may be missing or invalid.", apiResponse.Message);
+    }
+    
+    [Fact]
+    public async Task NoPolicy_Token_403_Response_Async()
+    {
+        string date = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd");
+        HttpResponseMessage httpResponse = await _noPolicyJwtClient.GetAsync($"{TRANSACTIONS_ROUTE}/date/{date}");
+        ApiResponse? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse>();
+        
+        Assert.Equal(HttpStatusCode.Forbidden, httpResponse.StatusCode);
+        Assert.NotNull(apiResponse);
+        Assert.Equal(HttpStatusCode.Forbidden, apiResponse.StatusCode);
+        Assert.NotNull(apiResponse.Message);
+        Assert.NotEmpty(apiResponse.Message);
+        Assert.Equal("Access Denied: You do not have permission to perform this action.", apiResponse.Message);
+    }
+    
+    #endregion
     
     #region Transaction Entity
 
@@ -75,29 +116,31 @@ public class TransactionsTests
 
     [Theory]
     [ClassData(typeof(TransactionsEntityInValidTestData))]
-    public async Task Transaction_Entity_InValid_Success_Async(Transaction transaction)
+    public async Task Transaction_Entity_InValid_ThrowsException_Async(InsertTransactionInvalidEntityThrowsExceptionDto data)
     {
         using (IServiceScope scope = _fixture.Factory.CreateScope())
         {
             WriteDbContext dbcontext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
-
             await using (new TransactionDisposal(dbcontext))
             {
-                // TODO: Exception is not getting caught
-                await Assert.ThrowsAsync<InvalidPayloadException>(async () =>
+                Exception exception = await Record.ExceptionAsync(async () =>
                 {
+                    Transaction transaction = Transaction.Create(
+                        actualAmount: data.Payload.Amount,
+                        description: data.Payload.Description,
+                        amount: data.Payload.Amount,
+                        date: data.Payload.Date,
+                        categoryId: data.Payload.CategoryId,
+                        fromBank: data.Payload.FromBank,
+                        toBank: data.Payload.ToBank,
+                        type: data.Payload.Type
+                    );
                     await dbcontext.Transactions.AddAsync(transaction);
                     await dbcontext.SaveChangesAsync();
                 });
-
-                // Exception _ = await Record.ExceptionAsync(async () =>
-                // {
-                //     await dbcontext.Transactions.AddAsync(transaction);
-                //     await dbcontext.SaveChangesAsync();
-                // });
-
-                Transaction? data = await dbcontext.Transactions.Where(t => t.Description == transaction.Description).FirstOrDefaultAsync();
-                Assert.Null(data);
+                
+                Assert.NotNull(exception);
+                Assert.IsType(data.ExpectedExceptionType, exception);
             }
         }
     }
@@ -258,6 +301,60 @@ public class TransactionsTests
                 Assert.NotEmpty(apiResponse.Message);
                 Assert.Equal(HttpStatusCode.BadRequest, httpResponse.StatusCode);
                 Assert.Equal(HttpStatusCode.BadRequest, apiResponse.StatusCode);
+            }
+        }
+    }
+    
+    [Theory]
+    [ClassData(typeof(TransactionsInsertDueMetaSuccessTestData))]
+    public async Task InsertTransaction_DueInsert_TransactionsMeta_SuccessResponse_Async(InsertTransactionDueIdMetaDataDef data)
+    {
+        using (IServiceScope scope = _fixture.Factory.CreateScope())
+        {
+            WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
+
+            await using (new TransactionDisposal(dbContext))
+            {
+                HttpResponseMessage httpResponse = await _client.PostAsJsonAsync(TRANSACTIONS_ROUTE, data.Payload);
+                ApiResponse<InsertTransactionResponseDto>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<InsertTransactionResponseDto>>();
+                TransactionsMeta? meta = await dbContext.TransactionsMeta.Where(m => m.TransactionId == apiResponse!.Result.TransactionId).FirstOrDefaultAsync();
+                
+                Assert.NotNull(apiResponse);
+                Assert.NotNull(apiResponse.Message);
+                Assert.NotEmpty(apiResponse.Message);
+                Assert.NotNull(apiResponse.Result);
+                Assert.Equal(data.ExpectedHttpStatusCode, httpResponse.StatusCode);
+                Assert.Equal(data.ExpectedApiStatusCode, apiResponse.StatusCode);
+                Assert.Equal(data.ExpectedMetaData, meta is not null);
+
+                if (data.ExpectedMetaData)
+                {
+                    Assert.Equal(meta!.DueId, data.Payload.DueId);
+                }
+            }
+        }
+    }
+    
+    [Theory]
+    [ClassData(typeof(TransactionsInsertDueMetaFailureTestData))]
+    public async Task InsertTransaction_DueInsert_TransactionsMeta_FailureResponse_Async(InsertTransactionDueIdMetaDataDef data)
+    {
+        using (IServiceScope scope = _fixture.Factory.CreateScope())
+        {
+            WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
+
+            await using (new TransactionDisposal(dbContext))
+            {
+                HttpResponseMessage httpResponse = await _client.PostAsJsonAsync(TRANSACTIONS_ROUTE, data.Payload);
+                ApiResponse? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse>();
+                int? metaDataCount = await dbContext.TransactionsMeta.CountAsync();
+                
+                Assert.NotNull(apiResponse);
+                Assert.NotNull(apiResponse.Message);
+                Assert.NotEmpty(apiResponse.Message);
+                Assert.Equal(0, metaDataCount);
+                Assert.Equal(data.ExpectedHttpStatusCode, httpResponse.StatusCode);
+                Assert.Equal(data.ExpectedApiStatusCode, apiResponse.StatusCode);
             }
         }
     }
@@ -479,6 +576,7 @@ public class TransactionsTests
                 ApiResponse<int>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<int>>();
                 
                 Assert.NotNull(apiResponse);
+                Assert.NotNull(apiResponse.Result);
                 // Assert.NotEmpty(apiResponse.TraceId); // TODO: Empty Trace ID
                 Assert.Equal(data.ExpectedHttpStatusCode, httpResponse.StatusCode);
                 Assert.Equal(data.ExpectedApiStatusCode, apiResponse.StatusCode);

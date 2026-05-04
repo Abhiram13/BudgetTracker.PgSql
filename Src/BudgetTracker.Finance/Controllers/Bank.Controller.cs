@@ -29,7 +29,7 @@ public class BankController : ControllerBase
     public async Task<ActionResult<ApiResponse<string>>> InsertAsync([FromBody] InsertBankDto payload)
     {
         await _bankService.InsertBankAsync(payload);
-        return Ok(new ApiResponse<string>
+        return Ok(new ApiResponse
         {
             StatusCode = System.Net.HttpStatusCode.Created,
             TraceId = _traceProvider.TraceId,
@@ -71,7 +71,7 @@ public class BankController : ControllerBase
     {
         await _bankService.UpdateBankAsync(payload, id);
 
-        return Ok(new ApiResponse<string>
+        return Ok(new ApiResponse
         {
             StatusCode = System.Net.HttpStatusCode.OK,
             TraceId = _traceProvider.TraceId,

@@ -1,5 +1,6 @@
 using BudgetTracker.Finance;
 using BudgetTracker.Finance.Entities;
+using BudgetTracker.Shared.Exceptions;
 using IntegrationTests.Finance.Data.Banks;
 using IntegrationTests.Finance.Disposals;
 using IntegrationTests.Finance.Fixtures;
@@ -9,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace IntegrationTests.Finance.Tests.Banks;
 
 [Collection(nameof(DatabaseFixture))]
-public class BankTests
+public class BankTests : IClassFixture<BanksTestsFixture>
 {
     private readonly HttpClient _client;
     private readonly HttpClient _unAuthorizedClient;
@@ -55,9 +56,9 @@ public class BankTests
             
             await using (new BankDisposal(dbcontext))
             {
-                Bank bank = Bank.Create(bankName);
-                await Assert.ThrowsAsync<DbUpdateException>(async () =>
+                await Assert.ThrowsAsync<InvalidPayloadException>(async () =>
                 {
+                    Bank bank = Bank.Create(bankName);
                     await dbcontext.Banks.AddAsync(bank);
                     await dbcontext.SaveChangesAsync();
                 });

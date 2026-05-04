@@ -1,5 +1,8 @@
+using System.Net;
 using BudgetTracker.Shared.Configurations;
 using BudgetTracker.Shared.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,7 +45,40 @@ public static class SharedServiceExtensions
             collection
                 .ConfigureOptions<ConfigureJwtOptions>()
                 .AddAuthentication()
-                .AddJwtBearer();
+                .AddJwtBearer(options =>
+                {
+                    options.IncludeErrorDetails = true;
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnChallenge = async context =>
+                        {
+                            context.HandleResponse();
+                            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                            context.Response.ContentType = "application/json";
+
+                            ApiResponse response = new ApiResponse
+                            {
+                                Message = "You are not authorized. Token may be missing or invalid.",
+                                StatusCode = HttpStatusCode.Unauthorized,
+                            };
+
+                            await context.Response.WriteAsJsonAsync(response);
+                        },
+                        OnForbidden = async context =>
+                        {
+                            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                            context.Response.ContentType = "application/json";
+
+                            ApiResponse response = new ApiResponse
+                            {
+                                StatusCode = HttpStatusCode.Forbidden,
+                                Message = "Access Denied: You do not have permission to perform this action."
+                            };
+
+                            await context.Response.WriteAsJsonAsync(response);
+                        }
+                    };
+                });
             
             return collection;
         }
