@@ -65,4 +65,22 @@ public interface ITransactionRepository
     /// </remarks>
     /// <returns>A list of <see cref="DateOnly"/> values of all transactions</returns>
     Task<List<DateOnly>> GetGroupOfDatesAsync();
+    
+    /// <summary>
+    /// Retrieves list of all transactions by given month and date
+    /// </summary>
+    /// <exception cref="InvalidPayloadException">Thrown if month or year are invalid or contains future values.</exception>
+    Task<List<TransactionsListByMonthYear>> GetListOfTransactionsByMonthYear(int? month, int? year);
+    
+    /// <summary>
+    /// Retrieves list of all transactions grouped by all Categories by given month and date
+    /// </summary>
+    /// <exception cref="InvalidPayloadException">Thrown if month or year are invalid or contains future values.</exception>
+    Task<List<CategoryBankTransactionsByMonthYear>> GetListOfCategoryTransactionsByMonthYear(int? month, int? year);
+    
+    /// <summary>
+    /// Retrieves list of all transactions grouped by all Banks by given month and date
+    /// </summary>
+    /// <exception cref="InvalidPayloadException">Thrown if month or year are invalid or contains future values.</exception>
+    Task<List<CategoryBankTransactionsByMonthYear>> GetListOfBankTransactionsByMonthYear(int? month, int? year);
 }

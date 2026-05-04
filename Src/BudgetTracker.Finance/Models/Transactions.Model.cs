@@ -1,10 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 using BudgetTracker.Finance.Attributes;
+using BudgetTracker.Finance.Entities;
 using BudgetTracker.Finance.Enums;
 using BudgetTracker.Shared.Constants;
 
 namespace BudgetTracker.Finance.Models;
 
+/// <summary>
+/// Payload DTO that will be used by <see cref="InsertTransactionDto"/> and <see cref="UpdateTransactionDto"/> in <see cref="Transaction"/> entity
+/// </summary>
 public abstract record TransactionDto
 {
     [Required(ErrorMessage = "Amount is required")]
@@ -54,6 +58,9 @@ public record InsertTransactionDto : TransactionDto { }
 
 public record UpdateTransactionDto : TransactionDto { }
 
+/// <summary>
+/// Payload that holds data belongs to Transction that fetched by Date (<c>yyyy-MM-dd</c>)
+/// </summary>
 public record TransactionByDateDto
 {
     [JsonPropertyName("debit")]
@@ -84,5 +91,43 @@ public record TransactionByDateDto
 public record InsertTransactionResponseDto
 {
     [JsonPropertyName("transaction_id")]
-    public int TransactionId { get; set; }
+    public int TransactionId { get; init; }
+}
+
+/// <summary>
+/// List of all transactions filtered by given month and year. Each data row contains <c>Debit</c>, <c>Credit</c> and <c>TransactionDate</c>
+/// </summary>
+public record TransactionsListByMonthYear
+{
+    /// <summary>
+    /// Sum of the debit during a single transaction date
+    /// </summary>
+    [JsonPropertyName("debit")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public decimal? Debit { get; init; }
+    
+    /// <summary>
+    /// Sum of the credit during a single transaction date
+    /// </summary>
+    [JsonPropertyName("credit")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public decimal? Credit { get; init; }
+    
+    /// <summary>
+    /// Single transaction date
+    /// </summary>
+    [JsonPropertyName("transaction_date")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public DateOnly? TransactionDate { get; init; }
+}
+
+public record CategoryBankTransactionsByMonthYear
+{
+    [JsonPropertyName("name")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Name { get; init; }
+    
+    [JsonPropertyName("amount")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public decimal? Amount { get; init; }
 }

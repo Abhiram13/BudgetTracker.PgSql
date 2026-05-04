@@ -149,6 +149,81 @@ public class TransactionController : ControllerBase
             Message = "Transaction updated successfully"
         });
     }
+    
+    /// <summary>
+    /// Retrieves total transactions for given month and year
+    /// </summary>
+    /// <param name="month">Optional month (1-12) to filter the count. Defaults to current month</param>
+    /// <param name="year">Optional year to filter the count. Defaults to current year</param>
+    /// <exception cref="InvalidPayloadException">Thrown when given month or year is greater than current month and year</exception>
+    /// <response code="200">Returns all transactions based on given month and year</response>
+    /// <response code="400">Returns when given month or year is in invalid format or future.</response>
+    /// <response code="500">Returns when any internal exception or DB updates failed due to constraints violations.</response>
+    [HttpGet]
+    [ProducesResponseType(typeof(ApiResponse<TransactionByDateDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> ListOfTransactionsByMonthYear([FromQuery] int? month, [FromQuery] int? year)
+    {
+        List<TransactionsListByMonthYear> result = await _transactionService.GetTransactionsByMonthYearAsync(month, year);
+
+        return Ok(new ApiResponse<List<TransactionsListByMonthYear>>
+        {
+            StatusCode = System.Net.HttpStatusCode.OK,
+            TraceId = _traceProvider.TraceId,
+            Result = result
+        });
+    }
+    
+    /// <summary>
+    /// Retrieves total transactions for given month and year
+    /// </summary>
+    /// <param name="month">Optional month (1-12) to filter the count. Defaults to current month</param>
+    /// <param name="year">Optional year to filter the count. Defaults to current year</param>
+    /// <exception cref="InvalidPayloadException">Thrown when given month or year is greater than current month and year</exception>
+    /// <response code="200">Returns all transactions based on given month and year</response>
+    /// <response code="400">Returns when given month or year is in invalid format or future.</response>
+    /// <response code="500">Returns when any internal exception or DB updates failed due to constraints violations.</response>
+    [HttpGet("categories")]
+    [ProducesResponseType(typeof(ApiResponse<TransactionByDateDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> ListOfCategoryTransactionsByMonthYear([FromQuery] int? month, [FromQuery] int? year)
+    {
+        List<CategoryBankTransactionsByMonthYear> result = await _transactionService.GetCategoryTransactionsByMonthYearAsync(month, year);
+
+        return Ok(new ApiResponse<List<CategoryBankTransactionsByMonthYear>>
+        {
+            StatusCode = System.Net.HttpStatusCode.OK,
+            TraceId = _traceProvider.TraceId,
+            Result = result
+        });
+    }
+    
+    /// <summary>
+    /// Retrieves total transactions for given month and year
+    /// </summary>
+    /// <param name="month">Optional month (1-12) to filter the count. Defaults to current month</param>
+    /// <param name="year">Optional year to filter the count. Defaults to current year</param>
+    /// <exception cref="InvalidPayloadException">Thrown when given month or year is greater than current month and year</exception>
+    /// <response code="200">Returns all transactions based on given month and year</response>
+    /// <response code="400">Returns when given month or year is in invalid format or future.</response>
+    /// <response code="500">Returns when any internal exception or DB updates failed due to constraints violations.</response>
+    [HttpGet("banks")]
+    [ProducesResponseType(typeof(ApiResponse<TransactionByDateDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> ListOfBankTransactionsByMonthYear([FromQuery] int? month, [FromQuery] int? year)
+    {
+        List<CategoryBankTransactionsByMonthYear> result = await _transactionService.GetBankTransactionsByMonthYearAsync(month, year);
+
+        return Ok(new ApiResponse<List<CategoryBankTransactionsByMonthYear>>
+        {
+            StatusCode = System.Net.HttpStatusCode.OK,
+            TraceId = _traceProvider.TraceId,
+            Result = result
+        });
+    }
 
     // [HttpGet("bigQuery")]
     // public async Task<IActionResult> BigQueryUpdatesAsync()
