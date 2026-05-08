@@ -33,7 +33,7 @@ public class FinanceTestWebApplicationFactory : WebApplicationFactory<Program>
     {
         DotEnvironmentVariables.Load();
         
-        builder.UseEnvironment("Development"); // TODO: Use Test here
+        builder.UseEnvironment("Test");
 
         // loading secrets from .env and appsettings.<env>.json into builder.configuration
         builder.ConfigureAppConfiguration((context, config) =>

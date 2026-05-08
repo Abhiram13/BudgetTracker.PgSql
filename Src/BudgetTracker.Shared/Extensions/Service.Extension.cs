@@ -19,7 +19,7 @@ public static class SharedServiceExtensions
     extension(IServiceCollection collection)
     {
         /// <summary>
-        /// Loads <see cref="JwtConfiguration"/> with secrets from <c>JWT</c> section
+        /// Loads <see cref="JwtConfiguration"/> with secrets into <see cref="IOptions{TOptions}"/> configuration from <c>Jwt</c> section from <c>appsettings</c>
         /// </summary>
         /// <remarks>This method should be called before <see cref="AddJwtConfiguration"/></remarks>
         /// <param name="configuration"><see cref="IConfiguration"/></param>
@@ -28,7 +28,7 @@ public static class SharedServiceExtensions
         {
             collection
                 .AddOptions<JwtConfiguration>()
-                .Bind(configuration.GetSection("JWT"))
+                .Bind(configuration.GetSection("Jwt"))
                 .Validate(c => !string.IsNullOrEmpty(c.SigningKey), "JWT Signing key is required")
                 .Validate(c => !string.IsNullOrEmpty(c.Issuer), "JWT Issuer is required")
                 .ValidateOnStart();
@@ -45,40 +45,7 @@ public static class SharedServiceExtensions
             collection
                 .ConfigureOptions<ConfigureJwtOptions>()
                 .AddAuthentication()
-                .AddJwtBearer(options =>
-                {
-                    options.IncludeErrorDetails = true;
-                    options.Events = new JwtBearerEvents
-                    {
-                        OnChallenge = async context =>
-                        {
-                            context.HandleResponse();
-                            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                            context.Response.ContentType = "application/json";
-
-                            ApiResponse response = new ApiResponse
-                            {
-                                Message = "You are not authorized. Token may be missing or invalid.",
-                                StatusCode = HttpStatusCode.Unauthorized,
-                            };
-
-                            await context.Response.WriteAsJsonAsync(response);
-                        },
-                        OnForbidden = async context =>
-                        {
-                            context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                            context.Response.ContentType = "application/json";
-
-                            ApiResponse response = new ApiResponse
-                            {
-                                StatusCode = HttpStatusCode.Forbidden,
-                                Message = "Access Denied: You do not have permission to perform this action."
-                            };
-
-                            await context.Response.WriteAsJsonAsync(response);
-                        }
-                    };
-                });
+                .AddJwtBearer();
             
             return collection;
         }

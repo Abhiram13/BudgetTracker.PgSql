@@ -16,7 +16,7 @@ public record DatabaseConfiguration
     public string Host { get; init; } = string.Empty;
     
     /// <summary>
-    /// Host of the DB (Write, Read or Migrate)
+    /// Port of the DB (Write, Read or Migrate)
     /// </summary>
     [ConfigurationKeyName("Port")]
     public string Port { get; init; } = string.Empty;
@@ -45,9 +45,9 @@ public record DatabaseConfiguration
 /// </summary>
 public static class DatabaseType
 {
-    public const string WRITE = "WRITE";
-    public const string READ = "READ";
-    public const string MIGRATE = "MIGRATE";
+    public const string WRITE = "Write";
+    public const string READ = "Read";
+    public const string MIGRATE = "Migrate";
 }
 
 public class DatabaseConfigurationSetup : IConfigureNamedOptions<DatabaseConfiguration>

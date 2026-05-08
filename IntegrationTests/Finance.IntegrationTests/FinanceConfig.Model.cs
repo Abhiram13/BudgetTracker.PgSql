@@ -11,7 +11,7 @@ public record PubSub
 
 public record FinanceConfig
 {
-    [ConfigurationKeyName("PUB_SUB")]
+    [ConfigurationKeyName("PubSub")]
     public required PubSub PubSub { get; init; }
     
     [ConfigurationKeyName("GOOGLE_CLOUD_PROJECT_ID")]
