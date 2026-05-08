@@ -45,6 +45,11 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <DependentUpon>Program.cs</DependentUpon>
         </None>
+        <None Include="..\sharedsettings.Test.json" Condition="Exists('..\sharedsettings.Test.json')">
+            <Link>sharedsettings.Test.json</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <DependentUpon>Program.cs</DependentUpon>
+        </None>
     </ItemGroup>
 
     <ItemGroup>

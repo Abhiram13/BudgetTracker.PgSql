@@ -2,8 +2,10 @@ using System.Net;
 using Abhiram.Extensions.DotEnv;
 using Abhiram.Abstractions.Logging;
 using Abhiram.Secrets.Configuration;
+using BudgetTracker.Finance.Configurations;
 using BudgetTracker.Finance.Extensions;
 using BudgetTracker.Shared.Models;
+using Microsoft.Extensions.Options;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 DotEnvironmentVariables.Load();
@@ -19,9 +21,10 @@ builder.Configuration
 builder.AddConsoleGoogleSeriLog();
 builder.Configuration.AddSecrets(environment: builder.Environment, optional: false);
 builder.Services.AddCollections(builder.Configuration);
-builder.WebHost.ConfigureKestrel((_, server) => {
-    string portNumber = Environment.GetEnvironmentVariable("PORT") ?? "3001";
-    int port = int.Parse(portNumber);
+builder.WebHost.ConfigureKestrel((context, server) =>
+{
+    AppSecrets? secrets = context.Configuration.Get<AppSecrets>();
+    int port = secrets?.ServerPort ?? 3001;
     server.Listen(IPAddress.Any, port);
 });
 

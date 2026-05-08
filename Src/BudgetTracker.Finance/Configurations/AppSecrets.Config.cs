@@ -6,10 +6,10 @@ using BudgetTracker.Shared.Models;
 namespace BudgetTracker.Finance.Configurations;
 
 /// <summary>
-/// Represents the strongly-typed root configuration for the application.
+/// Holds secrets or configuration required for the application
 /// </summary>
 /// <remarks>
-/// This record is bound from multiple configuration sources including appsettings.json, environment variables, and secret managers.
+/// This record is updated from multiple configuration sources including appsettings.json, environment variables, and secret managers.
 /// </remarks>
 public sealed record AppSecrets
 {
@@ -31,8 +31,16 @@ public sealed record AppSecrets
     /// <remarks>
     /// Typically mapped from the <c>GOOGLE_CLOUD_PROJECT_ID</c> environment variable.
     /// </remarks>
+    [Required]
     [ConfigurationKeyName("GOOGLE_CLOUD_PROJECT_ID")]
     public string GoogleCloudProjectId { get; init; } = string.Empty;
+    
+    /// <summary>
+    /// Gets or Sets the port of the current App server through environmental variable <c>PORT</c>
+    /// </summary>
+    [Required]
+    [ConfigurationKeyName("PORT")]
+    public int ServerPort {  get; init; }
 }
 
 /// <summary>
@@ -43,11 +51,13 @@ public record PubSubSecrets
     /// <summary>
     /// PubSub topic name
     /// </summary>
+    [Required]
     public string Topic { get; init; } = string.Empty;
     
     /// <summary>
     /// PubSub subscriber name
     /// </summary>
+    [Required]
     public string Subscriber { get; init; } = string.Empty;
 }
 
@@ -59,5 +69,6 @@ public record OutboxConfig
     /// <summary>
     /// Interval time to run Outbox background service
     /// </summary>
+    /// <value>In Seconds</value>
     public int Period { get; init; } = 100;
 }

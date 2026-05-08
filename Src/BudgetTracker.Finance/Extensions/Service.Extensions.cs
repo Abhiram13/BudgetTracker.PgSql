@@ -226,9 +226,33 @@ internal static class ServiceExtension
             return serviceCollection;
         }
 
+        /// <summary>
+        /// Sets config and secrets from environmental variables or appsettings.json into <see cref="IOptions{AppSecrets}"/> 
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <returns>Updated <see cref="IServiceCollection"/></returns>
+        /// <exception cref="OptionsValidationException">
+        /// <para>When <c>Port</c> is invalid or empty</para>
+        /// <para>When <c>GOOGLE_CLOUD_PROJECT_ID</c> is invalid or empty</para>
+        /// </exception>
         private IServiceCollection AddOptionsConfigurations(IConfiguration configuration)
         {
-            serviceCollection.AddOptions<AppSecrets>().Bind(configuration).ValidateDataAnnotations().ValidateOnStart();
+            serviceCollection
+                .AddOptions<AppSecrets>()
+                .Bind(configuration)
+                .ValidateDataAnnotations()
+                .Validate(a => !string.IsNullOrEmpty(a.GoogleCloudProjectId), "Google Cloud Project ID is required and current given value is invalid")
+                .Validate<IHostEnvironment>((appConfiguration, hostEnvironment) =>
+                {
+                    if (hostEnvironment.IsEnvironment("Test"))
+                    {
+                        return true;
+                    }
+
+                    return appConfiguration.ServerPort != default;
+                }, "Server Port is required and current given value is invalid")
+                .ValidateOnStart();
+            
             return serviceCollection;
         }
     }

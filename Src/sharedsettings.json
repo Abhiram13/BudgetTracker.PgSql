@@ -1,15 +1,5 @@
 {
     "Serilog": {
-        "MinimumLevel": {
-            "Default": "Information",
-            "Override": {
-                "Microsoft": "Warning",
-                "Microsoft.AspNetCore": "Error",
-                "System": "Error",
-                "BudgetTracker.Infrastructure.Security": "Information",
-                "Yarp.ReverseProxy.Forwarder.HttpForwarder": "Error"
-            }
-        },
         "Filter": [
             {
                 "Name": "ByExcluding"
