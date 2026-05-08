@@ -16,7 +16,7 @@ public record DatabaseConfiguration
     public string Host { get; init; } = string.Empty;
     
     /// <summary>
-    /// Host of the DB (Write, Read or Migrate)
+    /// Port of the DB (Write, Read or Migrate)
     /// </summary>
     [ConfigurationKeyName("Port")]
     public string Port { get; init; } = string.Empty;
