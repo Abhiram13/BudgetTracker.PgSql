@@ -11,8 +11,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Src", "Src", "{75D55491-246
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BudgetTracker.Finance", "Src\BudgetTracker.Finance\BudgetTracker.Finance.csproj", "{033E0F06-827E-4106-9900-6740BAEFE08D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BudgetTracker.Dues", "Src\BudgetTracker.Dues\BudgetTracker.Dues.csproj", "{3B0E3290-1223-45FA-B0BC-C5FF35758BC3}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BudgetTracker.EMIs", "Src\BudgetTracker.EMIs\BudgetTracker.EMIs.csproj", "{896453A1-9E3D-4B89-946B-730F4D346308}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BudgetTracker.Shared", "Src\BudgetTracker.Shared\BudgetTracker.Shared.csproj", "{D803A410-3A43-4153-BCAB-F26868477286}"
@@ -40,18 +38,11 @@ Global
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{033E0F06-827E-4106-9900-6740BAEFE08D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{033E0F06-827E-4106-9900-6740BAEFE08D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{033E0F06-827E-4106-9900-6740BAEFE08D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{033E0F06-827E-4106-9900-6740BAEFE08D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3B0E3290-1223-45FA-B0BC-C5FF35758BC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3B0E3290-1223-45FA-B0BC-C5FF35758BC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3B0E3290-1223-45FA-B0BC-C5FF35758BC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3B0E3290-1223-45FA-B0BC-C5FF35758BC3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{896453A1-9E3D-4B89-946B-730F4D346308}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{896453A1-9E3D-4B89-946B-730F4D346308}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{896453A1-9E3D-4B89-946B-730F4D346308}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -89,9 +80,11 @@ Global
 		{843A00EB-0BB9-429C-A2B2-46E000682EAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{843A00EB-0BB9-429C-A2B2-46E000682EAC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{033E0F06-827E-4106-9900-6740BAEFE08D} = {75D55491-2465-4227-93FC-FAAA7E9115F1}
-		{3B0E3290-1223-45FA-B0BC-C5FF35758BC3} = {75D55491-2465-4227-93FC-FAAA7E9115F1}
 		{896453A1-9E3D-4B89-946B-730F4D346308} = {75D55491-2465-4227-93FC-FAAA7E9115F1}
 		{D803A410-3A43-4153-BCAB-F26868477286} = {75D55491-2465-4227-93FC-FAAA7E9115F1}
 		{B743F375-410C-4E9A-85C6-D01B4E4EFB4D} = {75D55491-2465-4227-93FC-FAAA7E9115F1}

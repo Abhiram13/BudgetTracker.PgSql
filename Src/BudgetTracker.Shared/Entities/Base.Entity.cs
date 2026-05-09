@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.CompilerServices;
 
+// HACK: This attribute is used to expose "internal" members to specific named Assembly/ Projects
 [assembly: InternalsVisibleTo("IntegrationTests.Finance")]
 
 namespace BudgetTracker.Shared.Entities;

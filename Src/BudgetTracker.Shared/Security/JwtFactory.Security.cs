@@ -7,17 +7,8 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace BudgetTracker.Shared.Security;
 
-/// <summary>
-/// 
-/// </summary>
 public static class JwtFactory
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="configuration"></param>
-    /// <param name="scope"></param>
-    /// <returns></returns>
     public static string CreateToken(JwtConfiguration configuration, string scope)
     {
         SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.SigningKey));
