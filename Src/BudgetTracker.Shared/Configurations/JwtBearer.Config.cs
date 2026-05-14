@@ -6,6 +6,7 @@ using BudgetTracker.Shared.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
@@ -67,12 +68,14 @@ public record JwtConfiguration
 public class ConfigureJwtOptions : IConfigureNamedOptions<JwtBearerOptions>
 {
     private readonly JwtConfiguration _config;
+    private readonly ILogger<ConfigureJwtOptions> _logger;
     
     /// <inheritdoc cref="ConfigureJwtOptions" />
     /// <param name="config"><see cref="IOptions{T}"/> Config that holds <see cref="JwtConfiguration"/></param>
-    public ConfigureJwtOptions(IOptions<JwtConfiguration> config)
+    public ConfigureJwtOptions(IOptions<JwtConfiguration> config, ILogger<ConfigureJwtOptions> logger)
     {
         _config = config.Value;
+        _logger = logger;
     }
     
     /// <summary>
@@ -96,7 +99,7 @@ public class ConfigureJwtOptions : IConfigureNamedOptions<JwtBearerOptions>
             ValidateLifetime = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.SigningKey)),
             ValidateIssuerSigningKey = _config.ValidateIssuerSigingKey,
-            SignatureValidator = (token, _) => new JsonWebToken(token),
+            // SignatureValidator = (token, _) => new JsonWebToken(token),
         };
         options.IncludeErrorDetails = true;
         options.Events = new JwtBearerEvents
@@ -106,6 +109,8 @@ public class ConfigureJwtOptions : IConfigureNamedOptions<JwtBearerOptions>
                 context.HandleResponse();
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 context.Response.ContentType = "application/json";
+                
+                _logger.LogError(context.AuthenticateFailure, "Error = {Error} and Description = {Desc}", context.Error, context.ErrorDescription);
 
                 ApiResponse response = new ApiResponse
                 {

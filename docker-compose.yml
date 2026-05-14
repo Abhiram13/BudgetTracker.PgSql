@@ -1,46 +1,50 @@
+name: budget-tracker
 version: "3.9"
 
 services:
-  gateway:
-    build:
-      context: .
-      dockerfile: Src/BudgetTracker.Gateway/Dockerfile
-      args:
-        NUGET_PAT: ${NUGET_PAT}
-        GOOGLE_CLOUD_PROJECT_ID: <project-id>
-        GOOGLE_APPLICATION_CREDENTIALS: /gcp/credentials.json        
-    image: budget-tracker-gateway
-    ports:
-      - "3000:3000"
-    environment:
-      ASPNETCORE_ENVIRONMENT: Development
-      # Downstream__Api1: http://budget-tracker-finance:3001
-      # ReverseProxy__Clusters__finance-cluster__Destinations__instance-01__Address: http://budget-tracker-finance:3001
-      ENV: Development
-      API_KEY: <api-key>
-      YARP_API_KEY: <yarp-api-key>
-    volumes:
-      - /Volumes/SecureDisk/budget-tracker-453204-64c2649cc266.json:/gcp/credentials.json:ro
-    depends_on:
-      - budget-tracker-finance
-
-  budget-tracker-finance:
-    build:
-      context: .      
-      dockerfile: Src/BudgetTracker.Finance/Dockerfile
-      args:
-        NUGET_PAT: ${NUGET_PAT}    
-    image: budget-tracker-finance
-    ports:
-      - "3001:3001"
-    environment:
-      ASPNETCORE_ENVIRONMENT: Development
-      ENV: Development
-      YARP_API_KEY: <yarp-api-key>
-      POSTGRES_HOST: host.docker.internal
-      POSTGRES_DATABASE: BudgetTracker.Finance
-      POSTGRES_USERNAME: postgres
-      POSTGRES_PASSWORD: 123
-      POSTGRES_WRITE_PORT: 5432
-      GOOGLE_CLOUD_PROJECT_ID: <project-id>
-      PUB_SUB_TOPIC: <sub-name>
+    gateway:
+        build:
+            context: .
+            dockerfile: Src/BudgetTracker.Gateway/Dockerfile
+            args:
+                NUGET_PAT: ${NUGET_PAT}
+                GOOGLE_CLOUD_PROJECT_ID: budget-tracker-453204
+                GOOGLE_APPLICATION_CREDENTIALS: /gcp/credentials.json
+                APP_ENV: Development
+        image: budget-tracker-gateway
+        ports:
+            - "3000:3000"
+        environment:
+            ASPNETCORE_ENVIRONMENT: Development
+            # Downstream__Api1: http://budget-tracker-finance:3001
+            ReverseProxy__Clusters__finance-cluster__Destinations__instance-01__Address: http://budget-tracker-finance:3001
+            ENV: Development
+            API_KEY: r2mdo3Ya3bHI3v5OIO2qAkdJthxGWzAWlahriI8crDtmAt8GcakvMyxebaMRu
+            YARP_API_KEY: <yarp-api-key>
+#        volumes:
+#            - /Volumes/SecureDisk/budget-tracker-453204-64c2649cc266.json:/gcp/credentials.json:ro # <-- this is SHORT SYNTAX - VOLUME-PATH:CONTAINER-PATH:OPTIONS
+        volumes:
+            - type: bind
+              source: /Volumes/SecureDisk/budget-tracker-453204-64c2649cc266.json
+              target: /gcp/credentials.json
+              read_only: true        
+    
+    budget-tracker-finance:
+        build:
+            context: .
+            dockerfile: Src/BudgetTracker.Finance/Dockerfile
+            args:
+                NUGET_PAT: ${NUGET_PAT}
+                APP_ENV: Development
+        image: budget-tracker-finance
+#        ports:
+#            - "3001:3001"
+        environment:
+            ASPNETCORE_ENVIRONMENT: Development
+            ENV: Development
+            Postgres__Write__Host: host.docker.internal
+            Postgres__Read__Host: host.docker.internal
+            Postgres__Migrate__Host: host.docker.internal            
+            GOOGLE_CLOUD_PROJECT_ID: budget-tracker-453204
+            PUB_SUB_TOPIC: <sub-name>
+            PORT: 3001
