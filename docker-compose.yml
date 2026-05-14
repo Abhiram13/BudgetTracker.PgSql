@@ -2,43 +2,37 @@ name: budget-tracker
 version: "3.9"
 
 services:
-    gateway:
+    budget-tracker-gateway:
         build:
-            context: .
             dockerfile: Src/BudgetTracker.Gateway/Dockerfile
             args:
                 NUGET_PAT: ${NUGET_PAT}
-                GOOGLE_CLOUD_PROJECT_ID: budget-tracker-453204
-                GOOGLE_APPLICATION_CREDENTIALS: /gcp/credentials.json
                 APP_ENV: Development
         image: budget-tracker-gateway
         ports:
             - "3000:3000"
         environment:
             ASPNETCORE_ENVIRONMENT: Development
-            # Downstream__Api1: http://budget-tracker-finance:3001
             ReverseProxy__Clusters__finance-cluster__Destinations__instance-01__Address: http://budget-tracker-finance:3001
             ENV: Development
-            API_KEY: r2mdo3Ya3bHI3v5OIO2qAkdJthxGWzAWlahriI8crDtmAt8GcakvMyxebaMRu
-            YARP_API_KEY: <yarp-api-key>
-#        volumes:
-#            - /Volumes/SecureDisk/budget-tracker-453204-64c2649cc266.json:/gcp/credentials.json:ro # <-- this is SHORT SYNTAX - VOLUME-PATH:CONTAINER-PATH:OPTIONS
+            GOOGLE_APPLICATION_CREDENTIALS: /gcp/credentials.json
         volumes:
             - type: bind
               source: /Volumes/SecureDisk/budget-tracker-453204-64c2649cc266.json
               target: /gcp/credentials.json
-              read_only: true        
+              read_only: true
+            - type: bind
+              source: /Volumes/SecureDisk/bt-gateway-local-secrets.json
+              target: /secrets/gateway-secrets.json
+              read_only: true
     
     budget-tracker-finance:
         build:
-            context: .
             dockerfile: Src/BudgetTracker.Finance/Dockerfile
             args:
                 NUGET_PAT: ${NUGET_PAT}
                 APP_ENV: Development
         image: budget-tracker-finance
-#        ports:
-#            - "3001:3001"
         environment:
             ASPNETCORE_ENVIRONMENT: Development
             ENV: Development
@@ -46,5 +40,9 @@ services:
             Postgres__Read__Host: host.docker.internal
             Postgres__Migrate__Host: host.docker.internal            
             GOOGLE_CLOUD_PROJECT_ID: budget-tracker-453204
-            PUB_SUB_TOPIC: <sub-name>
             PORT: 3001
+        volumes:
+            - type: bind
+              source: /Volumes/SecureDisk/finance-local-secrets.json
+              target: /secrets/finance-secrets.json
+              read_only: true
