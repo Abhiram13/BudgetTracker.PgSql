@@ -16,12 +16,7 @@ services:
             ASPNETCORE_ENVIRONMENT: Development
             ReverseProxy__Clusters__finance-cluster__Destinations__instance-01__Address: http://budget-tracker-finance:3001
             ENV: Development
-            GOOGLE_APPLICATION_CREDENTIALS: /gcp/credentials.json
         volumes:
-            - type: bind
-              source: /Volumes/SecureDisk/budget-tracker-453204-64c2649cc266.json
-              target: /gcp/credentials.json
-              read_only: true
             - type: bind
               source: /Volumes/SecureDisk/bt-gateway-local-secrets.json
               target: /secrets/gateway-secrets.json
@@ -33,6 +28,7 @@ services:
     budget-tracker-finance:
         build:
             dockerfile: Src/BudgetTracker.Finance/Dockerfile
+            target: dev
             args:
                 NUGET_PAT: ${NUGET_PAT}
                 APP_ENV: Development
@@ -43,10 +39,17 @@ services:
             Postgres__Write__Host: host.docker.internal # <-- host.docker.internal = computer's localhostOkat
             Postgres__Read__Host: host.docker.internal
             Postgres__Migrate__Host: host.docker.internal            
-            GOOGLE_CLOUD_PROJECT_ID: budget-tracker-453204
             PORT: 3001
+            GOOGLE_APPLICATION_CREDENTIALS: /gcp/credentials.json
         volumes:
+            - type: bind
+              source: /Volumes/SecureDisk/budget-tracker-453204-64c2649cc266.json
+              target: /gcp/credentials.json
+              read_only: true
             - type: bind
               source: /Volumes/SecureDisk/finance-local-secrets.json
               target: /secrets/finance-secrets.json
               read_only: true
+            - type: bind
+              source: .
+              target: /budget-tracker
