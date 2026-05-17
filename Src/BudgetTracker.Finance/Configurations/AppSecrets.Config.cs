@@ -40,7 +40,7 @@ public sealed record AppSecrets
     /// </summary>
     [Required]
     [ConfigurationKeyName("PORT")]
-    public int ServerPort {  get; init; }
+    public int ServerPort { get; init; }
 }
 
 /// <summary>

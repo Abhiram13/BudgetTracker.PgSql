@@ -36,9 +36,9 @@ services:
         environment:
             ASPNETCORE_ENVIRONMENT: Development
             ENV: Development
-            Postgres__Write__Host: host.docker.internal # <-- host.docker.internal = computer's localhostOkat
+            Postgres__Write__Host: host.docker.internal # <-- host.docker.internal = computer's localhost
             Postgres__Read__Host: host.docker.internal
-            Postgres__Migrate__Host: host.docker.internal            
+            Postgres__Migrate__Host: host.docker.internal
             PORT: 3001
             GOOGLE_APPLICATION_CREDENTIALS: /gcp/credentials.json
         volumes:
