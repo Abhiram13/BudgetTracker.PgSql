@@ -2,6 +2,7 @@
 
     <PropertyGroup>
         <RootNameSpace>BudgetTracker.Gateway</RootNameSpace>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <ItemGroup>
@@ -16,7 +17,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\BudgetTracker.Shared\BudgetTracker.Shared.csproj" />
-        <ProjectReference Include="..\BudgetTracker.Warehouse\BudgetTracker.Warehouse.csproj" />
+<!--        <ProjectReference Include="..\BudgetTracker.Warehouse\BudgetTracker.Warehouse.csproj" />-->
     </ItemGroup>
 
     <ItemGroup>

@@ -53,6 +53,9 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Content Include="..\..\.dockerignore">
+          <Link>.dockerignore</Link>
+        </Content>
         <Content Include=".googlecloud\cloudbuild.yaml" />
     </ItemGroup>
 

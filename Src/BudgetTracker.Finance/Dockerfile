@@ -1,51 +1,43 @@
-# Use a build argument for the PAT
 ARG NUGET_PAT
-ARG DOTNET_VERSION=10.0
+ARG DOTNET_VERSION=10.0-alpine
 ARG APP_ENV
 
-FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_VERSION} AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_VERSION} AS base
 
 ARG APP_ENV
+ARG NUGET_PAT
+WORKDIR /budget-tracker
+RUN dotnet nuget add source --name "github" "https://nuget.pkg.github.com/Abhiram13/index.json" --username Abhiram13 --password "${NUGET_PAT}" --store-password-in-clear-text
 
-RUN echo "$APP_ENV"
-
-RUN if [ -z "$APP_ENV" ]; then \
-    echo "ERROR: APP_ENV build argument is required (e.g., --build-arg APP_ENV=Production)"; \
-    exit 1; \
-fi
-
-WORKDIR /app
+FROM base AS restore
 
 COPY BudgetTracker.sln ./
 COPY Directory.Build.props ./
 COPY Directory.Packages.props ./
-COPY Src/BudgetTracker.Finance/ ./BudgetTracker.Finance/
-COPY Src/BudgetTracker.Shared/ ./BudgetTracker.Shared/
-COPY Src/sharedsettings.json ./sharedsettings.json
-COPY Src/sharedsettings.${APP_ENV}.json ./sharedsettings.${APP_ENV}.json
+COPY Src/BudgetTracker.Finance/ ./Src/BudgetTracker.Finance/
+COPY Src/BudgetTracker.Shared/ ./Src/BudgetTracker.Shared/
+COPY Src/sharedsettings.json ./Src/sharedsettings.json
+COPY Src/sharedsettings.${APP_ENV}.json ./Src/sharedsettings.${APP_ENV}.json
+RUN dotnet restore Src/BudgetTracker.Finance/BudgetTracker.Finance.csproj
 
-# Re-declare the build argument to make it available in this stage
-ARG NUGET_PAT
-ARG DOTNET_VERSION=10.0
+FROM restore AS dev
 
-# Add the private package source using the build argument
-RUN dotnet nuget add source --name "github" "https://nuget.pkg.github.com/Abhiram13/index.json" --username Abhiram13 --password "${NUGET_PAT}" --store-password-in-clear-text
+WORKDIR /budget-tracker/Src/BudgetTracker.Finance
+CMD ["dotnet", "watch", "run"]
 
-# Copy csproj and restore as distinct layers
-# COPY *.csproj ./
-# RUN dotnet restore
+FROM restore AS build
 
-RUN dotnet restore BudgetTracker.Finance/BudgetTracker.Finance.csproj -p:WarningLevel=0
-RUN dotnet publish BudgetTracker.Finance/BudgetTracker.Finance.csproj -c Release -o /out -p:WarningLevel=0
+RUN dotnet build Src/BudgetTracker.Finance/BudgetTracker.Finance.csproj -c Release --no-restore
 
-# Copy everything else and build
-# COPY . .
-# RUN dotnet publish -c Release -o out
+FROM build AS publish
 
-# Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:${DOTNET_VERSION}
-WORKDIR /app
-# COPY --from=build-env /app/out .
-COPY --from=build-env /out ./
+ARG APP_ENV
+COPY Src/sharedsettings.json ./Src/sharedsettings.json
+COPY Src/sharedsettings.${APP_ENV}.json ./Src/sharedsettings.${APP_ENV}.json
+RUN dotnet publish Src/BudgetTracker.Finance/BudgetTracker.Finance.csproj -c Release -o /out --no-build
 
-ENTRYPOINT [ "dotnet", "/app/BudgetTracker.Finance.dll" ]
+FROM mcr.microsoft.com/dotnet/aspnet:${DOTNET_VERSION} AS runtime
+
+WORKDIR /budget-tracker
+COPY --from=publish /out ./
+ENTRYPOINT [ "dotnet", "BudgetTracker.Finance.dll" ]

@@ -57,3 +57,11 @@ public record InsertTransactionInvalidEntityThrowsExceptionDto
     public required InsertTransactionDto Payload { get; init; }
     public required Type ExpectedExceptionType { get; init; }
 }
+
+public record TransactionsDateWiseListDto
+{
+    public required Transaction[] Transactions { get; init; }
+    public int? Month { get; init; }
+    public int? Year { get; init; }
+    public required List<TransactionsListByMonthYear> ExpectedResult { get; init; }
+}
