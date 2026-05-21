@@ -705,4 +705,53 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
     }
     
     #endregion
+
+    #region Transactions date wise list
+
+    [Theory]
+    [ClassData(typeof(TransactionsDateWiseValidTestData))]
+    public async Task TransactionsDateWiseListAsync(TransactionsDateWiseListDto data)
+    {
+        using (IServiceScope scope = _fixture.Factory.CreateScope())
+        {
+            WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
+
+            await using (new TransactionDisposal(dbContext))
+            {
+                foreach (Transaction transaction in data.Transactions)
+                {
+                    await dbContext.Transactions.AddAsync(transaction);
+                    await dbContext.SaveChangesAsync();
+                }
+                
+                string url = $"{TRANSACTIONS_ROUTE}?";
+                
+                if (data.Month.HasValue && data.Year.HasValue)
+                {
+                    url += "month=" + data.Month + "&year=" + data.Year;
+                }
+                else if (data.Month.HasValue)
+                {
+                    url += "month=" + data.Month;
+                }
+                else if (data.Year.HasValue)
+                {
+                    url += "year=" + data.Year;
+                }
+                
+                HttpResponseMessage httpResponse = await _client.GetAsync(url);
+                ApiResponse<List<TransactionsListByMonthYear>>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<List<TransactionsListByMonthYear>>>();
+                
+                Assert.NotNull(apiResponse);
+                Assert.NotNull(apiResponse.Result);
+
+                foreach (TransactionsListByMonthYear result in data.ExpectedResult)
+                {
+                    Assert.True(apiResponse.Result.Any(l => l.Debit == result.Debit && l.Credit == result.Credit && l.TransactionDate == result.TransactionDate));
+                }
+            }
+        }
+    }
+    
+    #endregion
 }

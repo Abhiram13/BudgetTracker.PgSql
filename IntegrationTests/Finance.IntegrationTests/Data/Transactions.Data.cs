@@ -1078,3 +1078,316 @@ public class TransactionsEntityInValidTestData : TheoryData<InsertTransactionInv
         });
     }
 }
+
+public class TransactionsDateWiseValidTestData : TheoryData<TransactionsDateWiseListDto>
+{
+    public TransactionsDateWiseValidTestData()
+    {
+        // Current day and current month transactions. Only debits
+        Add(new TransactionsDateWiseListDto
+        {
+            Transactions = new Transaction[2]
+            {
+                Transaction.Create(
+                    actualAmount: 100,
+                    amount: 100,
+                    description: "A Sample Description",
+                    categoryId: 1,
+                    fromBank: 1,
+                    toBank: null,
+                    type: TransactionType.Debit,
+                    date: DateOnly.FromDateTime(DateTime.UtcNow)
+                ),
+                Transaction.Create(
+                    actualAmount: 240,
+                    amount: 240,
+                    description: "A Sample Description",
+                    categoryId: 1,
+                    fromBank: 1,
+                    toBank: null,
+                    type: TransactionType.Debit,
+                    date: DateOnly.FromDateTime(DateTime.UtcNow)
+                )
+            },
+            ExpectedResult = new List<TransactionsListByMonthYear>
+            {
+                new TransactionsListByMonthYear { Credit = 0, Debit = 340, TransactionDate = DateOnly.FromDateTime(DateTime.UtcNow) },
+            }
+        });
+        
+        // Current day and current month transactions. Explicit month and year. Only debits
+        Add(new TransactionsDateWiseListDto
+        {
+            Transactions = new Transaction[2]
+            {
+                Transaction.Create(
+                    actualAmount: 100,
+                    amount: 100,
+                    description: "A Sample Description",
+                    categoryId: 1,
+                    fromBank: 1,
+                    toBank: null,
+                    type: TransactionType.Debit,
+                    date: DateOnly.FromDateTime(DateTime.UtcNow)
+                ),
+                Transaction.Create(
+                    actualAmount: 240,
+                    amount: 240,
+                    description: "A Sample Description",
+                    categoryId: 1,
+                    fromBank: 1,
+                    toBank: null,
+                    type: TransactionType.Debit,
+                    date: DateOnly.FromDateTime(DateTime.UtcNow)
+                )
+            },
+            ExpectedResult = new List<TransactionsListByMonthYear>
+            {
+                new TransactionsListByMonthYear { Credit = 0, Debit = 340, TransactionDate = DateOnly.FromDateTime(DateTime.UtcNow) },
+            },
+            Month = DateTime.Now.Month,
+            Year = DateTime.Now.Year
+        });
+        
+        // Current day and current month transactions. Only credits
+        Add(new TransactionsDateWiseListDto
+        {
+            Transactions = new Transaction[2]
+            {
+                Transaction.Create(
+                    actualAmount: 174.67m,
+                    amount: 174.67m,
+                    description: "A Sample Description",
+                    categoryId: 1,
+                    fromBank: null,
+                    toBank: 1,
+                    type: TransactionType.Credit,
+                    date: DateOnly.FromDateTime(DateTime.UtcNow)
+                ),
+                Transaction.Create(
+                    actualAmount: 356.8m,
+                    amount: 356.8m,
+                    description: "A Sample Description",
+                    categoryId: 1,
+                    fromBank: null,
+                    toBank: 1,
+                    type: TransactionType.Credit,
+                    date: DateOnly.FromDateTime(DateTime.UtcNow)
+                )
+            },
+            ExpectedResult = new List<TransactionsListByMonthYear>
+            {
+                new TransactionsListByMonthYear { Credit = 531.47m, Debit = 0, TransactionDate = DateOnly.FromDateTime(DateTime.UtcNow) },
+            }
+        });
+        
+        // Current day and current month transactions. Only credits. Explicit month and year.
+        Add(new TransactionsDateWiseListDto
+        {
+            Transactions = new Transaction[2]
+            {
+                Transaction.Create(
+                    actualAmount: 174.67m,
+                    amount: 174.67m,
+                    description: "A Sample Description",
+                    categoryId: 1,
+                    fromBank: null,
+                    toBank: 1,
+                    type: TransactionType.Credit,
+                    date: DateOnly.FromDateTime(DateTime.UtcNow)
+                ),
+                Transaction.Create(
+                    actualAmount: 356.8m,
+                    amount: 356.8m,
+                    description: "A Sample Description",
+                    categoryId: 1,
+                    fromBank: null,
+                    toBank: 1,
+                    type: TransactionType.Credit,
+                    date: DateOnly.FromDateTime(DateTime.UtcNow)
+                )
+            },
+            ExpectedResult = new List<TransactionsListByMonthYear>
+            {
+                new TransactionsListByMonthYear { Credit = 531.47m, Debit = 0, TransactionDate = DateOnly.FromDateTime(DateTime.UtcNow) },
+            },
+            Month = DateTime.Now.Month,
+            Year = DateTime.Now.Year
+        });
+        
+        // Current day and current month transactions. One Debit and One credit.
+        Add(new TransactionsDateWiseListDto
+        {
+            Transactions = new Transaction[2]
+            {
+                Transaction.Create(
+                    actualAmount: 231.90m,
+                    amount: 231.90m,
+                    description: "A Sample Description",
+                    categoryId: 1,
+                    fromBank: 1,
+                    toBank: null,
+                    type: TransactionType.Debit,
+                    date: DateOnly.FromDateTime(DateTime.UtcNow)
+                ),
+                Transaction.Create(
+                    actualAmount: 677.1m,
+                    amount: 677.1m,
+                    description: "A Sample Description",
+                    categoryId: 1,
+                    fromBank: null,
+                    toBank: 1,
+                    type: TransactionType.Credit,
+                    date: DateOnly.FromDateTime(DateTime.UtcNow)
+                )
+            },
+            ExpectedResult = new List<TransactionsListByMonthYear>
+            {
+                new TransactionsListByMonthYear { Credit = 677.1m, Debit = 231.90m, TransactionDate = DateOnly.FromDateTime(DateTime.UtcNow) },
+            }
+        });
+        
+        // Current day and current month transactions. One Debit and One credit. Explicit month and year
+        Add(new TransactionsDateWiseListDto
+        {
+            Transactions = new Transaction[2]
+            {
+                Transaction.Create(
+                    actualAmount: 231.90m,
+                    amount: 231.90m,
+                    description: "A Sample Description",
+                    categoryId: 1,
+                    fromBank: 1,
+                    toBank: null,
+                    type: TransactionType.Debit,
+                    date: DateOnly.FromDateTime(DateTime.UtcNow)
+                ),
+                Transaction.Create(
+                    actualAmount: 677.1m,
+                    amount: 677.1m,
+                    description: "A Sample Description",
+                    categoryId: 1,
+                    fromBank: null,
+                    toBank: 1,
+                    type: TransactionType.Credit,
+                    date: DateOnly.FromDateTime(DateTime.UtcNow)
+                )
+            },
+            ExpectedResult = new List<TransactionsListByMonthYear>
+            {
+                new TransactionsListByMonthYear { Credit = 677.1m, Debit = 231.90m, TransactionDate = DateOnly.FromDateTime(DateTime.UtcNow) },
+            },
+            Month = DateTime.Now.Month,
+            Year = DateTime.Now.Year
+        });
+        
+        // One month back transactions. Two credits and one debit. 
+        Add(new TransactionsDateWiseListDto
+        {
+            Transactions = new Transaction[3]
+            {
+                Transaction.Create(
+                    actualAmount: 231.90m,
+                    amount: 231.90m,
+                    description: "A Sample Description",
+                    categoryId: 1,
+                    fromBank: 1,
+                    toBank: null,
+                    type: TransactionType.Debit,
+                    date: DateOnly.FromDateTime(DateTime.UtcNow).AddMonths(-1)
+                ),
+                Transaction.Create(
+                    actualAmount: 677.1m,
+                    amount: 677.1m,
+                    description: "A Sample Description",
+                    categoryId: 1,
+                    fromBank: null,
+                    toBank: 1,
+                    type: TransactionType.Credit,
+                    date: DateOnly.FromDateTime(DateTime.UtcNow).AddMonths(-1)
+                ),
+                Transaction.Create(
+                    actualAmount: 122,
+                    amount: 122,
+                    description: "A Sample Description",
+                    categoryId: 1,
+                    fromBank: null,
+                    toBank: 1,
+                    type: TransactionType.Credit,
+                    date: DateOnly.FromDateTime(DateTime.UtcNow).AddMonths(-1)
+                )
+            },
+            ExpectedResult = new List<TransactionsListByMonthYear>
+            {
+                new TransactionsListByMonthYear { Credit = 799.1m, Debit = 231.90m, TransactionDate = DateOnly.FromDateTime(DateTime.UtcNow).AddMonths(-1) },
+            },
+            Month = DateTime.Now.AddMonths(-1).Month,
+            Year = DateTime.Now.Year
+        });
+        
+        // Same month different days. Two debits and three credits.
+        Add(new TransactionsDateWiseListDto
+        {
+            Transactions = new Transaction[5]
+            {
+                Transaction.Create(
+                    actualAmount: 231.90m,
+                    amount: 231.90m,
+                    description: "A Sample Description",
+                    categoryId: 1,
+                    fromBank: 1,
+                    toBank: null,
+                    type: TransactionType.Debit,
+                    date: DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-2)
+                ),
+                Transaction.Create(
+                    actualAmount: 76,
+                    amount: 76,
+                    description: "A Sample Description",
+                    categoryId: 1,
+                    fromBank: 1,
+                    toBank: null,
+                    type: TransactionType.Debit,
+                    date: DateOnly.FromDateTime(DateTime.UtcNow)
+                ),
+                Transaction.Create(
+                    actualAmount: 677.1m,
+                    amount: 677.1m,
+                    description: "A Sample Description",
+                    categoryId: 1,
+                    fromBank: null,
+                    toBank: 1,
+                    type: TransactionType.Credit,
+                    date: DateOnly.FromDateTime(DateTime.UtcNow)
+                ),
+                Transaction.Create(
+                    actualAmount: 122,
+                    amount: 122,
+                    description: "A Sample Description",
+                    categoryId: 1,
+                    fromBank: null,
+                    toBank: 1,
+                    type: TransactionType.Credit,
+                    date: DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-2)
+                ),
+                Transaction.Create(
+                    actualAmount: 10.1m,
+                    amount: 10.1m,
+                    description: "A Sample Description",
+                    categoryId: 1,
+                    fromBank: null,
+                    toBank: 1,
+                    type: TransactionType.Credit,
+                    date: DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-2)
+                )
+            },
+            ExpectedResult = new List<TransactionsListByMonthYear>
+            {
+                new TransactionsListByMonthYear { Credit = 677.1m, Debit = 76, TransactionDate = DateOnly.FromDateTime(DateTime.UtcNow) },
+                new TransactionsListByMonthYear { Credit = 132.1m, Debit = 231.90m, TransactionDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-2) },
+            },
+            Month = DateTime.Now.Month,
+            Year = DateTime.Now.Year
+        });
+    }
+}
