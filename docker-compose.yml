@@ -2,7 +2,7 @@ name: budget-tracker
 version: "3.9"
 
 services:
-    budget-tracker-gateway:
+    gateway:
         build:
             dockerfile: Src/BudgetTracker.Gateway/Dockerfile
             target: dev
@@ -14,18 +14,24 @@ services:
             - "3000:3000"
         environment:
             ASPNETCORE_ENVIRONMENT: Development
-            ReverseProxy__Clusters__finance-cluster__Destinations__instance-01__Address: http://budget-tracker-finance:3001
+            ReverseProxy__Clusters__finance-cluster__Destinations__instance-01__Address: http://finance:3001
             ENV: Development
+            PORT: 3000
         volumes:
             - type: bind
-              source: /Volumes/SecureDisk/bt-gateway-local-secrets.json
+              source: /Volumes/SecureDisk/Budget-Tracker/gateway-local-secrets.json
               target: /secrets/gateway-secrets.json
               read_only: true
             - type: bind
               source: .
-              target: /budget-tracker                          
+              target: /budget-tracker
+              
+            - /budget-tracker/Src/BudgetTracker.Gateway/bin/
+            - /budget-tracker/Src/BudgetTracker.Gateway/obj/
+            - /budget-tracker/Src/BudgetTracker.Shared/bin/
+            - /budget-tracker/Src/BudgetTracker.Shared/obj/
     
-    budget-tracker-finance:
+    finance:
         build:
             dockerfile: Src/BudgetTracker.Finance/Dockerfile
             target: dev
@@ -43,13 +49,18 @@ services:
             GOOGLE_APPLICATION_CREDENTIALS: /gcp/credentials.json
         volumes:
             - type: bind
-              source: /Volumes/SecureDisk/budget-tracker-453204-64c2649cc266.json
+              source: /Volumes/SecureDisk/Budget-Tracker/bt-gcp-credentials.json
               target: /gcp/credentials.json
               read_only: true
             - type: bind
-              source: /Volumes/SecureDisk/finance-local-secrets.json
+              source: /Volumes/SecureDisk/Budget-Tracker/finance-local-secrets.json
               target: /secrets/finance-secrets.json
               read_only: true
             - type: bind
               source: .
               target: /budget-tracker
+              
+            - /budget-tracker/Src/BudgetTracker.Finance/bin/
+            - /budget-tracker/Src/BudgetTracker.Finance/obj/            
+            - /budget-tracker/Src/BudgetTracker.Shared/bin/
+            - /budget-tracker/Src/BudgetTracker.Shared/obj/
