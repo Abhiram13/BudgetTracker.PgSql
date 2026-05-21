@@ -752,6 +752,31 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
             }
         }
     }
+
+    [Fact]
+    public async Task TransactionsDateWiseList_ThrowsError_Async()
+    {
+        using (IServiceScope scope = _fixture.Factory.CreateScope())
+        {
+            WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
+
+            await using (new TransactionDisposal(dbContext))
+            {
+                int month = DateTime.Now.AddMonths(2).Month;
+                int year = DateTime.Now.AddYears(1).Year;
+                string url = $"{TRANSACTIONS_ROUTE}?month={month}&year={year}";
+                
+                HttpResponseMessage httpResponse = await _client.GetAsync(url);
+                ApiResponse? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse>();
+                
+                Assert.NotNull(apiResponse);
+                Assert.NotNull(apiResponse.Message);
+                Assert.NotEmpty(apiResponse.Message);
+                Assert.Equal(HttpStatusCode.BadRequest, httpResponse.StatusCode);
+                Assert.Equal(HttpStatusCode.BadRequest, apiResponse.StatusCode);
+            }
+        }
+    }
     
     #endregion
 }
