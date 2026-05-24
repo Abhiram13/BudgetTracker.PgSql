@@ -165,9 +165,9 @@ public class TransactionController : ControllerBase
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ListOfTransactionsByMonthYear([FromQuery] int? month, [FromQuery] int? year)
     {
-        List<TransactionsListByMonthYear> result = await _transactionService.GetTransactionsByMonthYearAsync(month, year);
+        IReadOnlyList<TransactionsListByMonthYear> result = await _transactionService.GetTransactionsByMonthYearAsync(month, year);
 
-        return Ok(new ApiResponse<List<TransactionsListByMonthYear>>
+        return Ok(new ApiResponse<IReadOnlyList<TransactionsListByMonthYear>>
         {
             StatusCode = System.Net.HttpStatusCode.OK,
             TraceId = _traceProvider.TraceId,
@@ -190,9 +190,9 @@ public class TransactionController : ControllerBase
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ListOfCategoryTransactionsByMonthYear([FromQuery] int? month, [FromQuery] int? year)
     {
-        List<CategoryBankTransactionsByMonthYear> result = await _transactionService.GetCategoryTransactionsByMonthYearAsync(month, year);
+        IReadOnlyList<CategoryBankTransactionsByMonthYear> result = await _transactionService.GetCategoryTransactionsByMonthYearAsync(month, year);
 
-        return Ok(new ApiResponse<List<CategoryBankTransactionsByMonthYear>>
+        return Ok(new ApiResponse<IReadOnlyList<CategoryBankTransactionsByMonthYear>>
         {
             StatusCode = System.Net.HttpStatusCode.OK,
             TraceId = _traceProvider.TraceId,
@@ -215,9 +215,9 @@ public class TransactionController : ControllerBase
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ListOfBankTransactionsByMonthYear([FromQuery] int? month, [FromQuery] int? year)
     {
-        List<CategoryBankTransactionsByMonthYear> result = await _transactionService.GetBankTransactionsByMonthYearAsync(month, year);
+        IReadOnlyList<CategoryBankTransactionsByMonthYear> result = await _transactionService.GetBankTransactionsByMonthYearAsync(month, year);
 
-        return Ok(new ApiResponse<List<CategoryBankTransactionsByMonthYear>>
+        return Ok(new ApiResponse<IReadOnlyList<CategoryBankTransactionsByMonthYear>>
         {
             StatusCode = System.Net.HttpStatusCode.OK,
             TraceId = _traceProvider.TraceId,

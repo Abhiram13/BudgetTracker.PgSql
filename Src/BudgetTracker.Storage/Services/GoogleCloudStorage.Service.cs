@@ -39,7 +39,7 @@ public class GoogleCloudStorageService
         _storageControlClient = StorageControlClient.Create();
     }
 
-    // gcloud storage buckets notifications create gs://[YOUR_BUCKET_NAME] --topic=[YOUR_TOPIC_NAME] --event-types=OBJECT_FINALIZE
+    // HACK: gcloud storage buckets notifications create gs://[YOUR_BUCKET_NAME] --topic=[YOUR_TOPIC_NAME] --event-types=OBJECT_FINALIZE
     // to setup notification link between pub/sub and gcp cloud storage
     public string GenerateUploadSignedUrl(string fileName, UploadFileDto file)
     {

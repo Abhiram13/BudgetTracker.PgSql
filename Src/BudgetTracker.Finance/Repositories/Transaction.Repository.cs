@@ -130,7 +130,7 @@ public class TransactionRepository : ITransactionRepository
     }
 
     /// <inheritdoc />
-    public async Task<List<TransactionsListByMonthYear>> GetListOfTransactionsByMonthYear(int? month, int? year)
+    public async Task<IReadOnlyList<TransactionsListByMonthYear>> GetListOfTransactionsByMonthYear(int? month, int? year)
     {
         (DateOnly start, DateOnly end) = ValidateMonthYear(month, year);
         List<TransactionsListByMonthYear> result = await _readDbContext.Transactions 
@@ -148,7 +148,7 @@ public class TransactionRepository : ITransactionRepository
     }
 
     /// <inheritdoc />
-    public async Task<List<CategoryBankTransactionsByMonthYear>> GetListOfCategoryTransactionsByMonthYear(int? month, int? year)
+    public async Task<IReadOnlyList<CategoryBankTransactionsByMonthYear>> GetListOfCategoryTransactionsByMonthYear(int? month, int? year)
     {
         (DateOnly start, DateOnly end) = ValidateMonthYear(month, year);
         List<CategoryBankTransactionsByMonthYear> result = await _readDbContext.Transactions
@@ -165,7 +165,7 @@ public class TransactionRepository : ITransactionRepository
     }
 
     /// <inheritdoc />
-    public async Task<List<CategoryBankTransactionsByMonthYear>> GetListOfBankTransactionsByMonthYear(int? month, int? year)
+    public async Task<IReadOnlyList<CategoryBankTransactionsByMonthYear>> GetListOfBankTransactionsByMonthYear(int? month, int? year)
     {
         (DateOnly start, DateOnly end) = ValidateMonthYear(month, year);
         List<CategoryBankTransactionsByMonthYear> result = await _readDbContext.Transactions
@@ -186,6 +186,7 @@ public class TransactionRepository : ITransactionRepository
         int m = month ?? DateTime.Now.Month;
         int y = year ?? DateTime.Now.Year;
 
+        // BUG: If month is above current month and year is less than current year. It is a valid case. But even then, below if condition will throw error.
         if (m > DateTime.Now.Month)
         {
             throw new InvalidPayloadException("Month cannot be greater than current month.");

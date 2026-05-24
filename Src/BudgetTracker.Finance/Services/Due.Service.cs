@@ -4,7 +4,7 @@ using BudgetTracker.Finance.Entities;
 
 namespace BudgetTracker.Finance.Services;
 
-public sealed class DueService
+public class DueService
 {
     private readonly IDueRepository _dueRepository;
 

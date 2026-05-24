@@ -59,7 +59,7 @@ public record InsertTransactionDto : TransactionDto { }
 public record UpdateTransactionDto : TransactionDto { }
 
 /// <summary>
-/// Payload that holds data belongs to Transction that fetched by Date (<c>yyyy-MM-dd</c>)
+/// Payload that holds data belongs to Transaction that fetched by Date (<c>yyyy-MM-dd</c>)
 /// </summary>
 public record TransactionByDateDto
 {
@@ -70,7 +70,7 @@ public record TransactionByDateDto
     public decimal Credit { get; init; }
 
     [JsonPropertyName("transactions")]
-    public List<Transactions> TransactionsList { get; init; } = new List<Transactions>();
+    public IReadOnlyList<Transactions> TransactionsList { get; init; } = new List<Transactions>();
 
     public record Transactions
     {

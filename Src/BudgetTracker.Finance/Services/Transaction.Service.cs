@@ -164,8 +164,8 @@ public class TransactionService
             catch (Exception e)
             {
                 await dbTransaction.RollbackAsync();
-                _logger.LogError(e, "Exception at inserting transaction. Rolling back transaction");
-                throw;
+                _logger.LogError(e, "Exception at inserting transaction. Rolling back changes");
+                throw; // Re-throwing the error so that Global exception handler will catch, logs and sends proper api response
             }
         }
     }
@@ -227,22 +227,23 @@ public class TransactionService
         }
     }
     
-    public async Task<List<TransactionsListByMonthYear>> GetTransactionsByMonthYearAsync(int? month, int? year)
+    /// <inheritdoc cref="ITransactionRepository.GetListOfTransactionsByMonthYear"/>
+    public async Task<IReadOnlyList<TransactionsListByMonthYear>> GetTransactionsByMonthYearAsync(int? month, int? year)
     {
         return await _repository.GetListOfTransactionsByMonthYear(month, year);
     }
     
-    public async Task<List<CategoryBankTransactionsByMonthYear>> GetCategoryTransactionsByMonthYearAsync(int? month, int? year)
+    public async Task<IReadOnlyList<CategoryBankTransactionsByMonthYear>> GetCategoryTransactionsByMonthYearAsync(int? month, int? year)
     {
         return await _repository.GetListOfCategoryTransactionsByMonthYear(month, year);
     }
     
-    public async Task<List<CategoryBankTransactionsByMonthYear>> GetBankTransactionsByMonthYearAsync(int? month, int? year)
+    public async Task<IReadOnlyList<CategoryBankTransactionsByMonthYear>> GetBankTransactionsByMonthYearAsync(int? month, int? year)
     {
         return await _repository.GetListOfBankTransactionsByMonthYear(month, year);
     }
     
-    [Obsolete(message: "Publishing transactions is moved to Outbox pattern. So this method is Obselete", error: true)]
+    [Obsolete(message: "Publishing transactions is moved to Outbox pattern. So this method is Obsolete", error: true)]
     private async Task UpdateTransactionsByMonthAsync(DateOnly date)
     {
         TransactionCreditDebitByDateDto? result = null;
@@ -270,7 +271,7 @@ public class TransactionService
     /// Updates transactions by bulk in big query
     /// </summary>
     /// <remarks><b>OBSOLETE</b> - Should not use unless manually update big query</remarks>
-    [Obsolete(message: "Publishing transactions is moved to Outbox pattern. So this method is Obselete", error: true)]
+    [Obsolete(message: "Publishing transactions is moved to Outbox pattern. So this method is Obsolete", error: true)]
     [EditorBrowsable(EditorBrowsableState.Never)]
     public async Task BigQueryUpdatesAsync()
     {

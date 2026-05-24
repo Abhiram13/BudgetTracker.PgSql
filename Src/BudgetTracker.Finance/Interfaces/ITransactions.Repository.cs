@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace BudgetTracker.Finance.Interfaces;
 
 /// <summary>
-/// Defines the data access contract for managing <see cref="Transaction"/> records
+/// Repository that defines database access contract for managing <see cref="Transaction"/> entity.
 /// </summary>
 public interface ITransactionRepository
 {
@@ -17,14 +17,14 @@ public interface ITransactionRepository
     /// </summary>
     /// <param name="payload">The <see cref="Transaction"/> entity to insert.</param>
     /// <returns>The inserted <see cref="Transaction"/> entity, along with its generated database ID.</returns>
-    /// <exception cref="DbUpdateException">Thrown if a database constraint is violated.</exception>
+    /// <exception cref="DbUpdateException">Thrown if a any database constraint is violated.</exception>
     Task<Transaction> InsertOneTransactionAsync(Transaction payload);
     
     /// <summary>
     /// Retrieves all transactions recorded on a specific date. Can return empty <see cref="TransactionByDateDto"/> if none found.
     /// </summary>
-    /// <param name="transactionDate">The date string (e.g., "yyyy-MM-dd") to filter.</param>
-    /// <returns><see cref="TransactionByDateDto"/> containing a collection of transactions for the specified date.</returns>
+    /// <param name="transactionDate">The Date in format <c>yyyy-MM-dd</c> to fetch recorded transactions on that date</param>
+    /// <returns><see cref="TransactionByDateDto"/> Contains collection of transactions with the specified date.</returns>
     /// <exception cref="InvalidDateException">Thrown when given date is not in <c>yyyy-MM-dd</c> format or if future date is given</exception>
     Task<TransactionByDateDto> GetAllTransactionsByDateAsync(string transactionDate);
 
@@ -64,23 +64,27 @@ public interface ITransactionRepository
     /// <b>This method is Private and should not be used in API. This is used to fetch all dates so that big query can be re-updated in bulk.</b>
     /// </remarks>
     /// <returns>A list of <see cref="DateOnly"/> values of all transactions</returns>
+    [Obsolete(message: "Big query is not being used. So this method will be removed in future.")]
     Task<List<DateOnly>> GetGroupOfDatesAsync();
     
     /// <summary>
-    /// Retrieves list of all transactions by given month and date
+    /// Retrieves list of monthly based transactions by given month and year.
     /// </summary>
+    /// <returns>
+    /// List of <see cref="TransactionsListByMonthYear"/>
+    /// </returns>
     /// <exception cref="InvalidPayloadException">Thrown if month or year are invalid or contains future values.</exception>
-    Task<List<TransactionsListByMonthYear>> GetListOfTransactionsByMonthYear(int? month, int? year);
+    Task<IReadOnlyList<TransactionsListByMonthYear>> GetListOfTransactionsByMonthYear(int? month, int? year);
     
     /// <summary>
     /// Retrieves list of all transactions grouped by all Categories by given month and date
     /// </summary>
     /// <exception cref="InvalidPayloadException">Thrown if month or year are invalid or contains future values.</exception>
-    Task<List<CategoryBankTransactionsByMonthYear>> GetListOfCategoryTransactionsByMonthYear(int? month, int? year);
+    Task<IReadOnlyList<CategoryBankTransactionsByMonthYear>> GetListOfCategoryTransactionsByMonthYear(int? month, int? year);
     
     /// <summary>
     /// Retrieves list of all transactions grouped by all Banks by given month and date
     /// </summary>
     /// <exception cref="InvalidPayloadException">Thrown if month or year are invalid or contains future values.</exception>
-    Task<List<CategoryBankTransactionsByMonthYear>> GetListOfBankTransactionsByMonthYear(int? month, int? year);
+    Task<IReadOnlyList<CategoryBankTransactionsByMonthYear>> GetListOfBankTransactionsByMonthYear(int? month, int? year);
 }
