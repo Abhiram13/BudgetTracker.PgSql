@@ -1,5 +1,6 @@
 using System.Net;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc;
@@ -24,8 +25,11 @@ using BudgetTracker.Shared.Extensions;
 using BudgetTracker.Shared.Configurations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Npgsql;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Encoding = System.Text.Encoding;
+
+[assembly: InternalsVisibleTo("IntegrationTests.Finance")]
 
 namespace BudgetTracker.Finance.Extensions;
 
@@ -252,6 +256,58 @@ internal static class ServiceExtension
                     return appConfiguration.ServerPort != default;
                 }, "Server Port is required and current given value is invalid")
                 .ValidateOnStart();
+            
+            return serviceCollection;
+        }
+        
+        /// <summary>
+        /// Registers <see cref="DatabaseConfigurationSetup"/> which allows <see cref="DatabaseConfiguration"/> to be accessed through <see cref="IOptionsMonitor{TOptions}"/>
+        /// </summary>
+        /// <returns>Chained <see cref="IServiceCollection"/></returns>
+        public IServiceCollection AddDatabaseConfiguration()
+        {
+            serviceCollection.ConfigureOptions<DatabaseConfigurationSetup>();
+            
+            return serviceCollection;
+        }
+
+        /// <summary>
+        /// Registers <typeparamref name="TContext"/> based DBContext by acquiring <see cref="IOptionsMonitor{DatabaseConfiguration}"/> and initializing a new connection.
+        /// </summary>
+        /// <param name="dbName">Name of the Database (<c>WRITE</c>, <c>READ</c>, <c>MIGRATE</c>)</param>
+        /// <typeparam name="TContext">DBContext class that should get registered. The class will be extension of <see cref="DbContext"/></typeparam>
+        /// <returns>Chained <see cref="IServiceCollection"/></returns>
+        public IServiceCollection AddPostgresDbContext<TContext>(string dbName) where TContext : DbContext
+        {
+            serviceCollection.AddDbContext<TContext>((provider, options) =>
+            {
+                DatabaseConfiguration dbConfig = provider.GetRequiredService<IOptionsMonitor<DatabaseConfiguration>>().Get(dbName);
+
+                string? postgresHost = dbConfig.Host;
+                string? postgresPort = dbConfig.Port;
+                string? postgresDatabase = dbConfig.Database;
+                string? postgresUsername = dbConfig.Username;
+                string? postgresPassword = dbConfig.Password;
+                string connectionString = $"Host={postgresHost};Port={postgresPort};Database={postgresDatabase};Username={postgresUsername};Password={postgresPassword}";
+                options.UseNpgsql(connectionString);
+            });
+            
+            return serviceCollection;
+        }
+        
+        /// <summary>
+        /// Registers <typeparamref name="TContext"/> based DBContext by acquiring <see cref="NpgsqlConnection"/> and initializing a new connection.
+        /// </summary>
+        /// <remarks>Gets <see cref="NpgsqlConnection"/> from <see cref="IServiceProvider"/> and internally builds shared connection with it.</remarks>
+        /// <typeparam name="TContext">DBContext class that should get registered. The class will be extension of <see cref="DbContext"/></typeparam>
+        /// <returns>Chained <see cref="IServiceCollection"/></returns>
+        public IServiceCollection AddPostgresDbContext<TContext>() where TContext : DbContext
+        {
+            serviceCollection.AddDbContext<TContext>((provider, options) =>
+            {
+                NpgsqlConnection sharedConnection = provider.GetRequiredService<NpgsqlConnection>();
+                options.UseNpgsql(sharedConnection);
+            });
             
             return serviceCollection;
         }
