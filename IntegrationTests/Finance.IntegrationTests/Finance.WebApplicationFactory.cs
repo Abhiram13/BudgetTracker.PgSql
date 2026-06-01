@@ -10,6 +10,7 @@ using Abhiram.Secrets.Configuration;
 using BudgetTracker.Finance.Configurations;
 using BudgetTracker.Finance.Extensions;
 using BudgetTracker.Shared.Configurations;
+using BudgetTracker.Shared.Constants;
 using BudgetTracker.Shared.Extensions;
 using Google.Api;
 using Google.Cloud.PubSub.V1;
@@ -34,7 +35,7 @@ public class FinanceTestWebApplicationFactory : WebApplicationFactory<Program>
     {
         DotEnvironmentVariables.Load();
         
-        builder.UseEnvironment("Test");
+        builder.UseEnvironment(SharedConstants.Environments.TEST);
 
         // loading secrets from .env and appsettings.<env>.json into builder.configuration
         builder.ConfigureAppConfiguration((context, config) =>

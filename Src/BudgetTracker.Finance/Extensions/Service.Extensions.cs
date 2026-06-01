@@ -207,7 +207,7 @@ internal static class ServiceExtension
                             
                             switch (environment)
                             {
-                                case "GoogleCloud":
+                                case SharedConstants.Environments.GOOGLECLOUD:
                                     policy.RequireAuthenticatedUser();
                                     break;
                                 default:
@@ -248,7 +248,7 @@ internal static class ServiceExtension
                 .Validate(a => !string.IsNullOrEmpty(a.GoogleCloudProjectId), "Google Cloud Project ID is required and current given value is invalid")
                 .Validate<IHostEnvironment>((appConfiguration, hostEnvironment) =>
                 {
-                    if (hostEnvironment.IsEnvironment("Test"))
+                    if (hostEnvironment.IsEnvironment(SharedConstants.Environments.TEST))
                     {
                         return true;
                     }

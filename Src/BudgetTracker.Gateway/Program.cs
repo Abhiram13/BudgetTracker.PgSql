@@ -48,7 +48,7 @@ builder.Services.AddReverseProxy()
             transform.ConfigJwtAuthentication();
         }
 
-        if (builder.Environment.IsEnvironment("GoogleCloud"))
+        if (builder.Environment.IsEnvironment(SharedConstants.Environments.GOOGLECLOUD))
         {
             transform.ConfigGoogleOAuth();
         }
