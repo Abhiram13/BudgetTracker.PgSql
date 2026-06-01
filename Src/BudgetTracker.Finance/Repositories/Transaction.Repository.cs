@@ -142,7 +142,7 @@ public class TransactionRepository : ITransactionRepository
                 Debit = t.Where(d => d.Type == TransactionType.Debit).Sum(d => d.Amount),
                 Credit = t.Where(c => c.Type == TransactionType.Credit).Sum(c => c.Amount),
             })
-            .ToListAsync();;
+            .ToListAsync();
 
         return result;
     }

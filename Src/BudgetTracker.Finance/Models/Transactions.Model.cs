@@ -3,6 +3,7 @@ using BudgetTracker.Finance.Attributes;
 using BudgetTracker.Finance.Entities;
 using BudgetTracker.Finance.Enums;
 using BudgetTracker.Shared.Constants;
+using System.Text.Json.Serialization;
 
 namespace BudgetTracker.Finance.Models;
 
@@ -116,9 +117,17 @@ public record TransactionsListByMonthYear
     /// <summary>
     /// Single transaction date
     /// </summary>
-    [JsonPropertyName("transaction_date")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonIgnore]
     public DateOnly? TransactionDate { get; init; }
+    
+    [JsonPropertyName("transaction_date")]
+    public string FormattedDate
+    {
+        get
+        {
+            return TransactionDate.HasValue ? TransactionDate.Value.ToString("ddd, MMM dd yyyy") : string.Empty;
+        }
+    }
 }
 
 public record CategoryBankTransactionsByMonthYear
