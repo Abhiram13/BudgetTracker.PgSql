@@ -25,7 +25,7 @@ public class TransactionsInsertDateValidationTestData : TheoryTestData<InsertTra
             Date = _currentDate.AddDays(-10),
             ExpectedHttpStatusCode = HttpStatusCode.Created,
             ExpectedApiStatusCode = HttpStatusCode.Created,
-            ShouldDataExists = true,
+            ShouldDataExists = true
         });
         
         // Current date validation
@@ -34,7 +34,7 @@ public class TransactionsInsertDateValidationTestData : TheoryTestData<InsertTra
             Date = _currentDate,
             ExpectedHttpStatusCode = HttpStatusCode.Created,
             ExpectedApiStatusCode = HttpStatusCode.Created,
-            ShouldDataExists = true,
+            ShouldDataExists = true
         });
         
         // Future date validation
@@ -43,7 +43,7 @@ public class TransactionsInsertDateValidationTestData : TheoryTestData<InsertTra
             Date = _currentDate.AddDays(10),
             ExpectedHttpStatusCode = HttpStatusCode.BadRequest,
             ExpectedApiStatusCode = HttpStatusCode.BadRequest,
-            ShouldDataExists = false,
+            ShouldDataExists = false
         });
     }
 }
@@ -68,7 +68,7 @@ public static class InsertTransactionsMemberTestData
                 Type = TransactionType.Debit,
                 FromBank = 1,
                 ToBank = null,
-                Date = _currentDate,
+                Date = _currentDate
             }
         };
         
@@ -84,7 +84,7 @@ public static class InsertTransactionsMemberTestData
                 Type = TransactionType.Debit,
                 FromBank = 1,
                 ToBank = null,
-                Date = _currentDate,
+                Date = _currentDate
             }
         };
         
@@ -100,7 +100,7 @@ public static class InsertTransactionsMemberTestData
                 Type = TransactionType.Debit,
                 FromBank = 1,
                 ToBank = null,
-                Date = _pastDate,
+                Date = _pastDate
             }
         };
         
@@ -116,7 +116,7 @@ public static class InsertTransactionsMemberTestData
                 Type = TransactionType.Debit,
                 FromBank = 1,
                 ToBank = null,
-                Date = _pastDate,
+                Date = _pastDate
             }
         };
         
@@ -132,7 +132,7 @@ public static class InsertTransactionsMemberTestData
                 Type = TransactionType.Credit,
                 FromBank = null,
                 ToBank = 1,
-                Date = _currentDate,
+                Date = _currentDate
             }
         };
         
@@ -148,7 +148,7 @@ public static class InsertTransactionsMemberTestData
                 Type = TransactionType.Credit,
                 FromBank = null,
                 ToBank = 1,
-                Date = _currentDate,
+                Date = _currentDate
             }
         };
         
@@ -164,7 +164,7 @@ public static class InsertTransactionsMemberTestData
                 Type = TransactionType.Credit,
                 FromBank = null,
                 ToBank = 1,
-                Date = _pastDate,
+                Date = _pastDate
             }
         };
     }
@@ -183,7 +183,7 @@ public static class InsertTransactionsMemberTestData
                 Type = TransactionType.Debit,
                 FromBank = 1,
                 ToBank = null,
-                Date = _currentDate,
+                Date = _currentDate
             }
         };
         
@@ -199,7 +199,7 @@ public static class InsertTransactionsMemberTestData
                 Type = TransactionType.Debit,
                 FromBank = 1,
                 ToBank = null,
-                Date = _currentDate,
+                Date = _currentDate
             }
         };
         
@@ -215,7 +215,7 @@ public static class InsertTransactionsMemberTestData
                 Type = TransactionType.Debit,
                 FromBank = 1,
                 ToBank = null,
-                Date = _currentDate,
+                Date = _currentDate
             }
         };
         
@@ -231,7 +231,7 @@ public static class InsertTransactionsMemberTestData
                 Type = TransactionType.Debit,
                 FromBank = null,
                 ToBank = null,
-                Date = _currentDate,
+                Date = _currentDate
             }
         };
         
@@ -247,7 +247,7 @@ public static class InsertTransactionsMemberTestData
                 Type = TransactionType.Debit,
                 FromBank = 1,
                 ToBank = null,
-                Date = _currentDate,
+                Date = _currentDate
             }
         };
         
@@ -263,7 +263,7 @@ public static class InsertTransactionsMemberTestData
                 Type = TransactionType.Debit,
                 FromBank = 1,
                 ToBank = null,
-                Date = _currentDate,
+                Date = _currentDate
             }
         };
         
@@ -279,7 +279,7 @@ public static class InsertTransactionsMemberTestData
                 Type = TransactionType.Debit,
                 FromBank = 1,
                 ToBank = null,
-                Date = new DateOnly(),
+                Date = new DateOnly()
             }
         };
         
@@ -295,7 +295,7 @@ public static class InsertTransactionsMemberTestData
                 Type = TransactionType.Credit,
                 FromBank = 1,
                 ToBank = null,
-                Date = _currentDate,
+                Date = _currentDate
             }
         };
     }
@@ -427,7 +427,7 @@ public class TransactionsInsertDueMetaSuccessTestData : TheoryTestData<InsertTra
                 FromBank = 1,
                 ToBank = null,
                 Date = _currentDate,
-                DueId = 1,
+                DueId = 1
             }
         });
     }
@@ -452,7 +452,7 @@ public class TransactionsInsertDueMetaFailureTestData : TheoryTestData<InsertTra
                 FromBank = 1,
                 ToBank = null,
                 Date = _currentDate,
-                DueId = 10, // invalid due id
+                DueId = 10 // invalid due id
             }
         });
     }
@@ -695,9 +695,9 @@ public class TransactionsEntityInValidTestData : TheoryData<InsertTransactionInv
                 FromBank = 1,
                 ToBank = null,
                 Type = TransactionType.Debit,
-                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                Date = DateOnly.FromDateTime(DateTime.UtcNow)
             },
-            ExpectedExceptionType = typeof(InvalidPayloadException),
+            ExpectedExceptionType = typeof(InvalidPayloadException)
         });
         
         // Amount is zero
@@ -712,9 +712,9 @@ public class TransactionsEntityInValidTestData : TheoryData<InsertTransactionInv
                 FromBank = 1,
                 ToBank = null,
                 Type = TransactionType.Debit,
-                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                Date = DateOnly.FromDateTime(DateTime.UtcNow)
             },
-            ExpectedExceptionType = typeof(InvalidPayloadException),
+            ExpectedExceptionType = typeof(InvalidPayloadException)
         });
         
         // Amount is not given 
@@ -728,9 +728,9 @@ public class TransactionsEntityInValidTestData : TheoryData<InsertTransactionInv
                 FromBank = 1,
                 ToBank = null,
                 Type = TransactionType.Debit,
-                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                Date = DateOnly.FromDateTime(DateTime.UtcNow)
             },
-            ExpectedExceptionType = typeof(InvalidPayloadException),
+            ExpectedExceptionType = typeof(InvalidPayloadException)
         });
         
         // Less than min length description
@@ -745,9 +745,9 @@ public class TransactionsEntityInValidTestData : TheoryData<InsertTransactionInv
                 FromBank = 1,
                 ToBank = null,
                 Type = TransactionType.Debit,
-                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                Date = DateOnly.FromDateTime(DateTime.UtcNow)
             },
-            ExpectedExceptionType = typeof(InvalidPayloadException),
+            ExpectedExceptionType = typeof(InvalidPayloadException)
         });
         
         // Less than min length description
@@ -762,9 +762,9 @@ public class TransactionsEntityInValidTestData : TheoryData<InsertTransactionInv
                 FromBank = 1,
                 ToBank = null,
                 Type = TransactionType.Debit,
-                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                Date = DateOnly.FromDateTime(DateTime.UtcNow)
             },
-            ExpectedExceptionType = typeof(InvalidPayloadException),
+            ExpectedExceptionType = typeof(InvalidPayloadException)
         });
         
         // Empty description
@@ -779,9 +779,9 @@ public class TransactionsEntityInValidTestData : TheoryData<InsertTransactionInv
                 FromBank = 1,
                 ToBank = null,
                 Type = TransactionType.Debit,
-                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                Date = DateOnly.FromDateTime(DateTime.UtcNow)
             },
-            ExpectedExceptionType = typeof(InvalidPayloadException),
+            ExpectedExceptionType = typeof(InvalidPayloadException)
         });
         
         // Spaces description
@@ -796,9 +796,9 @@ public class TransactionsEntityInValidTestData : TheoryData<InsertTransactionInv
                 FromBank = 1,
                 ToBank = null,
                 Type = TransactionType.Debit,
-                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                Date = DateOnly.FromDateTime(DateTime.UtcNow)
             },
-            ExpectedExceptionType = typeof(InvalidPayloadException),
+            ExpectedExceptionType = typeof(InvalidPayloadException)
         });
         
         // Spaces description
@@ -813,9 +813,9 @@ public class TransactionsEntityInValidTestData : TheoryData<InsertTransactionInv
                 FromBank = 1,
                 ToBank = null,
                 Type = TransactionType.Debit,
-                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                Date = DateOnly.FromDateTime(DateTime.UtcNow)
             },
-            ExpectedExceptionType = typeof(InvalidPayloadException),
+            ExpectedExceptionType = typeof(InvalidPayloadException)
         });
         
         // Null description
@@ -830,9 +830,9 @@ public class TransactionsEntityInValidTestData : TheoryData<InsertTransactionInv
                 FromBank = 1,
                 ToBank = null,
                 Type = TransactionType.Debit,
-                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                Date = DateOnly.FromDateTime(DateTime.UtcNow)
             },
-            ExpectedExceptionType = typeof(InvalidPayloadException),
+            ExpectedExceptionType = typeof(InvalidPayloadException)
         });
         
         // numbers description
@@ -847,9 +847,9 @@ public class TransactionsEntityInValidTestData : TheoryData<InsertTransactionInv
                 FromBank = 1,
                 ToBank = null,
                 Type = TransactionType.Debit,
-                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                Date = DateOnly.FromDateTime(DateTime.UtcNow)
             },
-            ExpectedExceptionType = typeof(InvalidPayloadException),
+            ExpectedExceptionType = typeof(InvalidPayloadException)
         });
         
         const string SPECIAL_CHARS = "!@$%^&*()-_+={}[]\\|;:'?/><.~`";
@@ -867,9 +867,9 @@ public class TransactionsEntityInValidTestData : TheoryData<InsertTransactionInv
                     FromBank = 1,
                     ToBank = null,
                     Type = TransactionType.Debit,
-                    Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                    Date = DateOnly.FromDateTime(DateTime.UtcNow)
                 },
-                ExpectedExceptionType = typeof(InvalidPayloadException),
+                ExpectedExceptionType = typeof(InvalidPayloadException)
             });
         }
         
@@ -885,9 +885,9 @@ public class TransactionsEntityInValidTestData : TheoryData<InsertTransactionInv
                 FromBank = 1,
                 ToBank = null,
                 Type = TransactionType.Debit,
-                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                Date = DateOnly.FromDateTime(DateTime.UtcNow)
             },
-            ExpectedExceptionType = typeof(DbUpdateException),
+            ExpectedExceptionType = typeof(DbUpdateException)
         });
         
         // Invalid category id
@@ -902,9 +902,9 @@ public class TransactionsEntityInValidTestData : TheoryData<InsertTransactionInv
                 FromBank = 1,
                 ToBank = null,
                 Type = TransactionType.Debit,
-                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                Date = DateOnly.FromDateTime(DateTime.UtcNow)
             },
-            ExpectedExceptionType = typeof(DbUpdateException),
+            ExpectedExceptionType = typeof(DbUpdateException)
         });
         
         // Invalid from bank id
@@ -919,9 +919,9 @@ public class TransactionsEntityInValidTestData : TheoryData<InsertTransactionInv
                 FromBank = 0,
                 ToBank = null,
                 Type = TransactionType.Debit,
-                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                Date = DateOnly.FromDateTime(DateTime.UtcNow)
             },
-            ExpectedExceptionType = typeof(DbUpdateException),
+            ExpectedExceptionType = typeof(DbUpdateException)
         });
         
         // Invalid from bank id
@@ -936,9 +936,9 @@ public class TransactionsEntityInValidTestData : TheoryData<InsertTransactionInv
                 FromBank = 100,
                 ToBank = null,
                 Type = TransactionType.Debit,
-                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                Date = DateOnly.FromDateTime(DateTime.UtcNow)
             },
-            ExpectedExceptionType = typeof(DbUpdateException),
+            ExpectedExceptionType = typeof(DbUpdateException)
         });
         
         // Invalid to bank id
@@ -953,9 +953,9 @@ public class TransactionsEntityInValidTestData : TheoryData<InsertTransactionInv
                 FromBank = null,
                 ToBank = 0,
                 Type = TransactionType.Credit,
-                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                Date = DateOnly.FromDateTime(DateTime.UtcNow)
             },
-            ExpectedExceptionType = typeof(DbUpdateException),
+            ExpectedExceptionType = typeof(DbUpdateException)
         });
         
         // Invalid to bank id
@@ -970,9 +970,9 @@ public class TransactionsEntityInValidTestData : TheoryData<InsertTransactionInv
                 FromBank = null,
                 ToBank = 100,
                 Type = TransactionType.Credit,
-                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                Date = DateOnly.FromDateTime(DateTime.UtcNow)
             },
-            ExpectedExceptionType = typeof(DbUpdateException),
+            ExpectedExceptionType = typeof(DbUpdateException)
         });
         
         // Invalid to bank and from bank id with credit type
@@ -987,9 +987,9 @@ public class TransactionsEntityInValidTestData : TheoryData<InsertTransactionInv
                 FromBank = 10,
                 ToBank = 100,
                 Type = TransactionType.Credit,
-                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                Date = DateOnly.FromDateTime(DateTime.UtcNow)
             },
-            ExpectedExceptionType = typeof(DbUpdateException),
+            ExpectedExceptionType = typeof(DbUpdateException)
         });
         
         // Invalid to bank and from bank id with debit type
@@ -1004,9 +1004,9 @@ public class TransactionsEntityInValidTestData : TheoryData<InsertTransactionInv
                 FromBank = 10,
                 ToBank = 100,
                 Type = TransactionType.Debit,
-                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                Date = DateOnly.FromDateTime(DateTime.UtcNow)
             },
-            ExpectedExceptionType = typeof(DbUpdateException),
+            ExpectedExceptionType = typeof(DbUpdateException)
         });
         
         // Same to bank and from bank id with debit type
@@ -1021,9 +1021,9 @@ public class TransactionsEntityInValidTestData : TheoryData<InsertTransactionInv
                 FromBank = 10,
                 ToBank = 10,
                 Type = TransactionType.Debit,
-                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                Date = DateOnly.FromDateTime(DateTime.UtcNow)
             },
-            ExpectedExceptionType = typeof(DbUpdateException),
+            ExpectedExceptionType = typeof(DbUpdateException)
         });
         
         // Same to bank and from bank id with credit type
@@ -1038,9 +1038,9 @@ public class TransactionsEntityInValidTestData : TheoryData<InsertTransactionInv
                 FromBank = 10,
                 ToBank = 10,
                 Type = TransactionType.Credit,
-                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                Date = DateOnly.FromDateTime(DateTime.UtcNow)
             },
-            ExpectedExceptionType = typeof(DbUpdateException),
+            ExpectedExceptionType = typeof(DbUpdateException)
         });
         
         // To bank with debit type
@@ -1055,9 +1055,9 @@ public class TransactionsEntityInValidTestData : TheoryData<InsertTransactionInv
                 FromBank = null,
                 ToBank = 1,
                 Type = TransactionType.Debit,
-                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                Date = DateOnly.FromDateTime(DateTime.UtcNow)
             },
-            ExpectedExceptionType = typeof(DbUpdateException),
+            ExpectedExceptionType = typeof(DbUpdateException)
         });
         
         // From bank with Credit type
@@ -1072,9 +1072,9 @@ public class TransactionsEntityInValidTestData : TheoryData<InsertTransactionInv
                 FromBank = 1,
                 ToBank = null,
                 Type = TransactionType.Credit,
-                Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                Date = DateOnly.FromDateTime(DateTime.UtcNow)
             },
-            ExpectedExceptionType = typeof(DbUpdateException),
+            ExpectedExceptionType = typeof(DbUpdateException)
         });
     }
 }
@@ -1099,8 +1099,8 @@ public class TransactionsDateWiseValidTestData : TheoryData<TransactionsDateWise
                     date: DateOnly.FromDateTime(DateTime.UtcNow)
                 ),
                 Transaction.Create(
-                    actualAmount: 240,
-                    amount: 240,
+                    actualAmount: 267,
+                    amount: 267,
                     description: "A Sample Description",
                     categoryId: 1,
                     fromBank: 1,
@@ -1111,7 +1111,7 @@ public class TransactionsDateWiseValidTestData : TheoryData<TransactionsDateWise
             },
             ExpectedResult = new List<TransactionsListByMonthYear>
             {
-                new TransactionsListByMonthYear { Credit = 0, Debit = 340, TransactionDate = DateOnly.FromDateTime(DateTime.UtcNow) },
+                new TransactionsListByMonthYear { Credit = 0, Debit = 367, TransactionDate = DateOnly.FromDateTime(DateTime.UtcNow) }
             }
         });
         
@@ -1143,7 +1143,7 @@ public class TransactionsDateWiseValidTestData : TheoryData<TransactionsDateWise
             },
             ExpectedResult = new List<TransactionsListByMonthYear>
             {
-                new TransactionsListByMonthYear { Credit = 0, Debit = 340, TransactionDate = DateOnly.FromDateTime(DateTime.UtcNow) },
+                new TransactionsListByMonthYear { Credit = 0, Debit = 340, TransactionDate = DateOnly.FromDateTime(DateTime.UtcNow) }
             },
             Month = DateTime.Now.Month,
             Year = DateTime.Now.Year
@@ -1177,7 +1177,7 @@ public class TransactionsDateWiseValidTestData : TheoryData<TransactionsDateWise
             },
             ExpectedResult = new List<TransactionsListByMonthYear>
             {
-                new TransactionsListByMonthYear { Credit = 531.47m, Debit = 0, TransactionDate = DateOnly.FromDateTime(DateTime.UtcNow) },
+                new TransactionsListByMonthYear { Credit = 531.47m, Debit = 0, TransactionDate = DateOnly.FromDateTime(DateTime.UtcNow) }
             }
         });
         
@@ -1209,7 +1209,7 @@ public class TransactionsDateWiseValidTestData : TheoryData<TransactionsDateWise
             },
             ExpectedResult = new List<TransactionsListByMonthYear>
             {
-                new TransactionsListByMonthYear { Credit = 531.47m, Debit = 0, TransactionDate = DateOnly.FromDateTime(DateTime.UtcNow) },
+                new TransactionsListByMonthYear { Credit = 531.47m, Debit = 0, TransactionDate = DateOnly.FromDateTime(DateTime.UtcNow) }
             },
             Month = DateTime.Now.Month,
             Year = DateTime.Now.Year
@@ -1243,7 +1243,7 @@ public class TransactionsDateWiseValidTestData : TheoryData<TransactionsDateWise
             },
             ExpectedResult = new List<TransactionsListByMonthYear>
             {
-                new TransactionsListByMonthYear { Credit = 677.1m, Debit = 231.90m, TransactionDate = DateOnly.FromDateTime(DateTime.UtcNow) },
+                new TransactionsListByMonthYear { Credit = 677.1m, Debit = 231.90m, TransactionDate = DateOnly.FromDateTime(DateTime.UtcNow) }
             }
         });
         
@@ -1275,7 +1275,7 @@ public class TransactionsDateWiseValidTestData : TheoryData<TransactionsDateWise
             },
             ExpectedResult = new List<TransactionsListByMonthYear>
             {
-                new TransactionsListByMonthYear { Credit = 677.1m, Debit = 231.90m, TransactionDate = DateOnly.FromDateTime(DateTime.UtcNow) },
+                new TransactionsListByMonthYear { Credit = 677.1m, Debit = 231.90m, TransactionDate = DateOnly.FromDateTime(DateTime.UtcNow) }
             },
             Month = DateTime.Now.Month,
             Year = DateTime.Now.Year
@@ -1319,13 +1319,13 @@ public class TransactionsDateWiseValidTestData : TheoryData<TransactionsDateWise
             },
             ExpectedResult = new List<TransactionsListByMonthYear>
             {
-                new TransactionsListByMonthYear { Credit = 799.1m, Debit = 231.90m, TransactionDate = DateOnly.FromDateTime(DateTime.UtcNow).AddMonths(-1) },
+                new TransactionsListByMonthYear { Credit = 799.1m, Debit = 231.90m, TransactionDate = DateOnly.FromDateTime(DateTime.UtcNow).AddMonths(-1) }
             },
             Month = DateTime.Now.AddMonths(-1).Month,
             Year = DateTime.Now.Year
         });
         
-        // Same month different days. Two debits and three credits.
+        // Previous month different days. Two debits and three credits.
         Add(new TransactionsDateWiseListDto
         {
             Transactions = new Transaction[5]
@@ -1338,7 +1338,7 @@ public class TransactionsDateWiseValidTestData : TheoryData<TransactionsDateWise
                     fromBank: 1,
                     toBank: null,
                     type: TransactionType.Debit,
-                    date: DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-2)
+                    date: DateOnly.FromDateTime(DateTime.UtcNow).AddMonths(-1).AddDays(1)
                 ),
                 Transaction.Create(
                     actualAmount: 76,
@@ -1348,7 +1348,7 @@ public class TransactionsDateWiseValidTestData : TheoryData<TransactionsDateWise
                     fromBank: 1,
                     toBank: null,
                     type: TransactionType.Debit,
-                    date: DateOnly.FromDateTime(DateTime.UtcNow)
+                    date: DateOnly.FromDateTime(DateTime.UtcNow).AddMonths(-1).AddDays(3)
                 ),
                 Transaction.Create(
                     actualAmount: 677.1m,
@@ -1358,7 +1358,7 @@ public class TransactionsDateWiseValidTestData : TheoryData<TransactionsDateWise
                     fromBank: null,
                     toBank: 1,
                     type: TransactionType.Credit,
-                    date: DateOnly.FromDateTime(DateTime.UtcNow)
+                    date: DateOnly.FromDateTime(DateTime.UtcNow).AddMonths(-1)
                 ),
                 Transaction.Create(
                     actualAmount: 122,
@@ -1368,7 +1368,7 @@ public class TransactionsDateWiseValidTestData : TheoryData<TransactionsDateWise
                     fromBank: null,
                     toBank: 1,
                     type: TransactionType.Credit,
-                    date: DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-2)
+                    date: DateOnly.FromDateTime(DateTime.UtcNow).AddMonths(-1).AddDays(5)
                 ),
                 Transaction.Create(
                     actualAmount: 10.1m,
@@ -1378,16 +1378,19 @@ public class TransactionsDateWiseValidTestData : TheoryData<TransactionsDateWise
                     fromBank: null,
                     toBank: 1,
                     type: TransactionType.Credit,
-                    date: DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-2)
+                    date: DateOnly.FromDateTime(DateTime.UtcNow).AddMonths(-1).AddDays(7)
                 )
             },
             ExpectedResult = new List<TransactionsListByMonthYear>
             {
-                new TransactionsListByMonthYear { Credit = 677.1m, Debit = 76, TransactionDate = DateOnly.FromDateTime(DateTime.UtcNow) },
-                new TransactionsListByMonthYear { Credit = 132.1m, Debit = 231.90m, TransactionDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-2) },
+                new TransactionsListByMonthYear { Credit = 677.1m, Debit = 0, TransactionDate = DateOnly.FromDateTime(DateTime.UtcNow).AddMonths(-1) },
+                new TransactionsListByMonthYear { Credit = 0, Debit = 231.90m, TransactionDate = DateOnly.FromDateTime(DateTime.UtcNow).AddMonths(-1).AddDays(1) },
+                new TransactionsListByMonthYear { Credit = 0, Debit = 76, TransactionDate = DateOnly.FromDateTime(DateTime.UtcNow).AddMonths(-1).AddDays(3) },
+                new TransactionsListByMonthYear { Credit = 122, Debit = 0, TransactionDate = DateOnly.FromDateTime(DateTime.UtcNow).AddMonths(-1).AddDays(5) },
+                new TransactionsListByMonthYear { Credit = 10.1m, Debit = 0, TransactionDate = DateOnly.FromDateTime(DateTime.UtcNow).AddMonths(-1).AddDays(7) }
             },
-            Month = DateTime.Now.Month,
-            Year = DateTime.Now.Year
+            Month = DateTime.UtcNow.AddMonths(-1).Month,
+            Year = DateTime.UtcNow.Year
         });
     }
 }

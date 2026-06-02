@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
+using System.Text.Json;
 using BudgetTracker.Finance.Attributes;
 using BudgetTracker.Finance.Entities;
 using BudgetTracker.Finance.Enums;
@@ -117,22 +119,10 @@ public record TransactionsListByMonthYear
     /// <summary>
     /// Single transaction date
     /// </summary>
-    /// <remarks>This property will be ignored in Json serializaton in favor of <see cref="FormattedDate"/></remarks>
-    [JsonIgnore]
-    public DateOnly? TransactionDate { get; init; }
-    
-    /// <summary>
-    /// Displays date in <c>ddd, MMM dd yyyy</c> format.
-    /// </summary>
-    /// <example>Tue, Jun 02 2026</example>
+    /// <remarks>This property will be serialised/ deserialised in <c>ddd, MMM dd yyyy</c> format</remarks>
     [JsonPropertyName("transaction_date")]
-    public string FormattedDate
-    {
-        get
-        {
-            return TransactionDate.HasValue ? TransactionDate.Value.ToString("ddd, MMM dd yyyy") : string.Empty;
-        }
-    }
+    [JsonConverter(typeof(DateOnlyJsonConverter))]
+    public DateOnly? TransactionDate { get; init; }
 }
 
 public record CategoryBankTransactionsByMonthYear
@@ -144,4 +134,22 @@ public record CategoryBankTransactionsByMonthYear
     [JsonPropertyName("amount")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public decimal? Amount { get; init; }
+}
+
+public class DateOnlyJsonConverter : JsonConverter<DateOnly?>
+{
+    public override DateOnly? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null)
+        {
+            return null;
+        }
+
+        return DateOnly.ParseExact(reader.GetString()!, "ddd, MMM dd yyyy", CultureInfo.InvariantCulture);
+    }
+
+    public override void Write(Utf8JsonWriter writer, DateOnly? value, JsonSerializerOptions options)
+    {
+        writer.WriteStringValue(value?.ToString("ddd, MMM dd yyyy"));
+    }
 }

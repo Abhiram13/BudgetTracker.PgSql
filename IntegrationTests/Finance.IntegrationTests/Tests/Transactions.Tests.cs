@@ -99,14 +99,14 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
     {
         using (IServiceScope scope = _fixture.Factory.CreateScope())
         {
-            WriteDbContext dbcontext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
+            WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
             
-            await using (new TransactionDisposal(dbcontext))
+            await using (new TransactionDisposal(dbContext))
             {
-                await dbcontext.Transactions.AddAsync(transaction);
-                await dbcontext.SaveChangesAsync();
+                await dbContext.Transactions.AddAsync(transaction);
+                await dbContext.SaveChangesAsync();
                 
-                Transaction? data = await dbcontext.Transactions.Where(t => t.Description == transaction.Description).FirstOrDefaultAsync();
+                Transaction? data = await dbContext.Transactions.Where(t => t.Description == transaction.Description).FirstOrDefaultAsync();
                 
                 Assert.NotNull(data);
                 Assert.Equal(transaction.Description, data.Description);
@@ -120,8 +120,8 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
     {
         using (IServiceScope scope = _fixture.Factory.CreateScope())
         {
-            WriteDbContext dbcontext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
-            await using (new TransactionDisposal(dbcontext))
+            WriteDbContext dbContext = scope.ServiceProvider.GetRequiredService<WriteDbContext>();
+            await using (new TransactionDisposal(dbContext))
             {
                 Exception exception = await Record.ExceptionAsync(async () =>
                 {
@@ -135,8 +135,8 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
                         toBank: data.Payload.ToBank,
                         type: data.Payload.Type
                     );
-                    await dbcontext.Transactions.AddAsync(transaction);
-                    await dbcontext.SaveChangesAsync();
+                    await dbContext.Transactions.AddAsync(transaction);
+                    await dbContext.SaveChangesAsync();
                 });
                 
                 Assert.NotNull(exception);
@@ -217,7 +217,7 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
                     Type = TransactionType.Debit,
                     FromBank = _testBank.Id,
                     ToBank = null,
-                    Date = payload.Date,
+                    Date = payload.Date
                 };
         
                 HttpResponseMessage httpResponse = await _client.PostAsJsonAsync(TRANSACTIONS_ROUTE, insertDto);
@@ -253,7 +253,7 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
                     Type = payload.TransactionType,
                     FromBank = payload.FromBank,
                     ToBank = payload.ToBank,
-                    Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                    Date = DateOnly.FromDateTime(DateTime.UtcNow)
                 };
         
                 HttpResponseMessage httpResponse = await _client.PostAsJsonAsync(TRANSACTIONS_ROUTE, insertDto);
@@ -287,7 +287,7 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
                     Type = TransactionType.Debit,
                     FromBank = _testBank.Id,
                     ToBank = null,
-                    Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                    Date = DateOnly.FromDateTime(DateTime.UtcNow)
                 };
         
                 HttpResponseMessage httpResponse = await _client.PostAsJsonAsync(TRANSACTIONS_ROUTE, insertDto);
@@ -317,7 +317,7 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
             {
                 HttpResponseMessage httpResponse = await _client.PostAsJsonAsync(TRANSACTIONS_ROUTE, data.Payload);
                 ApiResponse<InsertTransactionResponseDto>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<InsertTransactionResponseDto>>();
-                TransactionsMeta? meta = await dbContext.TransactionsMeta.Where(m => m.TransactionId == apiResponse!.Result.TransactionId).FirstOrDefaultAsync();
+                TransactionsMeta? meta = await dbContext.TransactionsMeta.Where(m => m.TransactionId == apiResponse!.Result!.TransactionId).FirstOrDefaultAsync();
                 
                 Assert.NotNull(apiResponse);
                 Assert.NotNull(apiResponse.Message);
@@ -378,7 +378,7 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
                         actualAmount: 100, 
                         amount: 100, 
                         categoryId: 1, 
-                        description: "smome description",
+                        description: "some description",
                         type: TransactionType.Debit,
                         fromBank: _testBank.Id,
                         toBank: null, 
@@ -388,12 +388,12 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
                         actualAmount: 100, 
                         amount: 100, 
                         categoryId: 1, 
-                        description: "smome description",
+                        description: "some description",
                         type: TransactionType.Debit,
                         fromBank: _testBank.Id,
                         toBank: null, 
                         date: DateOnly.FromDateTime(DateTime.UtcNow)
-                    ),
+                    )
                 };
 
                 foreach (Transaction transaction in transactions)
@@ -441,7 +441,7 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
                         actualAmount: 100, 
                         amount: 100, 
                         categoryId: 1, 
-                        description: "smome description",
+                        description: "some description",
                         type: TransactionType.Credit,
                         fromBank: null,
                         toBank: _testBank.Id, 
@@ -451,12 +451,12 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
                         actualAmount: 100, 
                         amount: 100, 
                         categoryId: 1, 
-                        description: "smome description",
+                        description: "some description",
                         type: TransactionType.Credit,
                         fromBank: null,
                         toBank: _testBank.Id, 
                         date: DateOnly.FromDateTime(DateTime.UtcNow)
-                    ),
+                    )
                 };
 
                 foreach (Transaction transaction in transactions)
@@ -533,7 +533,7 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
                         actualAmount: 100, 
                         amount: 100, 
                         categoryId: 1, 
-                        description: "smome description",
+                        description: "some description",
                         type: TransactionType.Debit,
                         fromBank: _testBank.Id,
                         toBank: null, 
@@ -543,12 +543,12 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
                         actualAmount: 100, 
                         amount: 100, 
                         categoryId: 1, 
-                        description: "smome description",
+                        description: "some description",
                         type: TransactionType.Debit,
                         fromBank: _testBank.Id,
                         toBank: null, 
                         date: DateOnly.FromDateTime(DateTime.UtcNow).AddMonths(-1)
-                    ),
+                    )
                 };
 
                 foreach (Transaction transaction in transactions)
@@ -602,7 +602,7 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
                     actualAmount: 100,
                     amount: 100,
                     categoryId: 1,
-                    description: "smome description",
+                    description: "some description",
                     type: TransactionType.Debit,
                     fromBank: _testBank.Id,
                     toBank: null,
@@ -623,7 +623,7 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
                     Type = TransactionType.Credit,
                     FromBank = null,
                     ToBank = _testBank.Id,
-                    Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                    Date = DateOnly.FromDateTime(DateTime.UtcNow)
                 };
                 
                 HttpResponseMessage httpResponse = await _client.PutAsJsonAsync($"{TRANSACTIONS_ROUTE}/{transaction.Id}", updatePayload);
@@ -665,7 +665,7 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
                     actualAmount: 100,
                     amount: 100,
                     categoryId: 1,
-                    description: "smome description",
+                    description: "some description",
                     type: TransactionType.Debit,
                     fromBank: _testBank.Id,
                     toBank: null,
@@ -686,7 +686,7 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
                     Type = TransactionType.Credit,
                     FromBank = _testBank.Id,
                     ToBank = null,
-                    Date = DateOnly.FromDateTime(DateTime.UtcNow),
+                    Date = DateOnly.FromDateTime(DateTime.UtcNow)
                 };
                 
                 HttpResponseMessage httpResponse = await _client.PutAsJsonAsync($"{TRANSACTIONS_ROUTE}/{transaction.Id}", updatePayload);
@@ -740,14 +740,17 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
                 }
                 
                 HttpResponseMessage httpResponse = await _client.GetAsync(url);
+                string _ = await httpResponse.Content.ReadAsStringAsync();
                 ApiResponse<List<TransactionsListByMonthYear>>? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse<List<TransactionsListByMonthYear>>>();
                 
                 Assert.NotNull(apiResponse);
                 Assert.NotNull(apiResponse.Result);
 
-                foreach (TransactionsListByMonthYear result in data.ExpectedResult)
+                for (int i = 0; i < data.ExpectedResult.Count; i++)
                 {
-                    Assert.True(apiResponse.Result.Any(l => l.Debit == result.Debit && l.Credit == result.Credit && l.TransactionDate == result.TransactionDate));
+                    Assert.True(data.ExpectedResult[i].TransactionDate == apiResponse.Result[i].TransactionDate);
+                    Assert.True(data.ExpectedResult[i].Credit == apiResponse.Result[i].Credit);
+                    Assert.True(data.ExpectedResult[i].Debit == apiResponse.Result[i].Debit);
                 }
             }
         }

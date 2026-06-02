@@ -23,7 +23,7 @@ public interface ITransactionRepository
     /// <summary>
     /// Retrieves all transactions recorded on a specific date. Can return empty <see cref="TransactionByDateDto"/> if none found.
     /// </summary>
-    /// <param name="transactionDate">The Date in format <c>yyyy-MM-dd</c> to fetch recorded transactions on that date</param>
+    /// <param name="transactionDate">The Date in format <c>yyyy-MM-dd</c> to fetch transactions recorded on that date</param>
     /// <returns><see cref="TransactionByDateDto"/> Contains collection of transactions with the specified date.</returns>
     /// <exception cref="InvalidDateException">Thrown when given date is not in <c>yyyy-MM-dd</c> format or if future date is given</exception>
     Task<TransactionByDateDto> GetAllTransactionsByDateAsync(string transactionDate);
@@ -37,10 +37,11 @@ public interface ITransactionRepository
     /// </remarks>
     /// <param name="transactionDate">The specific <see cref="DateOnly"/> to filter.</param>
     /// <returns><see cref="TransactionCreditDebitByDateDto"/> with debit, credit and count.</returns>
+    [Obsolete(message: "Already an API GetListOfTransactionsByMonthYear() is created. This method was used in Big Query")]
     Task<TransactionCreditDebitByDateDto?> GetDebitCreditByDateAsync(DateOnly transactionDate);
     
     /// <summary>
-    /// Counts total transactions for given month and year
+    /// Returns total count of all transactions by given month, year.
     /// </summary>
     /// <param name="month">Optional month (1-12) to filter the count. Defaults to current month</param>
     /// <param name="year">Optional year to filter the count. Defaults to current year</param>
@@ -68,8 +69,10 @@ public interface ITransactionRepository
     Task<List<DateOnly>> GetGroupOfDatesAsync();
     
     /// <summary>
-    /// Retrieves list of monthly based transactions by given month and year.
+    /// Retrieves list of transactions grouped by date along with total credit and total debit that occured on that date.
     /// </summary>
+    /// <param name="month">Optional param that is used to fetch list of transactions by given month. Can be null. Default will be current month.</param>
+    /// <param name="year">Optional param that is used to fetch list of transactions by given year. Can be null. Default will be current year.</param>
     /// <returns>
     /// List of <see cref="TransactionsListByMonthYear"/>
     /// </returns>
@@ -79,12 +82,13 @@ public interface ITransactionRepository
     /// <summary>
     /// Retrieves list of all transactions grouped by all Categories by given month and date
     /// </summary>
-    /// <exception cref="InvalidPayloadException">Thrown if month or year are invalid or contains future values.</exception>
+    /// <returns>List of <see cref="CategoryBankTransactionsByMonthYear"/></returns>
+    /// <inheritdoc cref="GetListOfTransactionsByMonthYear"/>
     Task<IReadOnlyList<CategoryBankTransactionsByMonthYear>> GetListOfCategoryTransactionsByMonthYear(int? month, int? year);
     
     /// <summary>
     /// Retrieves list of all transactions grouped by all Banks by given month and date
     /// </summary>
-    /// <exception cref="InvalidPayloadException">Thrown if month or year are invalid or contains future values.</exception>
+    /// <inheritdoc cref="GetListOfCategoryTransactionsByMonthYear"/>
     Task<IReadOnlyList<CategoryBankTransactionsByMonthYear>> GetListOfBankTransactionsByMonthYear(int? month, int? year);
 }

@@ -136,6 +136,7 @@ public class TransactionRepository : ITransactionRepository
         List<TransactionsListByMonthYear> result = await _readDbContext.Transactions 
             .Where(t => t.Date >= start && t.Date < end)
             .GroupBy(t => t.Date)
+            .OrderBy(o => o.Key)
             .Select(t => new TransactionsListByMonthYear
             {
                 TransactionDate = t.Key,
@@ -183,16 +184,16 @@ public class TransactionRepository : ITransactionRepository
 
     private (DateOnly start, DateOnly end) ValidateMonthYear(int? month, int? year)
     {
-        int m = month ?? DateTime.Now.Month;
-        int y = year ?? DateTime.Now.Year;
+        int m = month ?? DateTime.UtcNow.Month;
+        int y = year ?? DateTime.UtcNow.Year;
 
         // BUG: If month is above current month and year is less than current year. It is a valid case. But even then, below if condition will throw error.
-        if (m > DateTime.Now.Month)
+        if (m > DateTime.UtcNow.Month)
         {
             throw new InvalidPayloadException("Month cannot be greater than current month.");
         }
 
-        if (y > DateTime.Now.Year)
+        if (y > DateTime.UtcNow.Year)
         {
             throw new InvalidPayloadException("Year cannot be greater than current year.");
         }
