@@ -173,12 +173,16 @@ internal static class ServiceExtension
         {
             IActionResult ModelValidation(ActionContext action)
             {
+                // TODO: Rather than making 'Program' default logger instance, can failed model service be injected here?
+                ILogger<Program> logger = action.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
                 HttpRequest request = action.HttpContext.Request;
                 KeyValuePair<string, ModelStateEntry?> modelState = action.ModelState.First(m => m.Value?.Errors.Count > 0);
                 string errorAt = modelState.Key;
                 string errorMessage = modelState.Value?.Errors.FirstOrDefault()?.ErrorMessage ?? $"Something went wrong at {errorAt}";
-                string traceId = request.Headers[SharedConstants.Headers.YARP_API_KEY]!;
-                ApiResponse apiResponse = new ApiResponse { Message = errorMessage, StatusCode = HttpStatusCode.BadRequest, TraceId = traceId };
+                
+                // TODO: How to know which model or field model failed?
+                logger.LogError("Model validation failed at {ErrorAt}. Message: {ErrorMessage}", errorAt, errorMessage);
+                ApiResponse apiResponse = new ApiResponse { Message = errorMessage, StatusCode = HttpStatusCode.BadRequest, TraceId = string.Empty };
                 BadRequestObjectResult badRequest = new BadRequestObjectResult(apiResponse);
             
                 return badRequest;

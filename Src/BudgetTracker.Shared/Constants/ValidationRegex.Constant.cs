@@ -9,21 +9,15 @@ public static partial class SharedConstants
     {
         /// <summary>
         /// Validates a description string. 
-        /// Requires at least one alphabetic character and allows alphanumeric characters, 
-        /// hashes (#), commas (,), and whitespace.
+        /// Allows indian languages and english.
+        /// Used in Transactions description
         /// </summary>
-        /// <remarks>
-        /// Pattern: <c>^(?=.*[a-zA-Z])[a-zA-Z0-9#,\s]*$</c>
-        /// - Must contain at least one letter (a-z, A-Z).
-        /// - Allows digits, hashes, commas, and spaces.
-        /// - Prevents strings consisting only of special characters or numbers.
-        /// </remarks>
-        public const string DESCRIPTION_PATTERN = @"^(?=.*[a-zA-Z])[a-zA-Z0-9#,\s]*$";
+        public const string DESCRIPTION_PATTERN = @"^[\p{L}\p{M}\p{N} #]+$";
     
         /// <summary>
         /// Validates a name string. 
         /// Requires at least one alphabetic character and allows alphanumeric characters, 
-        /// commas (,), and whitespace.
+        /// commas (,), and whitespace. Used in Category, Bank names
         /// </summary>
         /// <remarks>
         /// Pattern: <c>^(?=.*[a-zA-Z])[a-zA-Z0-9,\s]*$</c>

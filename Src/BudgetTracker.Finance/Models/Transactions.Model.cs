@@ -117,9 +117,14 @@ public record TransactionsListByMonthYear
     /// <summary>
     /// Single transaction date
     /// </summary>
+    /// <remarks>This property will be ignored in Json serializaton in favor of <see cref="FormattedDate"/></remarks>
     [JsonIgnore]
     public DateOnly? TransactionDate { get; init; }
     
+    /// <summary>
+    /// Displays date in <c>ddd, MMM dd yyyy</c> format.
+    /// </summary>
+    /// <example>Tue, Jun 02 2026</example>
     [JsonPropertyName("transaction_date")]
     public string FormattedDate
     {

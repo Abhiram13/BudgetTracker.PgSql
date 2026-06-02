@@ -101,6 +101,7 @@ public class TransactionService
             };
 
             await _transactionsMetaService.InsertTransactionMetaAsync(meta);
+            _logger.LogInformation("Transaction meta data with Transaction-Id = {TransactionId} has been inserted successfully", transactionId);
         }
     }
 
@@ -154,7 +155,6 @@ public class TransactionService
                 _logger.LogInformation("Transaction with Id = {TransactionId} has been inserted successfully", transaction.Id);
                 
                 await InsertTransactionsMetaAsync(payload, currentDate: today, transactionId: transaction.Id);
-                _logger.LogInformation("Transaction meta data with Transaction-Id = {TransactionId} has been inserted successfully", transaction.Id);
                 
                 // await OutboxTransanctionMessageUpdateAsync(payload.Date, transaction.Id); //NOTE: OutBox pattern to only understand patterns. Is this neceessary now?
                 await dbTransaction.CommitAsync();
