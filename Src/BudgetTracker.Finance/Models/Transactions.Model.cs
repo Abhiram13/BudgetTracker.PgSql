@@ -121,7 +121,6 @@ public record TransactionsListByMonthYear
     /// </summary>
     /// <remarks>This property will be serialised/ deserialised in <c>ddd, MMM dd yyyy</c> format</remarks>
     [JsonPropertyName("transaction_date")]
-    [JsonConverter(typeof(DateOnlyJsonConverter))]
     public DateOnly? TransactionDate { get; init; }
 }
 
