@@ -69,7 +69,8 @@ internal static class ServiceExtension
                 .AddControllerConfiguration()
                 .AddSecurityConfiguration(configuration)
                 .AddEndpointsApiExplorer()
-                .AddHttpClientConfigurations();
+                .AddHttpClientConfigurations()
+                .AddControllersWithViews(); // MVC
         
             return serviceCollection;
         }

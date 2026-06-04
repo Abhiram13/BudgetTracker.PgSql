@@ -59,6 +59,16 @@
         <Content Include=".googlecloud\cloudbuild.yaml" />
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="MVC\Views\Home\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="MVC\Views\Home\Privacy.cshtml" />
+      <_ContentIncludedByDefault Remove="MVC\Views\Shared\Error.cshtml" />
+      <_ContentIncludedByDefault Remove="MVC\Views\Shared\_Layout.cshtml" />
+      <_ContentIncludedByDefault Remove="MVC\Views\Shared\_ValidationScriptsPartial.cshtml" />
+      <_ContentIncludedByDefault Remove="MVC\Views\_ViewImports.cshtml" />
+      <_ContentIncludedByDefault Remove="MVC\Views\_ViewStart.cshtml" />
+    </ItemGroup>
+
     <PropertyGroup>
         <ReferenceCopyLocalPathsOutputGroupIncludeMetadata>
             $(ReferenceCopyLocalPathsOutputGroupIncludeMetadata);SerializedXmlDocumentation

@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using BudgetTracker.View.Models;
+using BudgetTracker.Finance.Mvc.Models;
 
 namespace BudgetTracker.View.Controllers;
 

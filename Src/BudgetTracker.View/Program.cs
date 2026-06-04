@@ -1,3 +1,8 @@
+using BudgetTracker.Finance.Extensions;
+using BudgetTracker.Finance.Interfaces;
+using BudgetTracker.Finance.Repository;
+using BudgetTracker.Finance.Services;
+
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -17,9 +22,5 @@ app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthorization();
 app.MapStaticAssets();
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
-
+app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}").WithStaticAssets();
 app.Run();

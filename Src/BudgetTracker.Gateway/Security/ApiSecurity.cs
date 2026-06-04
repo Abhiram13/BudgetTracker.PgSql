@@ -25,6 +25,11 @@ public class ApiKeyHandler : AuthenticationHandler<ApiKeySchemaOptions>
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
+        if (Request.Path.StartsWithSegments("/view") || Request.Path.StartsWithSegments("/lib") || Request.Path.StartsWithSegments("/js") || Request.Path.StartsWithSegments("/css"))
+        {
+            return Task.FromResult(AuthenticateResult.NoResult());
+        }
+        
         bool isHeaderExist = Request.Headers.ContainsKey(ApiKeySchemaOptions.HeaderName);
 
         if (!isHeaderExist)

@@ -33,8 +33,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Warehouse.IntegrationTests"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BudgetTracker.Storage", "Src\BudgetTracker.Storage\BudgetTracker.Storage.csproj", "{843A00EB-0BB9-429C-A2B2-46E000682EAC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BudgetTracker.View", "Src\BudgetTracker.View\BudgetTracker.View.csproj", "{93987ED4-A535-4677-86BB-E2DE67D50A2A}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -165,18 +163,6 @@ Global
 		{843A00EB-0BB9-429C-A2B2-46E000682EAC}.Release|x64.Build.0 = Release|Any CPU
 		{843A00EB-0BB9-429C-A2B2-46E000682EAC}.Release|x86.ActiveCfg = Release|Any CPU
 		{843A00EB-0BB9-429C-A2B2-46E000682EAC}.Release|x86.Build.0 = Release|Any CPU
-		{93987ED4-A535-4677-86BB-E2DE67D50A2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{93987ED4-A535-4677-86BB-E2DE67D50A2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{93987ED4-A535-4677-86BB-E2DE67D50A2A}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{93987ED4-A535-4677-86BB-E2DE67D50A2A}.Debug|x64.Build.0 = Debug|Any CPU
-		{93987ED4-A535-4677-86BB-E2DE67D50A2A}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{93987ED4-A535-4677-86BB-E2DE67D50A2A}.Debug|x86.Build.0 = Debug|Any CPU
-		{93987ED4-A535-4677-86BB-E2DE67D50A2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{93987ED4-A535-4677-86BB-E2DE67D50A2A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{93987ED4-A535-4677-86BB-E2DE67D50A2A}.Release|x64.ActiveCfg = Release|Any CPU
-		{93987ED4-A535-4677-86BB-E2DE67D50A2A}.Release|x64.Build.0 = Release|Any CPU
-		{93987ED4-A535-4677-86BB-E2DE67D50A2A}.Release|x86.ActiveCfg = Release|Any CPU
-		{93987ED4-A535-4677-86BB-E2DE67D50A2A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -192,6 +178,5 @@ Global
 		{FA7D5A2C-5448-4F5C-8303-AF984300C36C} = {2764CD46-2151-4873-B487-B10590E9A147}
 		{0698FFAF-9451-444E-B727-5F2A410526FB} = {36584FA1-5006-4556-869B-BD3B38A12FFD}
 		{843A00EB-0BB9-429C-A2B2-46E000682EAC} = {75D55491-2465-4227-93FC-FAAA7E9115F1}
-		{93987ED4-A535-4677-86BB-E2DE67D50A2A} = {75D55491-2465-4227-93FC-FAAA7E9115F1}
 	EndGlobalSection
 EndGlobal

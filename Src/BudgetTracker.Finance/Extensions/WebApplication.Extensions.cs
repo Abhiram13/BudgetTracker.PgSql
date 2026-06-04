@@ -31,6 +31,8 @@ internal static class WebApplicationExtensions
             application.UseAuthorization();
             application.UseHttpsRedirection();
             application.MapControllers();
+            // application.MapControllerRoute(name: "MVC", pattern: "{controller=Home}/{action=Index}/{id?}");
+            application.MapStaticAssets();
             
             return application;
         }
