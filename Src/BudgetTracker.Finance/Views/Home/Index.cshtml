@@ -10,7 +10,7 @@
 <section>
     <section class="container text-center">
         <div class="row">
-            <button type="button" class="btn btn-primary col">Previous</button>
+            <a type="button" class="btn btn-primary col" asp-controller="TransactionView" asp-action="PreviousMonth" asp-route-month="@Model.SelectedMonth" asp-route-year="@Model.SelectedYear">Previous</a>
             <p class="col">June</p>
             <button type="button" class="btn btn-primary col">Next</button>
         </div>
