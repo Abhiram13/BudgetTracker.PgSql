@@ -25,8 +25,11 @@ public class TransactionViewController : Controller
     {
         int queryMonth = month ?? DateTime.UtcNow.Month;
         int queryYear = year ?? DateTime.UtcNow.Year;
+
+        _logger.LogInformation("Month: {Month} and Year: {Year}", month, year);
+        
         int countTask = await _transactionService.CountOfAllTransactionsAsync(queryMonth, queryYear);
-        IReadOnlyList<TransactionsListByMonthYear> listTask = await _transactionService.GetTransactionsByMonthYearAsync(queryMonth, queryYear);
+        IReadOnlyList<TransactionsListByMonthYear> listTask = await _transactionService.GetTransactionsByMonthYearAsync(queryMonth, queryYear);        
         
         TransactionModel model = new TransactionModel
         {
