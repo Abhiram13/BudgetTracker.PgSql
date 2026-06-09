@@ -84,6 +84,7 @@ public class TransactionService
         if (IsNotValidCredit()) throw new InvalidPayloadException("Invalid credit for a transaction is not allowed");
     }
 
+    // TODO: Move this method to TransactionMeta service.
     private async Task InsertTransactionsMetaAsync(InsertTransactionDto payload, DateTimeOffset currentDate, int transactionId)
     {
         bool ShouldCreateTransactionsMeta() => payload.DueId is not null || payload.EmiId is not null || !string.IsNullOrEmpty(payload.Tags);
@@ -129,6 +130,7 @@ public class TransactionService
             {
                 InsertValidations(payload);
 
+                // TODO: Move this if/else check to dedicated method in Due service.
                 if (payload.DueId is not null)
                 {
                     bool isDueExist = await _dueService.IsDueExists((int)payload.DueId);
