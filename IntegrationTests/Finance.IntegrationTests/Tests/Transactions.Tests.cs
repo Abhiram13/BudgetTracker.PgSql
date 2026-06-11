@@ -18,19 +18,19 @@ using Xunit.Abstractions;
 namespace IntegrationTests.Finance.Tests.Transactions;
 
 [Collection(nameof(DatabaseFixture))]
-public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixture>
+public abstract class TransactionBaseTests : IClassFixture<TransactionsIntegrationTestFixture>
 {
-    private readonly Category _testCategory;
-    private readonly Bank _testBank;
-    private readonly HttpClient _client;
-    private readonly HttpClient _unAuthorizedClient;
-    private readonly HttpClient _invalidJwtClient;
-    private readonly HttpClient _noPolicyJwtClient;
-    private readonly TransactionsIntegrationTestFixture _fixture;
-    private readonly ITestOutputHelper _testOutputHelper;
-    private const string TRANSACTIONS_ROUTE = "/api/transactions";
+    protected readonly Category _testCategory;
+    protected readonly Bank _testBank;
+    protected readonly HttpClient _client;
+    protected readonly HttpClient _unAuthorizedClient;
+    protected readonly HttpClient _invalidJwtClient;
+    protected readonly HttpClient _noPolicyJwtClient;
+    protected readonly TransactionsIntegrationTestFixture _fixture;
+    protected readonly ITestOutputHelper _testOutputHelper;
+    protected const string TRANSACTIONS_ROUTE = "/api/transactions";
 
-    public TransactionsTests(TransactionsIntegrationTestFixture fixture, ITestOutputHelper testOutputHelper)
+    protected TransactionBaseTests(TransactionsIntegrationTestFixture fixture, ITestOutputHelper testOutputHelper)
     {
         _client = fixture.Client;
         _unAuthorizedClient = fixture.UnAuthorizedClient;
@@ -41,58 +41,12 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
         _fixture = fixture;
         _testOutputHelper = testOutputHelper;
     }
-
-    #region Authentication and Authorisation Tests
+}
     
-    [Fact]
-    public async Task Unauthorised_401_Response_Async()
-    {
-        string date = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd");
-        HttpResponseMessage httpResponse = await _unAuthorizedClient.GetAsync($"{TRANSACTIONS_ROUTE}/date/{date}");
-        ApiResponse? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse>();
-        
-        Assert.Equal(HttpStatusCode.Unauthorized, httpResponse.StatusCode);
-        Assert.NotNull(apiResponse);
-        Assert.Equal(HttpStatusCode.Unauthorized, apiResponse.StatusCode);
-        Assert.NotNull(apiResponse.Message);
-        Assert.NotEmpty(apiResponse.Message);
-        Assert.Equal("You are not authorized. Token may be missing or invalid.", apiResponse.Message);
-    }
+public sealed class TransactionsEntityTests : TransactionBaseTests
+{
+    public TransactionsEntityTests (TransactionsIntegrationTestFixture fixture, ITestOutputHelper testOutputHelper) : base(fixture, testOutputHelper) { }
     
-    [Fact]
-    public async Task InValid_Token_401_Response_Async()
-    {
-        string date = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd");
-        HttpResponseMessage httpResponse = await _invalidJwtClient.GetAsync($"{TRANSACTIONS_ROUTE}/date/{date}");
-        ApiResponse? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse>();
-        
-        Assert.Equal(HttpStatusCode.Unauthorized, httpResponse.StatusCode);
-        Assert.NotNull(apiResponse);
-        Assert.Equal(HttpStatusCode.Unauthorized, apiResponse.StatusCode);
-        Assert.NotNull(apiResponse.Message);
-        Assert.NotEmpty(apiResponse.Message);
-        Assert.Equal("You are not authorized. Token may be missing or invalid.", apiResponse.Message);
-    }
-    
-    [Fact]
-    public async Task NoPolicy_Token_403_Response_Async()
-    {
-        string date = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd");
-        HttpResponseMessage httpResponse = await _noPolicyJwtClient.GetAsync($"{TRANSACTIONS_ROUTE}/date/{date}");
-        ApiResponse? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse>();
-        
-        Assert.Equal(HttpStatusCode.Forbidden, httpResponse.StatusCode);
-        Assert.NotNull(apiResponse);
-        Assert.Equal(HttpStatusCode.Forbidden, apiResponse.StatusCode);
-        Assert.NotNull(apiResponse.Message);
-        Assert.NotEmpty(apiResponse.Message);
-        Assert.Equal("Access Denied: You do not have permission to perform this action.", apiResponse.Message);
-    }
-    
-    #endregion
-    
-    #region Transaction Entity
-
     [Theory]
     [ClassData(typeof(TransactionsEntityValidTestData))]
     public async Task Transaction_Entity_Valid_Success_Async(Transaction transaction)
@@ -144,11 +98,12 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
             }
         }
     }
+}
 
-    #endregion
-
-    #region Insert Transactions
-
+public sealed class TransactionInsertTests : TransactionBaseTests
+{
+    public TransactionInsertTests (TransactionsIntegrationTestFixture fixture, ITestOutputHelper testOutputHelper) : base(fixture, testOutputHelper) { }
+    
     // Tests to verify success response in Insert transactions
     [Theory]
     [MemberData(nameof(InsertTransactionsMemberTestData.HappyPathData), MemberType = typeof(InsertTransactionsMemberTestData))]
@@ -365,11 +320,12 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
             }
         }
     }
+}
+
+public sealed class TransactionsByDateTests : TransactionBaseTests
+{
+    public TransactionsByDateTests (TransactionsIntegrationTestFixture fixture, ITestOutputHelper testOutputHelper) : base(fixture, testOutputHelper) { }
     
-    #endregion
-
-    #region Transactions By Date
-
     [Fact]
     public async Task TransactionByDate_DebitTransactions_SuccessResponse()
     {
@@ -519,10 +475,11 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
             }
         }
     }
+}
 
-    #endregion
-    
-    #region Transactions Count by month and year
+public sealed class TransactionsCountTests : TransactionBaseTests
+{
+    public TransactionsCountTests (TransactionsIntegrationTestFixture fixture, ITestOutputHelper testOutputHelper) : base(fixture, testOutputHelper) { }
     
     [Theory]
     [ClassData(typeof(TransactionsByMonthYearTestsData))]
@@ -591,10 +548,11 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
             }
         }
     }
-    
-    #endregion
+}
 
-    #region Update transactions
+public sealed class TransactionsUpdateTests : TransactionBaseTests
+{
+    public TransactionsUpdateTests (TransactionsIntegrationTestFixture fixture, ITestOutputHelper testOutputHelper) : base(fixture, testOutputHelper) { }
     
     [Fact]
     public async Task UpdateTransaction_SuccessResponse_Async()
@@ -710,11 +668,12 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
             }
         }
     }
+}
+
+public sealed class TransactionsListByMonthTests : TransactionBaseTests
+{
+    public TransactionsListByMonthTests (TransactionsIntegrationTestFixture fixture, ITestOutputHelper testOutputHelper) : base(fixture, testOutputHelper) { }
     
-    #endregion
-
-    #region Transactions date wise list
-
     [Theory]
     [ClassData(typeof(TransactionsDateWiseValidTestData))]
     public async Task TransactionsDateWiseListAsync(TransactionsDateWiseListDto data)
@@ -787,6 +746,54 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
             }
         }
     }
+}
+
+public sealed class TransactionsAuthTests : TransactionBaseTests
+{
+    public TransactionsAuthTests (TransactionsIntegrationTestFixture fixture, ITestOutputHelper testOutputHelper) : base(fixture, testOutputHelper) { }
     
-    #endregion
+    [Fact]
+    public async Task Unauthorised_401_Response_Async()
+    {
+        string date = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd");
+        HttpResponseMessage httpResponse = await _unAuthorizedClient.GetAsync($"{TRANSACTIONS_ROUTE}/date/{date}");
+        ApiResponse? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse>();
+        
+        Assert.Equal(HttpStatusCode.Unauthorized, httpResponse.StatusCode);
+        Assert.NotNull(apiResponse);
+        Assert.Equal(HttpStatusCode.Unauthorized, apiResponse.StatusCode);
+        Assert.NotNull(apiResponse.Message);
+        Assert.NotEmpty(apiResponse.Message);
+        Assert.Equal("You are not authorized. Token may be missing or invalid.", apiResponse.Message);
+    }
+    
+    [Fact]
+    public async Task InValid_Token_401_Response_Async()
+    {
+        string date = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd");
+        HttpResponseMessage httpResponse = await _invalidJwtClient.GetAsync($"{TRANSACTIONS_ROUTE}/date/{date}");
+        ApiResponse? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse>();
+        
+        Assert.Equal(HttpStatusCode.Unauthorized, httpResponse.StatusCode);
+        Assert.NotNull(apiResponse);
+        Assert.Equal(HttpStatusCode.Unauthorized, apiResponse.StatusCode);
+        Assert.NotNull(apiResponse.Message);
+        Assert.NotEmpty(apiResponse.Message);
+        Assert.Equal("You are not authorized. Token may be missing or invalid.", apiResponse.Message);
+    }
+    
+    [Fact]
+    public async Task NoPolicy_Token_403_Response_Async()
+    {
+        string date = DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd");
+        HttpResponseMessage httpResponse = await _noPolicyJwtClient.GetAsync($"{TRANSACTIONS_ROUTE}/date/{date}");
+        ApiResponse? apiResponse = await httpResponse.Content.ReadFromJsonAsync<ApiResponse>();
+        
+        Assert.Equal(HttpStatusCode.Forbidden, httpResponse.StatusCode);
+        Assert.NotNull(apiResponse);
+        Assert.Equal(HttpStatusCode.Forbidden, apiResponse.StatusCode);
+        Assert.NotNull(apiResponse.Message);
+        Assert.NotEmpty(apiResponse.Message);
+        Assert.Equal("Access Denied: You do not have permission to perform this action.", apiResponse.Message);
+    }
 }

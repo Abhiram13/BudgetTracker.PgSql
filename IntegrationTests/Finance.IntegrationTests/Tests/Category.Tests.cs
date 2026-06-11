@@ -14,19 +14,24 @@ using Microsoft.Extensions.DependencyInjection;
 namespace IntegrationTests.Finance.Tests.Categories;
 
 [Collection(nameof(DatabaseFixture))]
-public class CategoryTests : IClassFixture<CategoriesTestsFixture>
+public abstract class CategoryTestsBase : IClassFixture<CategoriesTestsFixture>
 {
-    private readonly HttpClient _client;
-    private readonly HttpClient _unAuthorisedClient;
-    private readonly CategoriesTestsFixture _fixture;
-    private const string CATEGORY_ROUTE = "/api/categories";
+    protected readonly HttpClient _client;
+    protected readonly HttpClient _unAuthorisedClient;
+    protected readonly CategoriesTestsFixture _fixture;
+    protected const string CATEGORY_ROUTE = "/api/categories";
 
-    public CategoryTests(CategoriesTestsFixture fixture)
+    protected CategoryTestsBase(CategoriesTestsFixture fixture)
     {
         _client = fixture.Client;
         _unAuthorisedClient = fixture.UnAuthorizedClient;
         _fixture = fixture;
     }
+}
+
+public sealed class CategoryEntityTests : CategoryTestsBase
+{
+    public CategoryEntityTests(CategoriesTestsFixture fixture) : base(fixture) { }
 
     [Theory]
     [ClassData(typeof(CategoryEntityValidTestData))]
@@ -86,7 +91,12 @@ public class CategoryTests : IClassFixture<CategoriesTestsFixture>
     //     Assert.NotNull(apiResponse.Message);
     //     Assert.NotEmpty(apiResponse.Message);
     // }
+}
 
+public sealed class InsertCategoryTests : CategoryTestsBase
+{
+    public InsertCategoryTests(CategoriesTestsFixture fixture) : base(fixture) { }
+    
     [Theory]
     [ClassData(typeof(InsertCategoriesTestData))]
     public async Task Insert_Categories_SuccessFailResponse_Async(InsertCategoryDef testData)
@@ -122,9 +132,4 @@ public class CategoryTests : IClassFixture<CategoriesTestsFixture>
             }
         }
     }
-    
-    // public async Task Get_Categories_List_Async()
-    // {
-    //     HttpResponseMessage httpResponse = await _client.GetAsync(CATEGORY_ROUTE);
-    // }
 }

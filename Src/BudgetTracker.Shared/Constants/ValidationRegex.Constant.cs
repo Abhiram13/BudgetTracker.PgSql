@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 namespace BudgetTracker.Shared.Constants;
 
 public static partial class SharedConstants
@@ -5,15 +7,15 @@ public static partial class SharedConstants
     /// <summary>
     /// Provides a centralized collection of regular expressions for data validation.
     /// </summary>
-    public static class ValidationRegex
+    public static partial class ValidationRegex
     {
         /// <summary>
         /// Validates a description string. 
         /// Allows indian languages and english.
         /// Used in Transactions description
         /// </summary>
-        public const string DESCRIPTION_PATTERN = @"^[\p{L}\p{M}\p{N} #]+$";
-    
+        // public const string DESCRIPTION_PATTERN = @"^[\p{L}\p{M}\p{N} #]+$";
+        public const string DESCRIPTION_PATTERN = @"^(?=.*\p{L})[\p{L}\p{M}\p{N} #,]+$";
         /// <summary>
         /// Validates a name string. 
         /// Requires at least one alphabetic character and allows alphanumeric characters, 
@@ -26,5 +28,8 @@ public static partial class SharedConstants
         /// - Does not allow special symbols like hashes (#).
         /// </remarks>
         public const string NAME_PATTERN = @"^(?=.*[a-zA-Z])[a-zA-Z0-9,\s]*$";
+        
+        [GeneratedRegex(DESCRIPTION_PATTERN)]
+        public static partial Regex DescriptionRegex { get; }
     }
 }

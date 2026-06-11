@@ -107,7 +107,7 @@ public class Transaction : BaseEntity
             throw new InvalidPayloadException("Actual Amount must be between 0.01 and 1000000");
         }
 
-        if (string.IsNullOrEmpty(description))
+        if (string.IsNullOrEmpty(description) || string.IsNullOrWhiteSpace(description))
         {
             throw new InvalidPayloadException("Description is required");
         }
