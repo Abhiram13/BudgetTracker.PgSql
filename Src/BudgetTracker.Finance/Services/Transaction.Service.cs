@@ -84,28 +84,6 @@ public class TransactionService
         if (IsNotValidCredit()) throw new InvalidPayloadException("Invalid credit for a transaction is not allowed");
     }
 
-    // TODO: Move this method to TransactionMeta service.
-    private async Task InsertTransactionsMetaAsync(InsertTransactionDto payload, DateTimeOffset currentDate, int transactionId)
-    {
-        bool ShouldCreateTransactionsMeta() => payload.DueId is not null || payload.EmiId is not null || !string.IsNullOrEmpty(payload.Tags);
-        
-        if (ShouldCreateTransactionsMeta())
-        {
-            TransactionsMeta meta = new TransactionsMeta
-            {
-                TransactionId = transactionId,
-                DueId = payload.DueId,
-                EmiId = payload.EmiId,
-                Tags = payload.Tags,
-                CreatedAt = currentDate,
-                UpdatedAt = currentDate,
-            };
-
-            await _transactionsMetaService.InsertTransactionMetaAsync(meta);
-            _logger.LogInformation("Transaction meta data with Transaction-Id = {TransactionId} has been inserted successfully", transactionId);
-        }
-    }
-
     /// <summary>
     /// Validates the payload, inserts the <see cref="Transaction"/> and then inserts the <see cref="TransactionsMeta"/>
     /// and then inserts an event in <see cref="OutboxEvents"/> for later processing
@@ -130,18 +108,8 @@ public class TransactionService
             {
                 InsertValidations(payload);
 
-                // TODO: Move this if/else check to dedicated method in Due service.
-                if (payload.DueId is not null)
-                {
-                    bool isDueExist = await _dueService.IsDueExists((int)payload.DueId);
-                    
-                    if (!isDueExist)
-                    {
-                        throw new InvalidPayloadException("Due id is invalid");
-                    }
-                }
-
-                DateTimeOffset today = DateTimeOffset.UtcNow;
+                await _dueService.IsDueExists(payload.DueId);
+                
                 Transaction transaction = Transaction.Create(
                     actualAmount: payload.ActualAmount,
                     amount: payload.Amount,
@@ -155,10 +123,11 @@ public class TransactionService
 
                 await _repository.InsertOneTransactionAsync(transaction);
                 _logger.LogInformation("Transaction with Id = {TransactionId} has been inserted successfully", transaction.Id);
+
+                await _transactionsMetaService.InsertTransactionMetaAsync(new InsertTransactionMetaDto(
+                    EmiId: payload.EmiId, DueId: payload.DueId, TransactionId: transaction.Id, Tags: payload.Tags
+                ));
                 
-                await InsertTransactionsMetaAsync(payload, currentDate: today, transactionId: transaction.Id);
-                
-                // await OutboxTransanctionMessageUpdateAsync(payload.Date, transaction.Id); //NOTE: OutBox pattern to only understand patterns. Is this neceessary now?
                 await dbTransaction.CommitAsync();
 
                 return new InsertTransactionResponseDto { TransactionId = transaction.Id };

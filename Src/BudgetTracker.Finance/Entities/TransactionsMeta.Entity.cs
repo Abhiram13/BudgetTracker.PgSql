@@ -7,33 +7,47 @@ using System.ComponentModel.DataAnnotations;
 namespace BudgetTracker.Finance.Entities;
 
 [Table("transactions_meta")]
-public class TransactionsMeta
+public class TransactionsMeta : BaseTimeStampEntity
 {
     [Key]
     [Column("transaction_id")]
     [ForeignKey(nameof(Transaction))]
-    [JsonPropertyName("transaction_id")]
-    public required int TransactionId { get; set; }
+    public int TransactionId { get; private set; }
 
     [Column("due_id")]
-    [JsonPropertyName("due_id")]
-    public int? DueId { get; set; }
+    public int? DueId { get; private set; }
 
     [Column("emi_id")]
-    [JsonPropertyName("emi_id")]
-    public int? EmiId { get; set; }
-
-    [Column("created_at")]
-    [JsonPropertyName("created_at")]
-    public DateTimeOffset CreatedAt { get; set; }
-
-    [Column("updated_at")]
-    [JsonPropertyName("updated_at")]
-    public DateTimeOffset UpdatedAt { get; set; }
+    public int? EmiId { get; private set; }
 
     [Column("tags")]
-    [JsonPropertyName("tags")]
-    public string? Tags { get; set; }
+    public string? Tags { get; private set; }
 
-    public Transaction TransactionF { get; init; } = default!;
+    public Transaction TransactionF { get; private init; } = default!;
+    
+    private TransactionsMeta() { }
+    
+    public static TransactionsMeta Create(int transactionId, int? dueId = null, int? emiId = null, string? tags = null)
+    {
+        TransactionsMeta meta = new TransactionsMeta
+        {
+            TransactionId = transactionId,
+            DueId = dueId,
+            EmiId = emiId,
+            Tags = tags
+        };
+        
+        meta.SetModifiedAt();
+        return meta;
+    }
+
+    public void Update(int? transactionId = null, int? dueId = null, int? emiId = null, string? tags = null)
+    {
+        TransactionId = transactionId ?? TransactionId;
+        DueId = dueId;
+        EmiId = emiId;
+        Tags = tags;
+        
+        SetUpdatedAt();
+    }
 }

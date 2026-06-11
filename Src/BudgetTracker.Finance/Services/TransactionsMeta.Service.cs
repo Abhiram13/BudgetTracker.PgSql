@@ -15,24 +15,29 @@ public class TransactionsMetaService
         _logger = logger;
     }
 
-    public async Task InsertTransactionMetaAsync(TransactionsMeta payload)
+    public async Task InsertTransactionMetaAsync(InsertTransactionMetaDto payload)
     {
-        // DateOnly date = DateOnly.FromDateTime(DateTime.UtcNow);
-        // TransactionsMeta data = new TransactionsMeta
-        // {
-        //     EmiId = payload.EmiId,
-        //     DueId = payload.DueId,
-        //     TransactionId = payload.TransactionId,
-        //     Tags = payload.Tags,
-        //     CreatedAt = date,
-        //     UpdatedAt = date,
-        // };
-
-        await _repository.InsertMetaAsync(payload);
+        if (ShouldTransactionMetaCreated(payload.DueId, payload.EmiId, payload.Tags))
+        {
+            TransactionsMeta data = TransactionsMeta.Create(
+                transactionId: payload.TransactionId,
+                emiId: payload.EmiId,
+                tags: payload.Tags,
+                dueId: payload.DueId
+            );
+            
+            await _repository.InsertMetaAsync(data);
+            _logger.LogInformation("Transaction meta data with Transaction-Id = {TransactionId} has been inserted successfully", payload.TransactionId);
+        }
     }
 
     public async Task UpdateTransactionMetaAsync(UpdateTransactionMetaDto payload, int transactionId)
     {
         await _repository.UpdateMetaAsync(payload, transactionId);
+    }
+
+    private bool ShouldTransactionMetaCreated(int? dueId, int? emiId, string? tags)
+    {
+        return dueId is not null || emiId is not null || !string.IsNullOrEmpty(tags);
     }
 }

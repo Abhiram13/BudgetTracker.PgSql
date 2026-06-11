@@ -11,7 +11,6 @@ namespace BudgetTracker.Finance.Entities;
 public class Bank : BaseEntity
 {
     [Column("name")]
-    [JsonPropertyName("name")]
     public string Name { get; private set; } = string.Empty;
     
     private Bank() { }

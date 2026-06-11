@@ -106,7 +106,7 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
                 await dbContext.Transactions.AddAsync(transaction);
                 await dbContext.SaveChangesAsync();
                 
-                Transaction? data = await dbContext.Transactions.Where(t => t.Description == transaction.Description).FirstOrDefaultAsync();
+                Transaction data = await dbContext.Transactions.Where(t => t.Description == transaction.Description).FirstAsync();
                 
                 Assert.NotNull(data);
                 Assert.Equal(transaction.Description, data.Description);
@@ -149,6 +149,7 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
 
     #region Insert Transactions
 
+    // Tests to verify success response in Insert transactions
     [Theory]
     [MemberData(nameof(InsertTransactionsMemberTestData.HappyPathData), MemberType = typeof(InsertTransactionsMemberTestData))]
     public async Task InsertTransaction_201_SuccessResponse(InsertTransactionDto payload)
@@ -171,6 +172,7 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
         }
     }
 
+    // Tests to verify Bad request response due to validation failures in Insert Transactions
     [Theory]
     [MemberData(nameof(InsertTransactionsMemberTestData.BadRequestValidationData), MemberType = typeof(InsertTransactionsMemberTestData))]
     public async Task InsertTransaction_Validation_BadRequestResponse(InsertTransactionDto payload)
@@ -197,6 +199,7 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
         }
     }
 
+    // Tests to verify Date field validations which returns success and failure response in Insert transactions. 
     [Theory]
     [ClassData(typeof(TransactionsInsertDateValidationTestData))]
     public async Task InsertTransaction_DateValidation_ReturnsExpectedStatus(InsertTransactionDateDef payload)
@@ -233,6 +236,7 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
         }
     }
 
+    // Tests to verify behavior of debit and credit with different amounts which returns success and failure response in Insert transactions. 
     [Theory]
     [ClassData(typeof(TransactionsInsertDebitCreditBusinessTestData))]
     public async Task InsertTransaction_DebitCredit_Rules_200_400_Response(InsertTransactionDebitCreditBusinessDataDef payload)
@@ -268,6 +272,7 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
         }
     }
 
+    // Tests to verify security edge cases with validations which returns bad request response in Insert transactions.
     [Theory]
     [ClassData(typeof(TransactionsInsertSecurityEdgeCasesTestData))]
     public async Task InsertTransaction_SecurityEdge_400_Response(InsertTransactionSecurityEdgeCasesDataDef payload)
@@ -305,6 +310,7 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
         }
     }
     
+    // Tests to verify Transactions meta table which returns success response when due is included in Insert transactions.
     [Theory]
     [ClassData(typeof(TransactionsInsertDueMetaSuccessTestData))]
     public async Task InsertTransaction_DueInsert_TransactionsMeta_SuccessResponse_Async(InsertTransactionDueIdMetaDataDef data)
@@ -335,6 +341,7 @@ public class TransactionsTests : IClassFixture<TransactionsIntegrationTestFixtur
         }
     }
     
+    // Tests to verify Transactions meta table which returns failure response when due is included in Insert transactions.
     [Theory]
     [ClassData(typeof(TransactionsInsertDueMetaFailureTestData))]
     public async Task InsertTransaction_DueInsert_TransactionsMeta_FailureResponse_Async(InsertTransactionDueIdMetaDataDef data)

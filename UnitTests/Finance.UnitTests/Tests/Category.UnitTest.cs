@@ -23,6 +23,8 @@ public class CategoryUnitTests
         _categoryService = new CategoryService(_categoryRepository.Object);
     }
     
+    #region Get Category Tests
+    
     [Fact]
     public async Task GetCategoryById_Success_Async()
     {
@@ -52,6 +54,8 @@ public class CategoryUnitTests
         Assert.IsType<InvalidPayloadException>(exception);
         Assert.Equal("Category with (0) not found", exception.Message);
     }
+    
+    #endregion
 
     #region Insert Category Tests
 
@@ -62,11 +66,15 @@ public class CategoryUnitTests
         // Arrange
         InsertCategoryDto insertDto = new InsertCategoryDto { Name = categoryName };
     
-        // 1. Ensure the duplicate check returns null
+        // When inserting category in Category repository, it first checks for category by given name and return it or null.
+        // So by defaulting setting up null to pass to Insert category.
         _categoryRepository.Setup(c => c.GetCategoryAsync(categoryName)).ReturnsAsync((Category)null);
 
-        // 2. Setup the insert to accept ANY Category object and return it back
-        _categoryRepository.Setup(c => c.InsertOneCategoryAsync(It.IsAny<Category>())).ReturnsAsync((Category c) => c); 
+        // Passing IsAny<Category> here instead of Category.Create() because a 'Category' instance will be created within _categoryService.InsertCategoryAsync()
+        // When these two instances of Category is created, 'result' is getting null.
+        // So with IsAny<>, we are returning any Category object that was created within _categoryService.InsertCategoryAsync().
+        // And here at .ReturnAsync() we are returning that whatever 'Category' instance that was created within.
+        _categoryRepository.Setup(c => c.InsertOneCategoryAsync(It.IsAny<Category>())).ReturnsAsync((Category c) => c);
     
         // Act
         Category result = await _categoryService.InsertCategoryAsync(insertDto);
@@ -76,6 +84,7 @@ public class CategoryUnitTests
         Assert.Equal(categoryName, result.Name);
     
         // Verify that the repository was actually called
+        // This test feels too much checking???
         _categoryRepository.Verify(c => c.InsertOneCategoryAsync(It.Is<Category>(x => x.Name == categoryName)), Times.Once);
     }
 
@@ -84,6 +93,7 @@ public class CategoryUnitTests
     {
         // Arrange
         const string categoryName = "Food";
+        
         _categoryRepository.Setup(c => c.GetCategoryAsync(categoryName)).ReturnsAsync(Category.Create(categoryName));
 
         Exception exception = await Record.ExceptionAsync(async () =>

@@ -7,10 +7,7 @@ using System.Runtime.CompilerServices;
 
 namespace BudgetTracker.Shared.Entities;
 
-/// <summary>
-/// Serves as the base class for all domain entities, providing common properties such as ID, Created at and Updated at.
-/// </summary>
-public abstract class BaseEntity
+public abstract class BaseEntity : BaseTimeStampEntity
 {
     /// <summary>
     /// Gets the unique identifier for the entity.
@@ -22,7 +19,13 @@ public abstract class BaseEntity
     [Column("id")]
     [JsonPropertyName("id")]
     public int Id { get; init; }
+}
 
+/// <summary>
+/// Serves as the base class for all domain entities, providing common properties such as ID, Created at and Updated at.
+/// </summary>
+public abstract class BaseTimeStampEntity
+{
     /// <summary>
     /// Gets or sets the date when the entity was first created.
     /// </summary>
@@ -31,8 +34,6 @@ public abstract class BaseEntity
     /// </remarks>
     [Required]
     [Column("created_at")]
-    [JsonPropertyName("created_at")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public DateTimeOffset CreatedAt { get; private set; }
 
     /// <summary>
@@ -40,8 +41,6 @@ public abstract class BaseEntity
     /// </summary>
     [Required]
     [Column("updated_at")]
-    [JsonPropertyName("updated_at")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public DateTimeOffset UpdatedAt { get; private set; }
 
     protected void SetModifiedAt()
