@@ -25,6 +25,11 @@ public class ApiKeyHandler : AuthenticationHandler<ApiKeySchemaOptions>
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
+        if (Request.Path.StartsWithSegments("/api-docs"))
+        {
+            return Task.FromResult(AuthenticateResult.NoResult());
+        }        
+
         bool isHeaderExist = Request.Headers.ContainsKey(ApiKeySchemaOptions.HeaderName);
 
         if (!isHeaderExist)

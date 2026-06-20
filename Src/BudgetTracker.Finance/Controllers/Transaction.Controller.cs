@@ -11,7 +11,6 @@ using BudgetTracker.Shared.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using BudgetTracker.Shared.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Swashbuckle.AspNetCore.Annotations;
 
 namespace BudgetTracker.Finance.Controllers;
 

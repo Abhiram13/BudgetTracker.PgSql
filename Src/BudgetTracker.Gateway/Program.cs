@@ -34,7 +34,6 @@ builder.Configuration
 builder.AddConsoleGoogleSeriLog();
 builder.Configuration.AddSecrets(environment: builder.Environment, optional: false);
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 builder.Services.LoadJwtConfiguration(builder.Configuration);
 builder.Services.AddOptions<GatewayAppSecrets>().Bind(builder.Configuration).ValidateDataAnnotations().ValidateOnStart();
@@ -71,8 +70,6 @@ WebApplication app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
 }
 
 app.UseMiddleware<TraceProviderMiddleware>();
@@ -81,7 +78,7 @@ app.UseRouting();
 app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapReverseProxy().RequireAuthorization();
+app.MapReverseProxy();
 app.UseHttpsRedirection();
 app.MapControllers();
 app.MapGet("/", () => new ApiResponse { StatusCode = HttpStatusCode.OK, Message = "This is YARP API Gateway" });

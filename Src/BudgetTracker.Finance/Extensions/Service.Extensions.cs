@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
 using Google.Cloud.PubSub.V1;
 using Abhiram.Secrets.Configuration;
 using Abhiram.Secrets.Providers.Exceptions;
@@ -26,7 +25,6 @@ using BudgetTracker.Shared.Configurations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Npgsql;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using Encoding = System.Text.Encoding;
 
 [assembly: InternalsVisibleTo("IntegrationTests.Finance")]
@@ -65,7 +63,6 @@ internal static class ServiceExtension
                 .AddPostgresDbContext<MigrateDbContext>(dbName: DatabaseType.MIGRATE)
                 .AddOptionsConfigurations(configuration)
                 .AddBackgroundServices()
-                .AddSwaggerConfiguration()
                 .AddControllerConfiguration()
                 .AddSecurityConfiguration(configuration)
                 .AddEndpointsApiExplorer()
@@ -118,54 +115,6 @@ internal static class ServiceExtension
             });
             serviceCollection.AddSingleton<PublisherService>();
         
-            return serviceCollection;
-        }
-
-        private IServiceCollection AddSwaggerConfiguration()
-        {
-            Action<SwaggerGenOptions> configure = options =>
-            {
-                string baseDir = AppContext.BaseDirectory;
-                string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                string xmlPath = Path.Combine(baseDir, xmlFile);
-                options.IncludeXmlComments(xmlPath);
-            
-                string sharedXml = "BudgetTracker.Shared.xml"; 
-                string sharedPath = Path.Combine(baseDir, sharedXml);
-            
-                if (File.Exists(sharedPath))
-                {
-                    options.IncludeXmlComments(sharedPath);
-                }
-            
-                options.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Title = "Budget Tracker Finance API",
-                    Version = "v1",
-                    Description = "Comprehensive APIs for managing bank transactions and categories."
-                });
-            
-                const string SWAGGER_API_SCHEMA = "Bearer";
-                options.AddSecurityDefinition(SWAGGER_API_SCHEMA, new OpenApiSecurityScheme
-                {
-                    Description = "Enter your JWT Token",
-                    Name = "JWT Authentication",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.Http,
-                    Scheme = JwtBearerDefaults.AuthenticationScheme.ToLower(),
-                    BearerFormat = "JWT"
-                });
-            
-                options.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    { 
-                        new OpenApiSecurityScheme { Reference = new OpenApiReference { Id = SWAGGER_API_SCHEMA, Type = ReferenceType.SecurityScheme }},
-                        Array.Empty<string>()
-                    }
-                });
-            };
-        
-            serviceCollection.AddSwaggerGen(configure);
             return serviceCollection;
         }
 

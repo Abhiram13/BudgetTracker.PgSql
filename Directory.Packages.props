@@ -9,7 +9,7 @@
     <ItemGroup Label="Microsoft Packages">
         <PackageVersion Include="EntityFramework6.Npgsql" Version="6.4.3" />
         <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.6" />
-        <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="$(EfCoreVersion)" />
+        <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
         <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="$(EfCoreVersion)" />
         <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="$(EfCoreVersion)">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -17,7 +17,7 @@
         </PackageVersion>
         <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
         <PackageVersion Include="Scalar.AspNetCore" Version="2.13.22" />
-        <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+        <PackageVersion Include="Scalar.AspNetCore.Microsoft" Version="2.9.0" />
         <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.17.0" />
         <PackageVersion Include="Yarp.ReverseProxy" Version="2.3.0" />
     </ItemGroup>
