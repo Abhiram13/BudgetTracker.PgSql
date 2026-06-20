@@ -79,13 +79,16 @@ if (app.Environment.IsDevelopment())
         {
             new ScalarServer("http://localhost:3000", "Development Server")
         };
+        options.DotNetFlag = true;
+        options.DocumentDownloadType = DocumentDownloadType.None;
         options
             .WithOpenApiRoutePattern(URL)
             .AddPreferredSecuritySchemes("ApiKey")
             .AddApiKeyAuthentication("ApiKey", apiKey =>
             {
                 apiKey.Name = "API_KEY";                
-            });
+            })
+            .DisableAgent();
     })
     .AllowAnonymous();
 }

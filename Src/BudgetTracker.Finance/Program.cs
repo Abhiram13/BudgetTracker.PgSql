@@ -23,6 +23,12 @@ builder.Services.AddCollections(builder.Configuration);
 builder.Services.AddOpenApi(options =>
 {
     options.AddDocumentTransformer<OpenApiTransformer>();
+    options.AddSchemaTransformer((schema, _, _) =>
+    {
+        schema.Example = null;
+        schema.Default = null;
+        return Task.CompletedTask;
+    });
 });
 builder.WebHost.ConfigureKestrel((context, server) =>
 {

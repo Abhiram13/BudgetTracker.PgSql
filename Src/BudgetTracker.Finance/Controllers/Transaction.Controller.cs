@@ -23,8 +23,6 @@ namespace BudgetTracker.Finance.Controllers;
 [ApiController]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = SharedConstants.Jwt.Policies.DOWNSTREAM_POLICY)]
 [Route("api/transactions")]
-[Produces("application/json")]
-[Consumes("application/json")]
 public class TransactionController : ControllerBase
 {
     private readonly TransactionService _transactionService;
@@ -61,8 +59,6 @@ public class TransactionController : ControllerBase
     /// </exception>
     [HttpPost]
     [ProducesResponseType(typeof(ApiResponse<InsertTransactionResponseDto>), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<ApiResponse<InsertTransactionResponseDto>>> InsertAsync([FromBody] InsertTransactionDto payload)
     {
         InsertTransactionResponseDto response = await _transactionService.InsertTransactionAsync(payload);
@@ -85,8 +81,6 @@ public class TransactionController : ControllerBase
     /// <response code="500">Returns when any internal exception or DB updates failed due to constraints violations.</response>
     [HttpGet("date/{date}")]
     [ProducesResponseType(typeof(ApiResponse<TransactionByDateDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<ApiResponse<TransactionByDateDto>>> GetTransactionsByDateAsync([FromRoute, Required] string date)
     {
         TransactionByDateDto result = await _transactionService.GetTransactionsByDateAsync(date);
@@ -109,8 +103,6 @@ public class TransactionController : ControllerBase
     /// <response code="500">Returns when any internal exception or DB updates failed due to constraints violations.</response>
     [HttpGet("count")]
     [ProducesResponseType(typeof(ApiResponse<TransactionByDateDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> CountOfTransactionsAsync([FromQuery] int? month, [FromQuery] int? year)
     {
         int count = await _transactionService.CountOfAllTransactionsAsync(month, year);
@@ -135,8 +127,6 @@ public class TransactionController : ControllerBase
     /// <response code="500">Returns when any internal exception or DB updates failed due to constraints violations.</response>
     [HttpPut("{id:int}")]
     [ProducesResponseType(typeof(ApiResponse<TransactionByDateDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> UpdateTransactionAsync([FromRoute] int id, [FromBody] UpdateTransactionDto payload)
     {
         await _transactionService.UpdateTransactionAsync(payload, id);
@@ -160,8 +150,6 @@ public class TransactionController : ControllerBase
     /// <response code="500">Returns when any internal exception or DB updates failed due to constraints violations.</response>
     [HttpGet]
     [ProducesResponseType(typeof(ApiResponse<TransactionByDateDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ListOfTransactionsByMonthYear([FromQuery] int? month, [FromQuery] int? year)
     {
         IReadOnlyList<TransactionsListByMonthYear> result = await _transactionService.GetTransactionsByMonthYearAsync(month, year);
@@ -185,8 +173,6 @@ public class TransactionController : ControllerBase
     /// <response code="500">Returns when any internal exception or DB updates failed due to constraints violations.</response>
     [HttpGet("categories")]
     [ProducesResponseType(typeof(ApiResponse<TransactionByDateDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ListOfCategoryTransactionsByMonthYear([FromQuery] int? month, [FromQuery] int? year)
     {
         IReadOnlyList<CategoryBankTransactionsByMonthYear> result = await _transactionService.GetCategoryTransactionsByMonthYearAsync(month, year);
@@ -210,8 +196,6 @@ public class TransactionController : ControllerBase
     /// <response code="500">Returns when any internal exception or DB updates failed due to constraints violations.</response>
     [HttpGet("banks")]
     [ProducesResponseType(typeof(ApiResponse<TransactionByDateDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ListOfBankTransactionsByMonthYear([FromQuery] int? month, [FromQuery] int? year)
     {
         IReadOnlyList<CategoryBankTransactionsByMonthYear> result = await _transactionService.GetBankTransactionsByMonthYearAsync(month, year);

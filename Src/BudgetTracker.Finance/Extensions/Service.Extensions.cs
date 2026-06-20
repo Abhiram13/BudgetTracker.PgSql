@@ -137,11 +137,20 @@ internal static class ServiceExtension
                 return badRequest;
             };
         
-            serviceCollection.AddControllers().ConfigureApiBehaviorOptions(options =>
-            {
-                options.SuppressModelStateInvalidFilter = false;
-                options.InvalidModelStateResponseFactory = ModelValidation;
-            });
+            serviceCollection
+                .AddControllers(options =>
+                {
+                    options.Filters.Add(new ProducesAttribute("application/json"));
+                    options.Filters.Add(new ConsumesAttribute("application/json"));
+                    options.Filters.Add(new ProducesResponseTypeAttribute(typeof(ApiResponse), StatusCodes.Status401Unauthorized));
+                    options.Filters.Add(new ProducesResponseTypeAttribute(typeof(ApiResponse), StatusCodes.Status403Forbidden));
+                    options.Filters.Add(new ProducesResponseTypeAttribute(typeof(ApiResponse), StatusCodes.Status500InternalServerError));
+                })
+                .ConfigureApiBehaviorOptions(options =>
+                {
+                    options.SuppressModelStateInvalidFilter = false;
+                    options.InvalidModelStateResponseFactory = ModelValidation;
+                });
         
             return serviceCollection;
         }
