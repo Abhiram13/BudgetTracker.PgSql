@@ -12,6 +12,9 @@
         <PackageReference Include="Abhiram.Extensions.DotEnv" />
         <PackageReference Include="Abhiram.Abstractions.Logging" />
         <PackageReference Include="Abhiram.Secrets.Providers" />
+        <PackageReference Include="Scalar.AspNetCore" />
+        <PackageReference Include="Scalar.AspNetCore.Microsoft" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     </ItemGroup>
 
     <ItemGroup>

@@ -5,7 +5,6 @@ using Abhiram.Secrets.Configuration;
 using BudgetTracker.Finance.Configurations;
 using BudgetTracker.Finance.Extensions;
 using BudgetTracker.Shared.Models;
-using Scalar.AspNetCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 DotEnvironmentVariables.Load();
@@ -21,7 +20,10 @@ builder.Configuration
 builder.AddConsoleGoogleSeriLog();
 builder.Configuration.AddSecrets(environment: builder.Environment, optional: false);
 builder.Services.AddCollections(builder.Configuration);
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer<OpenApiTransformer>();
+});
 builder.WebHost.ConfigureKestrel((context, server) =>
 {
     AppSecrets? secrets = context.Configuration.Get<AppSecrets>();
@@ -34,18 +36,6 @@ WebApplication app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi("/api-docs/openapi/{documentName}.json");
-    app.MapScalarApiReference("/api-docs", options =>
-    {
-        options.Title = "Budget Tracker Finance documentation";
-        options.Servers = new List<ScalarServer>
-        {
-            new ScalarServer("http://localhost:3000", "Development Server")
-        };
-        options
-            .WithOpenApiRoutePattern("/api-docs/openapi/{documentName}.json")
-            .AddPreferredSecuritySchemes("ApiKey");            
-    });    
-    // .AllowAnonymous();
 }
 
 app.UseApplicationServices();

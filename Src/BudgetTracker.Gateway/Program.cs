@@ -19,6 +19,7 @@ using BudgetTracker.Gateway.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Yarp.ReverseProxy.Model;
 using Yarp.ReverseProxy.Transforms;
+using Scalar.AspNetCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 DotEnvironmentVariables.Load();
@@ -70,6 +71,23 @@ WebApplication app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    const string URL = "/api-docs/openapi/{documentName}.json";
+    app.MapScalarApiReference("/api-docs", options =>
+    {
+        options.Title = "Budget Tracker Finance documentation";
+        options.Servers = new List<ScalarServer>
+        {
+            new ScalarServer("http://localhost:3000", "Development Server")
+        };
+        options
+            .WithOpenApiRoutePattern(URL)
+            .AddPreferredSecuritySchemes("ApiKey")
+            .AddApiKeyAuthentication("ApiKey", apiKey =>
+            {
+                apiKey.Name = "API_KEY";                
+            });
+    })
+    .AllowAnonymous();
 }
 
 app.UseMiddleware<TraceProviderMiddleware>();
