@@ -12,7 +12,6 @@ builder.AddConsoleGoogleSeriLog();
 builder.Services.AddRouting();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<WriteDbContext>(options =>
 {
     // TODO: UPDATE EITHER WITH .ENV OR app.settings.json
@@ -38,12 +37,6 @@ using (IServiceScope? scope = app.Services.CreateScope())
     {
         Console.WriteLine(e.Message);
     }
-}
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
 }
 
 app.MapControllers();

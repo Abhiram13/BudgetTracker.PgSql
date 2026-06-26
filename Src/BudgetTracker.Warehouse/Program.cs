@@ -25,7 +25,6 @@ builder.Configuration
 builder.AddConsoleGoogleSeriLog();
 builder.Configuration.AddSecrets(environment: builder.Environment, optional: false);
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 builder.Services.AddOptions<WarehouseAppSecrets>().Bind(builder.Configuration).ValidateDataAnnotations().ValidateOnStart();
 builder.Services.AddSingleton<WarehouseAppSecrets>(sp => sp.GetRequiredService<IOptions<WarehouseAppSecrets>>().Value);
@@ -42,13 +41,6 @@ builder.WebHost.ConfigureKestrel((_, server) => {
 });
 
 WebApplication app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
 
 app.UseRouting();
 app.UseAuthentication();

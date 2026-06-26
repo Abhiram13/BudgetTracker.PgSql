@@ -7,12 +7,14 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
-        <PackageReference Include="Swashbuckle.AspNetCore" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
         <PackageReference Include="Yarp.ReverseProxy" />
         <PackageReference Include="Abhiram.Extensions.DotEnv" />
         <PackageReference Include="Abhiram.Abstractions.Logging" />
         <PackageReference Include="Abhiram.Secrets.Providers" />
+        <PackageReference Include="Scalar.AspNetCore" />
+        <PackageReference Include="Scalar.AspNetCore.Microsoft" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     </ItemGroup>
 
     <ItemGroup>

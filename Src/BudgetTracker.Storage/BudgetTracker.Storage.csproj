@@ -10,7 +10,6 @@
         <PackageReference Include="Google.Cloud.Storage.Control.V2" />
         <PackageReference Include="Google.Cloud.Storage.V1" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
-        <PackageReference Include="Swashbuckle.AspNetCore" />
         <PackageReference Include="Abhiram.Secrets.Providers" />
         <PackageReference Include="Abhiram.Extensions.DotEnv" />
         <PackageReference Include="Abhiram.Abstractions.Logging" />

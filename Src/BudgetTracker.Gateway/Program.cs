@@ -19,6 +19,7 @@ using BudgetTracker.Gateway.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Yarp.ReverseProxy.Model;
 using Yarp.ReverseProxy.Transforms;
+using Scalar.AspNetCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 DotEnvironmentVariables.Load();
@@ -34,7 +35,6 @@ builder.Configuration
 builder.AddConsoleGoogleSeriLog();
 builder.Configuration.AddSecrets(environment: builder.Environment, optional: false);
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 builder.Services.LoadJwtConfiguration(builder.Configuration);
 builder.Services.AddOptions<GatewayAppSecrets>().Bind(builder.Configuration).ValidateDataAnnotations().ValidateOnStart();
@@ -71,8 +71,26 @@ WebApplication app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    const string URL = "/api-docs/openapi/{documentName}.json";
+    app.MapScalarApiReference("/api-docs", options =>
+    {
+        options.Title = "Budget Tracker Finance documentation";
+        options.Servers = new List<ScalarServer>
+        {
+            new ScalarServer("http://localhost:3000", "Development Server")
+        };
+        options.DotNetFlag = true;
+        options.DocumentDownloadType = DocumentDownloadType.None;
+        options
+            .WithOpenApiRoutePattern(URL)
+            .AddPreferredSecuritySchemes("ApiKey")
+            .AddApiKeyAuthentication("ApiKey", apiKey =>
+            {
+                apiKey.Name = "API_KEY";                
+            })
+            .DisableAgent();
+    })
+    .AllowAnonymous();
 }
 
 app.UseMiddleware<TraceProviderMiddleware>();
@@ -81,7 +99,7 @@ app.UseRouting();
 app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapReverseProxy().RequireAuthorization();
+app.MapReverseProxy();
 app.UseHttpsRedirection();
 app.MapControllers();
 app.MapGet("/", () => new ApiResponse { StatusCode = HttpStatusCode.OK, Message = "This is YARP API Gateway" });

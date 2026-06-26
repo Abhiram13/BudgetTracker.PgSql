@@ -23,9 +23,7 @@ internal static class WebApplicationExtensions
         public WebApplication UseApplicationServices()
         {
             application.UseMiddleware<ExceptionHandlerMiddleware>();
-            // application.UseMiddleware<ValidateTraceIdMiddleware>();
             application.InitlizeDbMigrations();
-            application.UseSwaggerConfiguration();
             application.UseRouting();
             application.UseAuthentication();
             application.UseAuthorization();
@@ -43,8 +41,6 @@ internal static class WebApplicationExtensions
         {
             if (!application.Environment.IsDevelopment()) return application;
             
-            application.UseSwagger();
-            application.UseSwaggerUI();
 
             return application;
         }

@@ -17,7 +17,6 @@ builder.Configuration
 builder.AddConsoleGoogleSeriLog();
 builder.Configuration.AddSecrets(environment: builder.Environment, optional: false);
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<GoogleCloudStorageService>();
 builder.Services.AddScoped<FileService>();
 builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
@@ -32,12 +31,6 @@ builder.WebHost.ConfigureKestrel((_, server) => {
 });
 
 WebApplication app = builder.Build();
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
 
 app.UseRouting();
 app.UseAuthentication();
