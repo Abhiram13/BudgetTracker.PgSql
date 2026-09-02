@@ -19,7 +19,7 @@ public static class SharedServiceExtensions
     extension(IServiceCollection collection)
     {
         /// <summary>
-        /// Loads <see cref="JwtConfiguration"/> with secrets into <see cref="IOptions{TOptions}"/> configuration from <c>Jwt</c> section from <c>appsettings</c>
+        /// Loads <c>Jwt</c> section from <c>appsettings.json</c> and binds that object into <see cref="JwtConfiguration"/> in <see cref="IOptions{JwtConfiguration}"/> and validate on start 
         /// </summary>
         /// <remarks>This method should be called before <see cref="AddJwtConfiguration"/></remarks>
         /// <param name="configuration"><see cref="IConfiguration"/></param>
@@ -37,8 +37,10 @@ public static class SharedServiceExtensions
         }
         
         /// <summary>
-        /// Configures JWT <see cref="TokenValidationParameters"/> and sets JWT as default authenticate method and adds <c>Bearer</c> as default schema
+        /// Configures JWT <see cref="TokenValidationParameters"/> and sets JWT as default authenticate method and adds <c>Bearer</c> as default schema. <br /> <br />
+        /// Check <see cref="ConfigureJwtOptions"/> on how Jwt is configured.
         /// </summary>
+        /// <remarks>This method should be called after <see cref="LoadJwtConfiguration"/> method</remarks>
         /// <returns>Chained <see cref="IServiceCollection"/></returns>
         public IServiceCollection AddJwtConfiguration()
         {
