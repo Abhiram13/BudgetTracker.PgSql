@@ -43,7 +43,6 @@ public record JwtConfiguration
     /// <value>true</value>
     [ConfigurationKeyName("ValidateIssuerSigningKey")]
     public bool ValidateIssuerSigingKey {  get; init; } = true;
-    
 }
 
 /// <summary>
